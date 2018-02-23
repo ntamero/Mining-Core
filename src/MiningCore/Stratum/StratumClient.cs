@@ -22,8 +22,10 @@ using System;
 using System.Buffers;
 using System.IO;
 using System.Net;
+using System.Net.Security;
 using System.Net.Sockets;
 using System.Reactive.Disposables;
+using System.Threading;
 using System.Threading.Tasks.Dataflow;
 using Autofac;
 using MiningCore.Buffers;
@@ -64,9 +66,9 @@ namespace MiningCore.Stratum
 
         #region API-Surface
 
-        public void Init(Socket socket, IMasterClock clock, Action<PooledArraySegment<byte>> onNext, Action onCompleted, Action<Exception> onError)
+        public void Init(Stream stream, IPEndPoint remoteEndpoint, IMasterClock clock, Action<PooledArraySegment<byte>> onNext, Action onCompleted, Action<Exception> onError)
         {
-            RemoteEndpoint = (IPEndPoint) socket.RemoteEndPoint;
+            RemoteEndpoint = remoteEndpoint;
 
             // initialize send queue
             sendQueue = new BufferBlock<PooledArraySegment<byte>>();
@@ -79,13 +81,13 @@ namespace MiningCore.Stratum
                     logger.Debug(() => $"[{ConnectionId}] Last subscriber disconnected from receiver stream");
 
                     isAlive = false;
-                    socket.Close();
+                    stream.Close();
                 }
             });
 
             // go
-            DoReceive(socket, clock, onNext, onCompleted, onError);
-            DoSend(socket, onError);
+            DoReceive(stream, clock, onNext, onCompleted, onError);
+            DoSend(stream, onError);
         }
 
         public string ConnectionId { get; private set; }
@@ -225,17 +227,16 @@ namespace MiningCore.Stratum
 
         #endregion // API-Surface
 
-        private async void DoReceive(Socket socket, IMasterClock clock,
+        private async void DoReceive(Stream stream, IMasterClock clock,
             Action<PooledArraySegment<byte>> onNext, Action onCompleted, Action<Exception> onError)
         {
             while (isAlive)
             {
                 var buf = ArrayPool<byte>.Shared.Rent(0x10000);
-                var aseg = new ArraySegment<byte>(buf);
 
                 try
                 {
-                    var cb = await socket.ReceiveAsync(aseg, SocketFlags.None);
+                    var cb = await stream.ReadAsync(buf, 0, buf.Length);
 
                     if (cb == 0 || !isAlive)
                     {
@@ -277,7 +278,7 @@ namespace MiningCore.Stratum
             }
         }
 
-        private async void DoSend(Socket socket, Action<Exception> onError)
+        private async void DoSend(Stream stream, Action<Exception> onError)
         {
             while(isAlive)
             {
@@ -289,7 +290,7 @@ namespace MiningCore.Stratum
 
                         using (segment)
                         {
-                            await socket.SendAsync(new ArraySegment<byte>(segment.Array, segment.Offset, segment.Size), SocketFlags.None);
+                            await stream.WriteAsync(segment.Array, segment.Offset, segment.Size);
                         }
                     }
                 }

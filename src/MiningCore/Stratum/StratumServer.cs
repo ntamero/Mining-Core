@@ -87,10 +87,15 @@ namespace MiningCore.Stratum
                     {
                         try
                         {
-                            var client = await server.AcceptAsync();
+                            var socket = await server.AcceptAsync();
 
+                            // prepare socket
+                            socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, 1000);
+                            socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.NoDelay, true);
+
+                            // hand over
                             #pragma warning disable 4014
-                            OnClientConnected(client, endpoint);
+                            OnClientConnected(new NetworkStream(socket, true), (IPEndPoint)socket.RemoteEndPoint, endpoint);
                             #pragma warning restore 4014
                         }
 
@@ -115,34 +120,28 @@ namespace MiningCore.Stratum
                 {
                     var socket = portValues[i];
 
-                    socket.Dispose();
+                    socket.Close();
                 }
             }
         }
 
-        private void OnClientConnected(Socket socket, IPEndPoint endpointConfig)
+        private void OnClientConnected(NetworkStream stream, IPEndPoint remoteEndpoint, IPEndPoint localEndpoint)
         {
             try
             {
-                var remoteEndPoint = (IPEndPoint) socket.RemoteEndPoint;
-
                 // get rid of banned clients as early as possible
-                if (banManager?.IsBanned(remoteEndPoint.Address) == true)
+                if (banManager?.IsBanned(remoteEndpoint.Address) == true)
                 {
-                    logger.Debug(() => $"[{LogCat}] Disconnecting banned ip {remoteEndPoint.Address}");
-                    socket.Dispose();
+                    logger.Debug(() => $"[{LogCat}] Disconnecting banned ip {remoteEndpoint.Address}");
+                    stream.Close();
                     return;
                 }
 
                 var connectionId = CorrelationIdGenerator.GetNextId();
-                logger.Debug(() => $"[{LogCat}] Accepting connection [{connectionId}] from {remoteEndPoint.Address}:{remoteEndPoint.Port}");
-
-                // setup client connection
-                socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, 1000);
-                socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.NoDelay, true);
+                logger.Debug(() => $"[{LogCat}] Accepting connection [{connectionId}] from {remoteEndpoint.Address}:{remoteEndpoint.Port}");
 
                 // setup client
-                var client = new StratumClient(endpointConfig, connectionId);
+                var client = new StratumClient(localEndpoint, connectionId);
 
                 // register client
                 lock (clients)
@@ -152,7 +151,7 @@ namespace MiningCore.Stratum
 
                 OnConnect(client);
 
-                client.Init(socket, clock,
+                client.Init(stream, remoteEndpoint, clock,
                     data => OnReceiveAsync(client, data),
                     () => OnReceiveComplete(client),
                     ex => OnReceiveError(client, ex));
