@@ -20,17 +20,17 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Buffers;
-using System.Collections.Concurrent;
 using System.IO;
 using System.Net;
+using System.Net.Sockets;
 using System.Reactive.Disposables;
+using System.Threading.Tasks.Dataflow;
 using Autofac;
 using MiningCore.Buffers;
 using MiningCore.JsonRpc;
 using MiningCore.Mining;
 using MiningCore.Time;
 using MiningCore.Util;
-using NetUV.Core.Handles;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using NLog;
@@ -40,13 +40,18 @@ namespace MiningCore.Stratum
 {
     public class StratumClient
     {
+        public StratumClient(IPEndPoint endpointConfig, string connectionId)
+        {
+            PoolEndpoint = endpointConfig;
+            ConnectionId = connectionId;
+        }
+
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
         private const int MaxInboundRequestLength = 8192;
         private const int MaxOutboundRequestLength = 0x4000;
 
-        private ConcurrentQueue<PooledArraySegment<byte>> sendQueue;
-        private Async sendQueueDrainer;
+        private BufferBlock<PooledArraySegment<byte>> sendQueue;
         private readonly PooledLineBuffer plb = new PooledLineBuffer(logger, MaxInboundRequestLength);
         private IDisposable subscription;
         private bool isAlive = true;
@@ -59,43 +64,28 @@ namespace MiningCore.Stratum
 
         #region API-Surface
 
-        public void Init(Loop loop, Tcp tcp, IComponentContext ctx, IMasterClock clock,
-            IPEndPoint endpointConfig, string connectionId,
-            Action<PooledArraySegment<byte>> onNext, Action onCompleted, Action<Exception> onError)
+        public void Init(Socket socket, IMasterClock clock, Action<PooledArraySegment<byte>> onNext, Action onCompleted, Action<Exception> onError)
         {
-            PoolEndpoint = endpointConfig;
-            ConnectionId = connectionId;
-            RemoteEndpoint = tcp.GetPeerEndPoint();
+            RemoteEndpoint = (IPEndPoint) socket.RemoteEndPoint;
 
             // initialize send queue
-            sendQueue = new ConcurrentQueue<PooledArraySegment<byte>>();
-            sendQueueDrainer = loop.CreateAsync(DrainSendQueue);
-            sendQueueDrainer.UserToken = tcp;
+            sendQueue = new BufferBlock<PooledArraySegment<byte>>();
 
             // cleanup preparation
-            var sub = Disposable.Create(() =>
+            subscription = Disposable.Create(() =>
             {
-                if (tcp.IsValid)
+                if (isAlive)
                 {
                     logger.Debug(() => $"[{ConnectionId}] Last subscriber disconnected from receiver stream");
 
                     isAlive = false;
-                    tcp.Shutdown();
+                    socket.Close();
                 }
             });
 
-            // ensure subscription is disposed on loop thread
-            var disposer = loop.CreateAsync((handle) =>
-            {
-                sub.Dispose();
-
-                handle.Dispose();
-            });
-
-            subscription = Disposable.Create(() => { disposer.Send(); });
-
             // go
-            Receive(tcp, clock, onNext, onCompleted, onError);
+            DoReceive(socket, clock, onNext, onCompleted, onError);
+            DoSend(socket, onError);
         }
 
         public string ConnectionId { get; private set; }
@@ -235,54 +225,50 @@ namespace MiningCore.Stratum
 
         #endregion // API-Surface
 
-        private void Receive(Tcp tcp, IMasterClock clock, 
+        private async void DoReceive(Socket socket, IMasterClock clock,
             Action<PooledArraySegment<byte>> onNext, Action onCompleted, Action<Exception> onError)
         {
-            tcp.OnRead((handle, buffer) =>
+            while (isAlive)
             {
-                // onAccept
-                using (buffer)
+                var buf = ArrayPool<byte>.Shared.Rent(0x10000);
+                var aseg = new ArraySegment<byte>(buf);
+
+                try
                 {
-                    if (buffer.Count == 0 || !isAlive)
+                    var cb = await socket.ReceiveAsync(aseg, SocketFlags.None);
+
+                    if (cb == 0 || !isAlive)
+                    {
+                        onCompleted();
                         return;
+                    }
 
                     LastReceive = clock.Now;
 
-                    plb.Receive(buffer, buffer.Count,
-                        (src, dst, count) => src.ReadBytes(dst, count),
+                    plb.Receive(buf, cb,
+                        (src, dst, count) => Array.Copy(src, dst, count),
                         onNext,
                         onError);
                 }
-            }, (handle, ex) =>
-            {
-                // onError
-                onError(ex);
-            }, handle =>
-            {
-                // onCompleted
-                isAlive = false;
-                onCompleted();
 
-                // release handles
-                sendQueueDrainer.UserToken = null;
-                sendQueueDrainer.Dispose();
+                catch(Exception ex)
+                {
+                    onError(ex);
+                    break;
+                }
 
-                // empty queues
-                while (sendQueue.TryDequeue(out var fragment))
-                    fragment.Dispose();
-
-                plb.Dispose();
-
-                handle.CloseHandle();
-            });
+                finally
+                {
+                    ArrayPool<byte>.Shared.Return(buf);
+                }
+            }
         }
 
         private void SendInternal(PooledArraySegment<byte> buffer)
         {
             try
             {
-                sendQueue.Enqueue(buffer);
-                sendQueueDrainer.Send();
+                sendQueue.Post(buffer);
             }
 
             catch (ObjectDisposedException)
@@ -291,31 +277,28 @@ namespace MiningCore.Stratum
             }
         }
 
-        private void DrainSendQueue(Async handle)
+        private async void DoSend(Socket socket, Action<Exception> onError)
         {
-            try
+            while(isAlive)
             {
-                var tcp = (Tcp)handle.UserToken;
-
-                if (tcp?.IsValid == true && !tcp.IsClosing && tcp.IsWritable && sendQueue != null)
+                try
                 {
-                    var queueSize = sendQueue.Count;
-                    if (queueSize >= 256)
-                        logger.Warn(() => $"[{ConnectionId}] Send queue backlog now at {queueSize}");
-
-                    while (sendQueue.TryDequeue(out var segment))
+                    while (await sendQueue.OutputAvailableAsync())
                     {
+                        var segment = await sendQueue.ReceiveAsync();
+
                         using (segment)
                         {
-                            tcp.QueueWrite(segment.Array, 0, segment.Size);
+                            await socket.SendAsync(new ArraySegment<byte>(segment.Array, segment.Offset, segment.Size), SocketFlags.None);
                         }
                     }
                 }
-            }
 
-            catch (Exception ex)
-            {
-                logger.Error(ex);
+                catch (Exception ex)
+                {
+                    onError(ex);
+                    break;
+                }
             }
         }
     }
