@@ -18,6 +18,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+using System.IO;
 using FluentValidation;
 using System.Linq;
 using FluentValidation.Attributes;
@@ -105,6 +106,11 @@ namespace MiningCore.Configuration
                 .NotEmpty()
                 .When(j=> j.Tls)
                 .WithMessage("Pool Endpoint: Tls enabled but neither TlsPemFile nor TlsPfxFile specified");
+
+            RuleFor(j => j.TlsPfxFile)
+                .Must(j=> File.Exists(j))
+                .When(j => j.Tls)
+                .WithMessage(j=> $"Pool Endpoint: {j.TlsPfxFile} does not exist");
 
             RuleFor(j => j.VarDiff)
                 .SetValidator(new VarDiffConfigValidator())

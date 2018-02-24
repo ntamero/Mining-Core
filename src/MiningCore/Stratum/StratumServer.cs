@@ -69,10 +69,20 @@ namespace MiningCore.Stratum
         {
             Contract.RequiresNonNull(stratumPorts, nameof(stratumPorts));
 
-            // every port gets serviced by a dedicated loop thread
             foreach(var port in stratumPorts)
             {
-                var thread = new Thread(async _ =>
+                // TLS cert loading
+                X509Certificate2 cert = null;
+
+                if (port.PoolEndpoint.Tls)
+                {
+                    cert = new X509Certificate2(port.PoolEndpoint.TlsPfxFile);
+
+                    if (!cert.HasPrivateKey)
+                        logger.ThrowLogPoolStartupException($"TLS certificate for stratum port {port} does not have private key and cannot be used");
+                }
+
+                var thread = new Thread(async arg =>
                 {
                     var server = new Socket(SocketType.Stream, ProtocolType.Tcp);
                     server.Bind(port.IPEndpoint);
@@ -82,8 +92,6 @@ namespace MiningCore.Stratum
                     {
                         ports[port.IPEndpoint.Port] = server;
                     }
-
-                    var cert = port.PoolEndpoint.Tls ? new X509Certificate2(port.PoolEndpoint.TlsPfxFile) : null;
 
                     logger.Info(() => $"[{LogCat}] Stratum port {port.IPEndpoint.Address}:{port.IPEndpoint.Port} online");
 
@@ -111,6 +119,7 @@ namespace MiningCore.Stratum
 
                             // create stream
                             var stream = (Stream) new NetworkStream(socket, true);
+                            var tlsCert = (X509Certificate)arg;
 
                             // TLS handshake
                             if (port.PoolEndpoint.Tls)
@@ -120,7 +129,7 @@ namespace MiningCore.Stratum
                                 try
                                 {
                                     sslStream = new SslStream(stream, false);
-                                    await sslStream.AuthenticateAsServerAsync(cert);
+                                    await sslStream.AuthenticateAsServerAsync(tlsCert);
                                 }
 
                                 catch (Exception ex)
@@ -156,7 +165,7 @@ namespace MiningCore.Stratum
                     }
                 }) { Name = $"StratumThread {id}:{port.IPEndpoint.Port}" };
 
-                thread.Start();
+                thread.Start(cert);
             }
         }
 
