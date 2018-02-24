@@ -103,13 +103,7 @@ namespace MiningCore.Configuration
             RuleFor(j => j.TlsPfxFile)
                 .NotNull()
                 .NotEmpty()
-                .When(j=> j.Tls && string.IsNullOrEmpty(j.TlsPemFile))
-                .WithMessage("Pool Endpoint: Tls enabled but neither TlsPemFile nor TlsPfxFile specified");
-
-            RuleFor(j => j.TlsPemFile)
-                .NotNull()
-                .NotEmpty()
-                .When(j => j.Tls && string.IsNullOrEmpty(j.TlsPemFile))
+                .When(j=> j.Tls)
                 .WithMessage("Pool Endpoint: Tls enabled but neither TlsPemFile nor TlsPfxFile specified");
 
             RuleFor(j => j.VarDiff)

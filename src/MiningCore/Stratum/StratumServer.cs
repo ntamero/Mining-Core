@@ -94,6 +94,9 @@ namespace MiningCore.Stratum
                             var socket = await server.AcceptAsync();
                             var remoteEndpoint = (IPEndPoint) socket.RemoteEndPoint;
 
+                            var connectionId = CorrelationIdGenerator.GetNextId();
+                            logger.Debug(() => $"[{LogCat}] Accepting connection [{connectionId}] from {remoteEndpoint.Address}:{remoteEndpoint.Port}");
+
                             // get rid of banned clients as early as possible
                             if (banManager?.IsBanned(remoteEndpoint.Address) == true)
                             {
@@ -109,15 +112,26 @@ namespace MiningCore.Stratum
                             // create stream
                             var stream = (Stream) new NetworkStream(socket, true);
 
-                            if (!port.PoolEndpoint.Tls)
+                            // TLS handshake
+                            if (port.PoolEndpoint.Tls)
                             {
-                                var sslStream = new SslStream(stream, false);
-                                await sslStream.AuthenticateAsServerAsync(cert);
+                                SslStream sslStream = null;
+
+                                try
+                                {
+                                    sslStream = new SslStream(stream, false);
+                                    await sslStream.AuthenticateAsServerAsync(cert);
+                                }
+
+                                catch (Exception ex)
+                                {
+                                    logger.Error(() => $"[{LogCat}] TLS init failed: {ex.Message}");
+                                    (sslStream ?? stream).Close();
+                                    continue;
+                                }
+
                                 stream = sslStream;
                             }
-
-                            var connectionId = CorrelationIdGenerator.GetNextId();
-                            logger.Debug(() => $"[{LogCat}] Accepting connection [{connectionId}] from {remoteEndpoint.Address}:{remoteEndpoint.Port}");
 
                             // setup client
                             var client = new StratumClient(clock, port.IPEndpoint, connectionId);
