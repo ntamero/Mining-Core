@@ -100,6 +100,18 @@ namespace MiningCore.Configuration
                 .GreaterThan(0)
                 .WithMessage("Pool Endpoint: Difficulty missing or invalid");
 
+            RuleFor(j => j.TlsPfxFile)
+                .NotNull()
+                .NotEmpty()
+                .When(j=> j.Tls && string.IsNullOrEmpty(j.TlsPemFile))
+                .WithMessage("Pool Endpoint: Tls enabled but neither TlsPemFile nor TlsPfxFile specified");
+
+            RuleFor(j => j.TlsPemFile)
+                .NotNull()
+                .NotEmpty()
+                .When(j => j.Tls && string.IsNullOrEmpty(j.TlsPemFile))
+                .WithMessage("Pool Endpoint: Tls enabled but neither TlsPemFile nor TlsPfxFile specified");
+
             RuleFor(j => j.VarDiff)
                 .SetValidator(new VarDiffConfigValidator())
                 .When(x => x.VarDiff != null);

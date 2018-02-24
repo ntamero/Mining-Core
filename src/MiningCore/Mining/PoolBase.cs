@@ -430,11 +430,15 @@ Pool Fee:               {poolConfig.RewardRecipients.Sum(x => x.Percentage)}%
 
                 if (!poolConfig.ExternalStratum)
 	            {
-		            var ipEndpoints = poolConfig.Ports.Keys
-			            .Select(port => PoolEndpoint2IPEndpoint(port, poolConfig.Ports[port]))
+		            var endpoints = poolConfig.Ports.Keys
+			            .Select(port =>
+		                {
+		                    var endpointConfig = poolConfig.Ports[port];
+                            return (PoolEndpoint2IPEndpoint(port, endpointConfig), endpointConfig);
+		                })
 			            .ToArray();
 
-		            StartListeners(poolConfig.Id, ipEndpoints);
+		            Start(poolConfig.Id, endpoints);
 	            }
 
 	            else

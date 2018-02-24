@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using MiningCore.Blockchain.Bitcoin;
 using MiningCore.Configuration;
 using MiningCore.Crypto;
@@ -7,6 +8,7 @@ using MiningCore.Crypto.Hashing.Special;
 using MiningCore.Extensions;
 using MiningCore.Stratum;
 using MiningCore.Tests.Util;
+using MiningCore.Time;
 using NBitcoin;
 using Newtonsoft.Json;
 using Xunit;
@@ -25,7 +27,7 @@ namespace MiningCore.Tests.Blockchain.Bitcoin
         [Fact]
         public void BitcoinJob_Should_Accept_Valid_Share()
         {
-	        var worker = new StratumClient();
+	        var worker = new StratumClient(new StandardClock(), new IPEndPoint(IPAddress.Any, 3000), string.Empty);
 
 	        worker.SetContext(new BitcoinWorkerContext
 	        {
@@ -61,9 +63,9 @@ namespace MiningCore.Tests.Blockchain.Bitcoin
         [Fact]
         public void BitcoinJob_Should_Not_Accept_Invalid_Share()
         {
-	        var worker = new StratumClient();
+            var worker = new StratumClient(new StandardClock(), new IPEndPoint(IPAddress.Any, 3000), string.Empty);
 
-	        worker.SetContext(new BitcoinWorkerContext
+            worker.SetContext(new BitcoinWorkerContext
 			{
 				Difficulty = 0.5,
 				ExtraNonce1 = "01000058",

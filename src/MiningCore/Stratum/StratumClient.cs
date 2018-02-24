@@ -20,14 +20,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Buffers;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
-using System.Net.Security;
-using System.Net.Sockets;
 using System.Reactive.Disposables;
-using System.Threading;
 using System.Threading.Tasks.Dataflow;
-using Autofac;
 using MiningCore.Buffers;
 using MiningCore.JsonRpc;
 using MiningCore.Mining;
@@ -42,8 +39,9 @@ namespace MiningCore.Stratum
 {
     public class StratumClient
     {
-        public StratumClient(IPEndPoint endpointConfig, string connectionId)
+        public StratumClient(IMasterClock clock, IPEndPoint endpointConfig, string connectionId)
         {
+            this.clock = clock;
             PoolEndpoint = endpointConfig;
             ConnectionId = connectionId;
         }
@@ -53,6 +51,7 @@ namespace MiningCore.Stratum
         private const int MaxInboundRequestLength = 8192;
         private const int MaxOutboundRequestLength = 0x4000;
 
+        private readonly IMasterClock clock;
         private BufferBlock<PooledArraySegment<byte>> sendQueue;
         private readonly PooledLineBuffer plb = new PooledLineBuffer(logger, MaxInboundRequestLength);
         private IDisposable subscription;
@@ -66,11 +65,9 @@ namespace MiningCore.Stratum
 
         #region API-Surface
 
-        public void Init(Stream stream, IPEndPoint remoteEndpoint, IMasterClock clock, Action<PooledArraySegment<byte>> onNext, Action onCompleted, Action<Exception> onError)
+        public void Start(Stream stream, IPEndPoint remoteEndpoint, Action<PooledArraySegment<byte>> onNext, Action onCompleted, Action<Exception> onError)
         {
             RemoteEndpoint = remoteEndpoint;
-
-            // initialize send queue
             sendQueue = new BufferBlock<PooledArraySegment<byte>>();
 
             // cleanup preparation
@@ -81,12 +78,13 @@ namespace MiningCore.Stratum
                     logger.Debug(() => $"[{ConnectionId}] Last subscriber disconnected from receiver stream");
 
                     isAlive = false;
+                    sendQueue.Complete();
                     stream.Close();
                 }
             });
 
             // go
-            DoReceive(stream, clock, onNext, onCompleted, onError);
+            DoReceive(stream, onNext, onCompleted, onError);
             DoSend(stream, onError);
         }
 
@@ -227,41 +225,51 @@ namespace MiningCore.Stratum
 
         #endregion // API-Surface
 
-        private async void DoReceive(Stream stream, IMasterClock clock,
-            Action<PooledArraySegment<byte>> onNext, Action onCompleted, Action<Exception> onError)
+        private async void DoReceive(Stream stream, Action<PooledArraySegment<byte>> onNext, Action onCompleted, Action<Exception> onError)
         {
-            while (isAlive)
+            var buf = ArrayPool<byte>.Shared.Rent(0x10000);
+
+            try
             {
-                var buf = ArrayPool<byte>.Shared.Rent(0x10000);
-
-                try
+                while (isAlive)
                 {
-                    var cb = await stream.ReadAsync(buf, 0, buf.Length);
-
-                    if (cb == 0 || !isAlive)
+                    try
                     {
-                        onCompleted();
-                        return;
+                        var cb = await stream.ReadAsync(buf, 0, buf.Length);
+
+                        if (cb == 0 || !isAlive)
+                        {
+                            onCompleted();
+                            return;
+                        }
+
+                        LastReceive = clock.Now;
+
+                        plb.Receive(buf, cb,
+                            (src, dst, count) => Array.Copy(src, dst, count),
+                            onNext,
+                            onError);
                     }
 
-                    LastReceive = clock.Now;
+                    catch (ObjectDisposedException)
+                    {
+                        Debug.Assert(!isAlive);
+                        break;
+                    }
 
-                    plb.Receive(buf, cb,
-                        (src, dst, count) => Array.Copy(src, dst, count),
-                        onNext,
-                        onError);
-                }
+                    catch (Exception ex)
+                    {
+                        if (isAlive)
+                            onError(ex);
 
-                catch(Exception ex)
-                {
-                    onError(ex);
-                    break;
+                        break;
+                    }
                 }
+            }
 
-                finally
-                {
-                    ArrayPool<byte>.Shared.Return(buf);
-                }
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(buf);
             }
         }
 
@@ -286,18 +294,24 @@ namespace MiningCore.Stratum
                 {
                     while (await sendQueue.OutputAvailableAsync())
                     {
-                        var segment = await sendQueue.ReceiveAsync();
-
-                        using (segment)
+                        using (var segment = await sendQueue.ReceiveAsync())
                         {
                             await stream.WriteAsync(segment.Array, segment.Offset, segment.Size);
                         }
                     }
                 }
 
+                catch (ObjectDisposedException)
+                {
+                    Debug.Assert(!isAlive);
+                    break;
+                }
+
                 catch (Exception ex)
                 {
-                    onError(ex);
+                    if (isAlive)
+                        onError(ex);
+
                     break;
                 }
             }

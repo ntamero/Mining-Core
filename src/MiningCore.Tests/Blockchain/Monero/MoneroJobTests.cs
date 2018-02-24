@@ -1,7 +1,9 @@
-﻿using MiningCore.Blockchain.Monero;
+﻿using System.Net;
+using MiningCore.Blockchain.Monero;
 using MiningCore.Configuration;
 using MiningCore.Extensions;
 using MiningCore.Stratum;
+using MiningCore.Time;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -15,9 +17,9 @@ namespace MiningCore.Tests.Blockchain.Monero
         [Fact]
         public void MoneroJob_Should_Accept_Valid_Share()
         {
-	        var worker = new StratumClient();
+            var worker = new StratumClient(new StandardClock(), new IPEndPoint(IPAddress.Any, 3000), string.Empty);
 
-	        worker.SetContext(new MoneroWorkerContext
+            worker.SetContext(new MoneroWorkerContext
 			{
 				Difficulty = 1000,
 	        });
@@ -39,9 +41,9 @@ namespace MiningCore.Tests.Blockchain.Monero
         [Fact]
         public void MoneroJob_Should_Not_Accept_Invalid_Share()
         {
-	        var worker = new StratumClient();
+            var worker = new StratumClient(new StandardClock(), new IPEndPoint(IPAddress.Any, 3000), string.Empty);
 
-	        worker.SetContext(new MoneroWorkerContext
+            worker.SetContext(new MoneroWorkerContext
 	        {
 		        Difficulty = 1000,
 	        });

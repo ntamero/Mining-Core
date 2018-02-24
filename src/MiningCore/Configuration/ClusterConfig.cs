@@ -116,6 +116,30 @@ namespace MiningCore.Configuration
         public string Name { get; set; }
         public double Difficulty { get; set; }
         public VarDiffConfig VarDiff { get; set; }
+
+        /// <summary>
+        /// Enable Transport layer security (TLS)
+        /// If set to true, you must specify values for either TlsPemFile or TlsPfxFile
+        /// If TlsPemFile does not include the private key, TlsKeyFile is also required
+        /// </summary>
+        public bool Tls { get; set; }
+
+        /// <summary>
+        /// RFC's 1421 through 1424, path to a file that may include just the public certificate
+        /// or may include an entire certificate chain including public key and private key.
+        /// </summary>
+        public string TlsPemFile { get; set; }
+
+        /// <summary>
+        /// This is a PEM formatted file containing just the private-key of the certificate
+        /// Not required if the private key is included in TlsPemFile
+        /// </summary>
+        public string TlsKeyFile { get; set; }
+
+        /// <summary>
+        /// PKCS certificate file
+        /// </summary>
+        public string TlsPfxFile { get; set; }
     }
 
     public partial class VarDiffConfig
