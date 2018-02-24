@@ -79,7 +79,7 @@ namespace MiningCore.Stratum
                     cert = new X509Certificate2(port.PoolEndpoint.TlsPfxFile);
 
                     if (!cert.HasPrivateKey)
-                        logger.ThrowLogPoolStartupException($"TLS certificate for stratum port {port} does not have private key and cannot be used");
+                        logger.ThrowLogPoolStartupException($"TLS certificate for stratum port {port} does not include the private key and cannot be used");
                 }
 
                 var thread = new Thread(async arg =>
