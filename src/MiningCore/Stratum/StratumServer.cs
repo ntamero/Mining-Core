@@ -92,8 +92,8 @@ namespace MiningCore.Stratum
                         try
                         {
                             var socket = await server.AcceptAsync();
-                            var remoteEndpoint = (IPEndPoint) socket.RemoteEndPoint;
 
+                            var remoteEndpoint = (IPEndPoint) socket.RemoteEndPoint;
                             var connectionId = CorrelationIdGenerator.GetNextId();
                             logger.Debug(() => $"[{LogCat}] Accepting connection [{connectionId}] from {remoteEndpoint.Address}:{remoteEndpoint.Port}");
 
