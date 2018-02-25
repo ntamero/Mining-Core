@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
@@ -243,6 +244,9 @@ namespace MiningCore
             // AutoMapper
             var amConf = new MapperConfiguration(cfg => { cfg.AddProfile(new AutoMapperProfile()); });
             builder.Register((ctx, parms) => amConf.CreateMapper());
+
+            // Misc
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 
             ConfigurePersistence(builder);
             container = builder.Build();
