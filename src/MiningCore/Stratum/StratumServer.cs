@@ -85,6 +85,7 @@ namespace MiningCore.Stratum
                 var thread = new Thread(async arg =>
                 {
                     var server = new Socket(SocketType.Stream, ProtocolType.Tcp);
+                    server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                     server.Bind(port.IPEndpoint);
                     server.Listen(512);
 
