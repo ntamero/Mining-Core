@@ -71,19 +71,15 @@ namespace MiningCore.Stratum
 
             foreach(var port in stratumPorts)
             {
-                // TLS cert loading
-                X509Certificate2 cert = null;
-
-                if (port.PoolEndpoint.Tls)
+                Task.Run(async () =>
                 {
-                    cert = new X509Certificate2(port.PoolEndpoint.TlsPfxFile);
+                    // TLS cert loading
+                    X509Certificate2 tlsCert = null;
 
-                    if (!cert.HasPrivateKey)
-                        logger.ThrowLogPoolStartupException($"TLS certificate for stratum port {port} does not include the private key and cannot be used");
-                }
+                    if (port.PoolEndpoint.Tls)
+                        tlsCert = new X509Certificate2(port.PoolEndpoint.TlsPfxFile);
 
-                var thread = new Thread(async arg =>
-                {
+                    // Setup socket
                     var server = new Socket(SocketType.Stream, ProtocolType.Tcp);
                     server.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                     server.Bind(port.IPEndpoint);
@@ -119,7 +115,6 @@ namespace MiningCore.Stratum
 
                             // create stream
                             var stream = (Stream) new NetworkStream(socket, true);
-                            var tlsCert = (X509Certificate)arg;
 
                             // TLS handshake
                             if (port.PoolEndpoint.Tls)
@@ -163,9 +158,7 @@ namespace MiningCore.Stratum
                             logger.Error(ex, () => Thread.CurrentThread.Name);
                         }
                     }
-                }) { Name = $"StratumThread {id}:{port.IPEndpoint.Port}" };
-
-                thread.Start(cert);
+                });
             }
         }
 

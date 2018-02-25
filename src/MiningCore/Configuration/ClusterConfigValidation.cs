@@ -18,9 +18,11 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+using System;
 using System.IO;
 using FluentValidation;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using FluentValidation.Attributes;
 
 namespace MiningCore.Configuration
@@ -111,6 +113,22 @@ namespace MiningCore.Configuration
                 .Must(j=> File.Exists(j))
                 .When(j => j.Tls)
                 .WithMessage(j=> $"Pool Endpoint: {j.TlsPfxFile} does not exist");
+
+            RuleFor(j => j.TlsPfxFile)
+                .Must(j =>
+                {
+                    try
+                    {
+                        var tlsCert = new X509Certificate2(j);
+                        return tlsCert.HasPrivateKey;
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+                })
+                .When(j => j.Tls)
+                .WithMessage(j => $"Pool Endpoint: {j.TlsPfxFile} is not valid or does not include the private key and cannot be used");
 
             RuleFor(j => j.VarDiff)
                 .SetValidator(new VarDiffConfigValidator())
