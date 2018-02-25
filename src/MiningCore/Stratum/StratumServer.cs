@@ -115,8 +115,7 @@ namespace MiningCore.Stratum
                             }
 
                             // prepare socket
-                            socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, 1000);
-                            socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.NoDelay, true);
+                            socket.NoDelay = true;
 
                             // create stream
                             var stream = (Stream) new NetworkStream(socket, true);
