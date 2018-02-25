@@ -88,8 +88,8 @@ namespace MiningCore.Stratum
             DoSend(stream, onError);
         }
 
-        public string ConnectionId { get; private set; }
-        public IPEndPoint PoolEndpoint { get; private set; }
+        public string ConnectionId { get; }
+        public IPEndPoint PoolEndpoint { get; }
         public IPEndPoint RemoteEndpoint { get; private set; }
         public DateTime? LastReceive { get; set; }
         public bool IsAlive { get; set; } = true;
@@ -106,44 +106,31 @@ namespace MiningCore.Stratum
 
         public void Respond<T>(T payload, object id)
         {
-            Contract.RequiresNonNull(payload, nameof(payload));
-            Contract.RequiresNonNull(id, nameof(id));
-
             Respond(new JsonRpcResponse<T>(payload, id));
         }
 
         public void RespondError(StratumError code, string message, object id, object result = null, object data = null)
         {
-            Contract.RequiresNonNull(message, nameof(message));
-
             Respond(new JsonRpcResponse(new JsonRpcException((int) code, message, null), id, result));
         }
 
         public void Respond<T>(JsonRpcResponse<T> response)
         {
-            Contract.RequiresNonNull(response, nameof(response));
-
             Send(response);
         }
 
         public void Notify<T>(string method, T payload)
         {
-            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(method), $"{nameof(method)} must not be empty");
-
             Notify(new JsonRpcRequest<T>(method, payload, null));
         }
 
         public void Notify<T>(JsonRpcRequest<T> request)
         {
-            Contract.RequiresNonNull(request, nameof(request));
-
             Send(request);
         }
 
         public void Send<T>(T payload)
         {
-            Contract.RequiresNonNull(payload, nameof(payload));
-
             if (isAlive)
             {
                 var buf = ArrayPool<byte>.Shared.Rent(MaxOutboundRequestLength);
@@ -153,7 +140,6 @@ namespace MiningCore.Stratum
                     using (var stream = new MemoryStream(buf, true))
                     {
                         stream.SetLength(0);
-                        int size;
 
                         using (var writer = new StreamWriter(stream, StratumConstants.Encoding))
                         {
@@ -162,12 +148,13 @@ namespace MiningCore.Stratum
 
                             // append newline
                             stream.WriteByte(0xa);
-                            size = (int)stream.Position;
+                            var cb = (int)stream.Position;
+
+                            // xmit
+                            sendQueue.Post(new PooledArraySegment<byte>(buf, 0, cb));
+
+                            logger.Trace(() => $"[{ConnectionId}] Sent: {StratumConstants.Encoding.GetString(buf, 0, cb)}");
                         }
-
-                        logger.Trace(() => $"[{ConnectionId}] Sending: {StratumConstants.Encoding.GetString(buf, 0, size)}");
-
-                        SendInternal(new PooledArraySegment<byte>(buf, 0, size));
                     }
                 }
 
@@ -181,10 +168,11 @@ namespace MiningCore.Stratum
 
         public void Disconnect()
         {
-            subscription?.Dispose();
-            subscription = null;
-
-            IsAlive = false;
+            if (subscription != null)
+            {
+                subscription.Dispose();
+                subscription = null;
+            }
         }
 
         public void RespondError(object id, int code, string message)
@@ -239,8 +227,10 @@ namespace MiningCore.Stratum
 
                         if (cb == 0 || !isAlive)
                         {
-                            onCompleted();
-                            return;
+                            if(isAlive)
+                                onCompleted();
+
+                            break;
                         }
 
                         LastReceive = clock.Now;
@@ -265,24 +255,13 @@ namespace MiningCore.Stratum
                         break;
                     }
                 }
+
+                logger.Trace(() => $"[{ConnectionId}] DoReceive loop exited");
             }
 
             finally
             {
                 ArrayPool<byte>.Shared.Return(buf);
-            }
-        }
-
-        private void SendInternal(PooledArraySegment<byte> buffer)
-        {
-            try
-            {
-                sendQueue.Post(buffer);
-            }
-
-            catch (ObjectDisposedException)
-            {
-                buffer.Dispose();
             }
         }
 
@@ -315,6 +294,8 @@ namespace MiningCore.Stratum
                     break;
                 }
             }
+
+            logger.Trace(() => $"[{ConnectionId}] DoSend loop exited");
         }
     }
 }
