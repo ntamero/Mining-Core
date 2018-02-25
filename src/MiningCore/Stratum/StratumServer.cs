@@ -26,6 +26,7 @@ using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Reactive;
+using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
@@ -124,12 +125,12 @@ namespace MiningCore.Stratum
                                 try
                                 {
                                     sslStream = new SslStream(stream, false);
-                                    await sslStream.AuthenticateAsServerAsync(tlsCert);
+                                    await sslStream.AuthenticateAsServerAsync(tlsCert, false, SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12, false);
                                 }
 
                                 catch (Exception ex)
                                 {
-                                    logger.Error(() => $"[{LogCat}] TLS init failed: {ex.Message}");
+                                    logger.Error(() => $"[{LogCat}] TLS init failed: {ex.Message}: {ex.InnerException.ToString() ?? string.Empty}");
                                     (sslStream ?? stream).Close();
                                     continue;
                                 }
