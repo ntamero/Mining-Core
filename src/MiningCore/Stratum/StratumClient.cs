@@ -24,6 +24,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Reactive.Disposables;
+using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using MiningCore.Buffers;
 using MiningCore.JsonRpc;
@@ -65,7 +66,7 @@ namespace MiningCore.Stratum
 
         #region API-Surface
 
-        public void Start(Stream stream, IPEndPoint remoteEndpoint, Action<PooledArraySegment<byte>> onNext, Action onCompleted, Action<Exception> onError)
+        public void Start(Stream stream, IPEndPoint remoteEndpoint, Func<PooledArraySegment<byte>, Task> onNext, Action onCompleted, Action<Exception> onError)
         {
             RemoteEndpoint = remoteEndpoint;
             sendQueue = new BufferBlock<PooledArraySegment<byte>>();
@@ -213,7 +214,7 @@ namespace MiningCore.Stratum
 
         #endregion // API-Surface
 
-        private async void DoReceive(Stream stream, Action<PooledArraySegment<byte>> onNext, Action onCompleted, Action<Exception> onError)
+        private async void DoReceive(Stream stream, Func<PooledArraySegment<byte>, Task> onNext, Action onCompleted, Action<Exception> onError)
         {
             var buf = ArrayPool<byte>.Shared.Rent(0x10000);
 
@@ -235,7 +236,7 @@ namespace MiningCore.Stratum
 
                         LastReceive = clock.Now;
 
-                        plb.Receive(buf, cb,
+                        await plb.ReceiveAsync(buf, cb,
                             (src, dst, count) => Array.Copy(src, dst, count),
                             onNext,
                             onError);

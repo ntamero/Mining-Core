@@ -178,7 +178,7 @@ namespace MiningCore.Stratum
             }
         }
 
-        protected virtual async void OnReceiveAsync(StratumClient client, PooledArraySegment<byte> data)
+        protected virtual async Task OnReceiveAsync(StratumClient client, PooledArraySegment<byte> data)
         {
             using (data)
             {
