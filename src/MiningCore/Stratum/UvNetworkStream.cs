@@ -32,23 +32,6 @@ namespace MiningCore.Stratum
                     logger.Debug(() => "Shutting down UvNetworkStream Tcp Handle");
                     tcp.Shutdown();
                 }
-
-                if (!isReading)
-                {
-                    tcp.Dispose();
-
-                    if (writeQueueDrainer.IsValid)
-                        writeQueueDrainer.Dispose();
-
-                    writeQueueDrainer.UserToken = null;
-
-                    // clear read queue
-                    lock (readLock)
-                    {
-                        while (readQueue.TryDequeue(out var buffer))
-                            buffer.Dispose();
-                    }
-                }
             });
 
             // ensure subscription is disposed on loop thread
@@ -60,12 +43,13 @@ namespace MiningCore.Stratum
             });
 
             subscription = Disposable.Create(() => { disposer.Send(); });
+
+            BeginRead();
         }
 
         private readonly IDisposable subscription;
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
         private readonly Tcp tcp;
-        private bool isReading = false;
         private bool isAlive = true;
 
         private readonly ConcurrentQueue<ArraySegment<byte>> writeQueue = new ConcurrentQueue<ArraySegment<byte>>();
@@ -218,8 +202,6 @@ namespace MiningCore.Stratum
 
         void BeginRead()
         {
-            isReading = true;
-
             tcp.OnRead((handle, buffer) =>
             {
                 if (buffer.Count == 0 || !isAlive)
@@ -298,21 +280,15 @@ namespace MiningCore.Stratum
 
         private int ReadInternal(byte[] buffer, int offset, int count)
         {
-            while (isAlive)
+            while(isAlive)
             {
-                lock (readLock)
+                lock(readLock)
                 {
-                    if (isReading)
-                    {
-                        if (readError != null)
-                            throw readError;
+                    if (readError != null)
+                        throw readError;
 
-                        if (readQueue.Count > 0)
-                            return ReadInternal2(buffer, offset, count);
-                    }
-
-                    else
-                        BeginRead();
+                    if (readQueue.Count > 0)
+                        return ReadInternal2(buffer, offset, count);
                 }
 
                 // wait for data
@@ -327,17 +303,11 @@ namespace MiningCore.Stratum
             // attempt to complete synchronously
             lock (readLock)
             {
-                if (isReading)
-                {
-                    if (readError != null)
-                        return Task.FromException<int>(readError);
+                if (readError != null)
+                    return Task.FromException<int>(readError);
 
-                    if (readQueue.Count > 0)
-                        return Task.FromResult(ReadInternal2(buffer, offset, count));
-                }
-
-                else
-                    BeginRead();
+                if (readQueue.Count > 0)
+                    return Task.FromResult(ReadInternal2(buffer, offset, count));
             }
 
             // run asynchronously
@@ -347,17 +317,11 @@ namespace MiningCore.Stratum
                 {
                     lock (readLock)
                     {
-                        if (isReading)
-                        {
-                            if (readError != null)
-                                throw readError;
+                        if (readError != null)
+                            throw readError;
 
-                            if (readQueue.Count > 0)
-                                return ReadInternal2(buffer, offset, count);
-                        }
-
-                        else
-                            BeginRead();
+                        if (readQueue.Count > 0)
+                            return ReadInternal2(buffer, offset, count);
                     }
 
                     // wait for data
@@ -370,52 +334,40 @@ namespace MiningCore.Stratum
 
         private int ReadInternal2(byte[] buffer, int offset, int count)
         {
-            lock (readLock)
+            var remaining = count;
+            var offsetInternal = 0;
+            var tmp = ArrayPool<byte>.Shared.Rent(count);
+
+            try
             {
-                if (readError != null)
-                    throw readError;
-
-                if (readQueue.Count == 0)
-                    return 0;
-
-                var remaining = count;
-                var offsetInternal = 0;
-                var tmp = ArrayPool<byte>.Shared.Rent(count);
-
-                try
+                while (remaining > 0 && readQueue.Count > 0)
                 {
-                    while (remaining > 0 && readQueue.Count > 0)
+                    var buf = readQueue.Peek();
+                    var cb = Math.Min(count, buf.Count);
+
+                    if(offset + offsetInternal == 0)
+                        buf.ReadBytes(buffer, cb);
+                    else
                     {
-                        var buf = readQueue.Peek();
-                        var cb = Math.Min(count, buf.Count);
-
-                        if(offset + offsetInternal == 0)
-                            buf.ReadBytes(buffer, cb);
-                        else
-                        {
-                            // NetUv's ReadableBuffer does not support offsets therefore we need a temp buffer 
-                            buf.ReadBytes(tmp, cb);
-                            Array.Copy(tmp, 0, buffer, offset + offsetInternal, cb);
-                        }
-
-                        // done with this buffer
-                        if (buf.Count == 0)
-                            readQueue.Dequeue().Dispose();
-
-                        remaining -= cb;
-                        offsetInternal += cb;
+                        // NetUv's ReadableBuffer does not support offsets therefore we need a temp buffer 
+                        buf.ReadBytes(tmp, cb);
+                        Array.Copy(tmp, 0, buffer, offset + offsetInternal, cb);
                     }
 
-                    if (count - remaining <= 0)
-                        ;
+                    // done with this buffer
+                    if (buf.Count == 0)
+                        readQueue.Dequeue().Dispose();
 
-                    return count - remaining;
+                    remaining -= cb;
+                    offsetInternal += cb;
                 }
 
-                finally
-                {
-                    ArrayPool<byte>.Shared.Return(tmp);
-                }
+                return count - remaining;
+            }
+
+            finally
+            {
+                ArrayPool<byte>.Shared.Return(tmp);
             }
         }
     }
