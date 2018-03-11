@@ -21,9 +21,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Security;
+using System.Net.Sockets;
 using System.Reactive;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
@@ -64,15 +69,21 @@ namespace MiningCore.Stratum
 
         protected abstract string LogCat { get; }
 
-        public void StartListeners(string id, params IPEndPoint[] stratumPorts)
+        public void Start(string id, params (IPEndPoint IPEndpoint, PoolEndpoint PoolEndpoint)[] stratumPorts)
         {
             Contract.RequiresNonNull(stratumPorts, nameof(stratumPorts));
 
             // every port gets serviced by a dedicated loop thread
-            foreach(var endpoint in stratumPorts)
+            foreach(var port in stratumPorts)
             {
                 var thread = new Thread(_ =>
                 {
+                    // TLS cert loading
+                    X509Certificate2 tlsCert = null;
+
+                    if (port.PoolEndpoint.Tls)
+                        tlsCert = new X509Certificate2(port.PoolEndpoint.TlsPfxFile);
+
                     var loop = new Loop();
 
                     try
@@ -81,17 +92,17 @@ namespace MiningCore.Stratum
                             .CreateTcp()
                             .NoDelay(true)
                             .SimultaneousAccepts(false)
-                            .Listen(endpoint, (con, ex) =>
+                            .Listen(port.IPEndpoint, (con, ex) =>
                             {
                                 if (ex == null)
-                                    OnClientConnected(con, endpoint, loop);
+                                    OnClientConnectedAsync(con, port.IPEndpoint, loop, tlsCert);
                                 else
                                     logger.Error(() => $"[{LogCat}] Connection error state: {ex.Message}");
                             });
 
                         lock (ports)
                         {
-                            ports[endpoint.Port] = listener;
+                            ports[port.IPEndpoint.Port] = listener;
                         }
                     }
 
@@ -101,7 +112,8 @@ namespace MiningCore.Stratum
                         throw;
                     }
 
-                    logger.Info(() => $"[{LogCat}] Stratum port {endpoint.Address}:{endpoint.Port} online");
+                    var portDesc = tlsCert != null ? " [TLS]" : string.Empty;
+                    logger.Info(() => $"[{LogCat}] Stratum port {port.IPEndpoint.Address}:{port.IPEndpoint.Port} online{portDesc}");
 
                     try
                     {
@@ -112,7 +124,7 @@ namespace MiningCore.Stratum
                     {
                         logger.Error(ex, $"[{LogCat}] {ex}");
                     }
-                }) { Name = $"UvLoopThread {id}:{endpoint.Port}" };
+                }) { Name = $"UvLoopThread {id}:{port.IPEndpoint.Port}" };
 
                 thread.Start();
             }
@@ -137,7 +149,7 @@ namespace MiningCore.Stratum
             }
         }
 
-        private void OnClientConnected(Tcp con, IPEndPoint endpointConfig, Loop loop)
+        private async void OnClientConnectedAsync(Tcp con, IPEndPoint endpointConfig, Loop loop, X509Certificate2 tlsCert)
         {
             try
             {
@@ -157,11 +169,37 @@ namespace MiningCore.Stratum
                 // setup client connection
                 con.KeepAlive(true, 1);
 
-                // setup client
-                var client = new StratumClient();
+                // create stream
+                var stream = (Stream) new UvNetworkStream(con, loop);
 
-                client.Init(loop, con, ctx, clock, endpointConfig, connectionId,
-                    data => OnReceive(client, data),
+                // TLS handshake
+                if (tlsCert != null)
+                {
+                    SslStream sslStream = null;
+
+                    try
+                    {
+                        sslStream = new SslStream(stream, false);
+                        await sslStream.AuthenticateAsServerAsync(tlsCert, false, SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12, false);
+                    }
+
+                    catch (Exception ex)
+                    {
+                        logger.Error(() => $"[{LogCat}] TLS init failed: {ex.Message}: {ex.InnerException.ToString() ?? string.Empty}");
+                        (sslStream ?? stream).Close();
+                        return;
+                    }
+
+                    stream = sslStream;
+                }
+
+                // setup client
+                var client = new StratumClient(clock, endpointConfig, connectionId);
+
+                OnConnect(client);
+
+                client.Start(stream, endpointConfig, 
+                    data => OnReceiveAsync(client, data),
                     () => OnReceiveComplete(client),
                     ex => OnReceiveError(client, ex));
 
@@ -170,69 +208,63 @@ namespace MiningCore.Stratum
                 {
                     clients[connectionId] = client;
                 }
-
-                OnConnect(client);
             }
 
             catch(Exception ex)
             {
-                logger.Error(ex, () => nameof(OnClientConnected));
+                logger.Error(ex, () => nameof(OnClientConnectedAsync));
             }
         }
 
-        protected virtual void OnReceive(StratumClient client, PooledArraySegment<byte> data)
+        protected virtual async Task OnReceiveAsync(StratumClient client, PooledArraySegment<byte> data)
         {
-            // get off of LibUV event-loop-thread immediately
-            Task.Run(async () =>
+            using (data)
             {
-                using (data)
+                JsonRpcRequest request = null;
+
+                try
                 {
-                    JsonRpcRequest request = null;
-
-                    try
+                    // boot pre-connected clients
+                    if (banManager?.IsBanned(client.RemoteEndpoint.Address) == true)
                     {
-                        // boot pre-connected clients
-                        if (banManager?.IsBanned(client.RemoteEndpoint.Address) == true)
-                        {
-                            logger.Info(() => $"[{LogCat}] [{client.ConnectionId}] Disconnecting banned client @ {client.RemoteEndpoint.Address}");
-                            DisconnectClient(client);
-                            return;
-                        }
-
-                        // de-serialize
-                        logger.Trace(() => $"[{LogCat}] [{client.ConnectionId}] Received request data: {StratumConstants.Encoding.GetString(data.Array, 0, data.Size)}");
-                        request = client.DeserializeRequest(data);
-
-                        // dispatch
-                        if (request != null)
-                        {
-                            logger.Debug(() => $"[{LogCat}] [{client.ConnectionId}] Dispatching request '{request.Method}' [{request.Id}]");
-                            await OnRequestAsync(client, new Timestamped<JsonRpcRequest>(request, clock.Now));
-                        }
-
-                        else
-                            logger.Trace(() => $"[{LogCat}] [{client.ConnectionId}] Unable to deserialize request");
+                        logger.Info(() => $"[{LogCat}] [{client.ConnectionId}] Disconnecting banned client @ {client.RemoteEndpoint.Address}");
+                        DisconnectClient(client);
+                        return;
                     }
 
-                    catch (JsonReaderException jsonEx)
-                    {
-                        // junk received (no valid json)
-                        logger.Error(() => $"[{LogCat}] [{client.ConnectionId}] Connection json error state: {jsonEx.Message}");
+                    // de-serialize
+                    logger.Trace(() => $"[{LogCat}] [{client.ConnectionId}] Received request data: {StratumConstants.Encoding.GetString(data.Array, 0, data.Size)}");
+                    request = client.DeserializeRequest(data);
 
-                        if (clusterConfig.Banning?.BanOnJunkReceive.HasValue == false || clusterConfig.Banning?.BanOnJunkReceive == true)
-                        {
-                            logger.Info(() => $"[{LogCat}] [{client.ConnectionId}] Banning client for sending junk");
-                            banManager?.Ban(client.RemoteEndpoint.Address, TimeSpan.FromMinutes(30));
-                        }
+                    // dispatch
+                    if (request != null)
+                    {
+                        logger.Debug(() => $"[{LogCat}] [{client.ConnectionId}] Dispatching request '{request.Method}' [{request.Id}]");
+                        await OnRequestAsync(client, new Timestamped<JsonRpcRequest>(request, clock.Now));
                     }
 
-                    catch (Exception ex)
+                    else
+                        logger.Trace(() => $"[{LogCat}] [{client.ConnectionId}] Unable to deserialize request");
+                }
+
+                catch (JsonReaderException jsonEx)
+                {
+                    // junk received (no valid json)
+                    logger.Error(() => $"[{LogCat}] [{client.ConnectionId}] Connection json error state: {jsonEx.Message}");
+
+                    if (clusterConfig.Banning?.BanOnJunkReceive.HasValue == false || clusterConfig.Banning?.BanOnJunkReceive == true)
                     {
-                        if (request != null)
-                            logger.Error(ex, () => $"[{LogCat}] [{client.ConnectionId}] Error processing request {request.Method} [{request.Id}]");
+                        logger.Info(() => $"[{LogCat}] [{client.ConnectionId}] Banning client for sending junk");
+                        banManager?.Ban(client.RemoteEndpoint.Address, TimeSpan.FromMinutes(30));
                     }
                 }
-            });
+
+                catch (Exception ex)
+                {
+                    if (request != null)
+                        logger.Error(ex, () => $"[{LogCat}] [{client.ConnectionId}] Error processing request {request.Method} [{request.Id}]");
+                }
+            }
         }
 
         protected virtual void OnReceiveError(StratumClient client, Exception ex)

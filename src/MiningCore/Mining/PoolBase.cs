@@ -435,14 +435,18 @@ Pool Fee:               {(poolConfig.RewardRecipients?.Any() == true ? poolConfi
 
                 if (poolConfig.EnableInternalStratum == true)
 	            {
-		            var ipEndpoints = poolConfig.Ports.Keys
-			            .Select(port => PoolEndpoint2IPEndpoint(port, poolConfig.Ports[port]))
-			            .ToArray();
+	                var endpoints = poolConfig.Ports.Keys
+	                    .Select(port =>
+	                    {
+	                        var endpointConfig = poolConfig.Ports[port];
+	                        return (PoolEndpoint2IPEndpoint(port, endpointConfig), endpointConfig);
+	                    })
+	                    .ToArray();
 
-		            StartListeners(poolConfig.Id, ipEndpoints);
+	                Start(poolConfig.Id, endpoints);
 	            }
 
-                if(poolConfig.ExternalStratums?.Length > 0)
+                if (poolConfig.ExternalStratums?.Length > 0)
 				    StartExternalStratumPublisherListeners();
 
                 logger.Info(() => $"[{LogCat}] Online");
