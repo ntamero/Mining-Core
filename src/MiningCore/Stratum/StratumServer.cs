@@ -91,7 +91,8 @@ namespace MiningCore.Stratum
                         ports[port.IPEndpoint.Port] = server;
                     }
 
-                    logger.Info(() => $"[{LogCat}] Stratum port {port.IPEndpoint.Address}:{port.IPEndpoint.Port} online");
+                    var portDesc = tlsCert != null ? " [TLS]" : string.Empty;
+                    logger.Info(() => $"[{LogCat}] Stratum port {port.IPEndpoint.Address}:{port.IPEndpoint.Port} online{portDesc}");
 
                     while (true)
                     {
