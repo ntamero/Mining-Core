@@ -285,6 +285,22 @@ namespace MiningCore.Configuration
         public int Port { get; set; }
     }
 
+    public partial class ZmqPubSubEndpointConfig
+    {
+        public string Url { get; set; }
+        public string Topic { get; set; }
+    }
+
+    public partial class ShareRelayConfig
+    {
+        public string PublishUrl { get; set; }
+
+        /// <summary>
+        /// If set to true, the relay will "Connect" to the url, rather than "Bind" it 
+        /// </summary>
+        public bool Connect { get; set; }
+    }
+
     public partial class PoolConfig
     {
         public string Id { get; set; }
@@ -302,9 +318,15 @@ namespace MiningCore.Configuration
         public int JobRebroadcastTimeout { get; set; }
         public int BlockRefreshInterval { get; set; }
 
-        public bool ExternalStratum { get; set; }
-        public string ExternalStratumZmqSocket { get; set; }
-        public string ExternalStratumZmqTopic { get; set; }
+        /// <summary>
+        /// If true, internal stratum ports are not initialized
+        /// </summary>
+        public bool? EnableInternalStratum { get; set; }
+
+        /// <summary>
+        /// External stratums (ZMQ based share publishers)
+        /// </summary>
+        public ZmqPubSubEndpointConfig[] ExternalStratums { get; set; }
 
         [JsonExtensionData]
         public IDictionary<string, object> Extra { get; set; }
@@ -320,6 +342,13 @@ namespace MiningCore.Configuration
         public NotificationsConfig Notifications { get; set; }
         public ApiConfig Api { get; set; }
         public decimal? DevDonation { get; set; }
+
+        /// <summary>
+        /// If this is enabled, shares are not written to the database
+        /// but published on the specified ZeroMQ Url and using the
+        /// poolid as topic
+        /// </summary>
+        public ShareRelayConfig ShareRelay { get; set; }
 
         /// <summary>
         /// Maximum parallelism of Equihash solver

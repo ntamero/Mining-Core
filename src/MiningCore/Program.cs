@@ -21,6 +21,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -41,6 +42,8 @@ using Microsoft.Extensions.CommandLineUtils;
 using MiningCore.Api;
 using MiningCore.Api.Responses;
 using MiningCore.Blockchain;
+using MiningCore.Blockchain.Bitcoin.DaemonResponses;
+using MiningCore.Blockchain.ZCash;
 using MiningCore.Configuration;
 using MiningCore.Crypto.Hashing.Algorithms;
 using MiningCore.Crypto.Hashing.Equihash;
@@ -48,6 +51,7 @@ using MiningCore.Extensions;
 using MiningCore.Mining;
 using MiningCore.Native;
 using MiningCore.Payments;
+using MiningCore.Persistence.Dummy;
 using MiningCore.Persistence.Postgres;
 using MiningCore.Persistence.Postgres.Repositories;
 using MiningCore.Util;
@@ -71,6 +75,7 @@ namespace MiningCore
         private static CommandOption dumpConfigOption;
         private static CommandOption shareRecoveryOption;
         private static ShareRecorder shareRecorder;
+        private static ShareRelay shareRelay;
         private static PayoutManager payoutManager;
         private static StatsRecorder statsRecorder;
         private static ClusterConfig clusterConfig;
@@ -162,6 +167,13 @@ namespace MiningCore
 
         private static void ValidateConfig()
         {
+            // set some defaults
+            foreach (var config in clusterConfig.Pools)
+            {
+                if (!config.EnableInternalStratum.HasValue)
+                    config.EnableInternalStratum = config.ExternalStratums == null || config.ExternalStratums.Length == 0;
+            }
+
             try
             {
                 clusterConfig.Validate();
@@ -498,11 +510,15 @@ namespace MiningCore
 
         private static void ConfigurePersistence(ContainerBuilder builder)
         {
-            if (clusterConfig.Persistence == null)
+            if (clusterConfig.Persistence == null &&
+                clusterConfig.PaymentProcessing?.Enabled == true &&
+                clusterConfig.ShareRelay == null)
                 logger.ThrowLogPoolStartupException("Persistence is not configured!");
 
-            if (clusterConfig.Persistence.Postgres != null)
+            if (clusterConfig.Persistence?.Postgres != null)
                 ConfigurePostgres(clusterConfig.Persistence.Postgres, builder);
+            else
+                ConfigureDummyPersistence(builder);
         }
 
         private static void ConfigurePostgres(DatabaseConfig pgConfig, ContainerBuilder builder)
@@ -524,7 +540,21 @@ namespace MiningCore
             var connectionString = $"Server={pgConfig.Host};Port={pgConfig.Port};Database={pgConfig.Database};User Id={pgConfig.User};Password={pgConfig.Password};CommandTimeout=900;";
 
             // register connection factory
-            builder.RegisterInstance(new ConnectionFactory(connectionString))
+            builder.RegisterInstance(new PgConnectionFactory(connectionString))
+                .AsImplementedInterfaces();
+
+            // register repositories
+            builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+                .Where(t =>
+                    t.Namespace.StartsWith(typeof(ShareRepository).Namespace))
+                .AsImplementedInterfaces()
+                .SingleInstance();
+        }
+
+        private static void ConfigureDummyPersistence(ContainerBuilder builder)
+        {
+            // register connection factory
+            builder.RegisterInstance(new DummyConnectionFactory(string.Empty))
                 .AsImplementedInterfaces();
 
             // register repositories
@@ -537,9 +567,19 @@ namespace MiningCore
 
         private static async Task Start()
         {
-            // start share recorder
-            shareRecorder = container.Resolve<ShareRecorder>();
-            shareRecorder.Start(clusterConfig);
+            if (clusterConfig.ShareRelay == null)
+            {
+                // start share recorder
+                shareRecorder = container.Resolve<ShareRecorder>();
+                shareRecorder.Start(clusterConfig);
+            }
+
+            else
+            {
+                // start share relay
+                shareRelay = container.Resolve<ShareRelay>();
+                shareRelay.Start(clusterConfig);
+            }
 
             // start API
             if (clusterConfig.Api == null || clusterConfig.Api.Enabled)
@@ -561,10 +601,13 @@ namespace MiningCore
             else
                 logger.Info("Payment processing is not enabled");
 
-            // start pool stats updater
-            statsRecorder = container.Resolve<StatsRecorder>();
-            statsRecorder.Configure(clusterConfig);
-            statsRecorder.Start();
+            if (clusterConfig.ShareRelay == null)
+            {
+                // start pool stats updater
+                statsRecorder = container.Resolve<StatsRecorder>();
+                statsRecorder.Configure(clusterConfig);
+                statsRecorder.Start();
+            }
 
             // start pools
             await Task.WhenAll(clusterConfig.Pools.Where(x => x.Enabled).Select(async poolConfig =>
@@ -578,8 +621,9 @@ namespace MiningCore
                 pool.Configure(poolConfig, clusterConfig);
 
                 // pre-start attachments
-                shareRecorder.AttachPool(pool);
-                statsRecorder.AttachPool(pool);
+                shareRecorder?.AttachPool(pool);
+                shareRelay?.AttachPool(pool);
+                statsRecorder?.AttachPool(pool);
 
                 await pool.StartAsync();
             }));

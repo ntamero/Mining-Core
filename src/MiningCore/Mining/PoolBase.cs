@@ -108,7 +108,7 @@ namespace MiningCore.Mining
             var context = CreateClientContext();
 
             var poolEndpoint = poolConfig.Ports[client.PoolEndpoint.Port];
-            context.Init(poolConfig, poolEndpoint.Difficulty, !poolConfig.ExternalStratum ? poolEndpoint.VarDiff : null, clock);
+            context.Init(poolConfig, poolEndpoint.Difficulty, poolConfig.EnableInternalStratum == true ? poolEndpoint.VarDiff : null, clock);
             client.SetContext(context);
 
             // varDiff setup
@@ -139,101 +139,105 @@ namespace MiningCore.Mining
                 });
         }
 
-	    private void StartExternalStratumPublisherListener()
+	    private void StartExternalStratumPublisherListeners()
 	    {
-		    var thread = new Thread(() =>
-			{
-				var serializer = new JsonSerializer
-				{
-					ContractResolver = new CamelCasePropertyNamesContractResolver()
-				};
+	        foreach (var externalStratum in poolConfig.ExternalStratums)
+	        {
+	            var thread = new Thread(arg =>
+	            {
+	                var serializer = new JsonSerializer
+	                {
+	                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+	                };
 
-			    var currentHeight = 0L;
-			    var lastBlockTime = clock.Now;
+	                var currentHeight = 0L;
+	                var lastBlockTime = clock.Now;
+	                var config = (ZmqPubSubEndpointConfig) arg;
 
-				while(true)
-				{
-					try
-					{
-						using (var subSocket = new SubscriberSocket())
-						{
-							//subSocket.Options.ReceiveHighWatermark = 1000;
-							subSocket.Connect(poolConfig.ExternalStratumZmqSocket);
-							subSocket.Subscribe(poolConfig.ExternalStratumZmqTopic);
+	                while (true)
+	                {
+	                    try
+	                    {
+	                        using (var subSocket = new SubscriberSocket())
+	                        {
+	                            //subSocket.Options.ReceiveHighWatermark = 1000;
+	                            subSocket.Connect(config.Url);
+	                            subSocket.Subscribe(config.Topic);
 
-							logger.Info($"Monitoring external stratum {poolConfig.ExternalStratumZmqSocket}/{poolConfig.ExternalStratumZmqTopic}");
+	                            logger.Info($"{LogCat}] Monitoring external stratum {config.Url}/{config.Topic}");
 
-							while (true)
-							{
-								var msg = subSocket.ReceiveMultipartMessage(2);
-								var topic = msg.First().ConvertToString(Encoding.UTF8);
-								var data = msg.Last().ConvertToString(Encoding.UTF8);
+	                            while (true)
+	                            {
+	                                var msg = subSocket.ReceiveMultipartMessage(2);
+	                                var topic = msg.Pop().ConvertToString(Encoding.UTF8);
+	                                var data = msg.Pop().ConvertToString(Encoding.UTF8);
 
-								// validate
-								if (topic != poolConfig.ExternalStratumZmqTopic)
-								{
-									logger.Warn(()=> $"Received non-matching topic {topic} on ZeroMQ subscriber socket");
-									continue;
-								}
+	                                // validate
+	                                if (topic != config.Topic)
+	                                {
+	                                    logger.Warn(() => $"{LogCat}] Received non-matching topic {topic} on ZeroMQ subscriber socket");
+	                                    continue;
+	                                }
 
-								if(string.IsNullOrEmpty(data))
-								{
-									logger.Warn(() => $"Received empty data on ZeroMQ subscriber socket");
-									continue;
-								}
+	                                if (string.IsNullOrEmpty(data))
+	                                {
+	                                    logger.Warn(() => $"{LogCat}] Received empty data on ZeroMQ subscriber socket");
+	                                    continue;
+	                                }
 
-								// deserialize
-								TShare share;
+	                                // deserialize
+	                                TShare share;
 
-								using (var reader = new StringReader(data))
-								{
-									using (var jreader = new JsonTextReader(reader))
-									{
-										share = serializer.Deserialize<TShare>(jreader);
-									}
-								}
+	                                using (var reader = new StringReader(data))
+	                                {
+	                                    using (var jreader = new JsonTextReader(reader))
+	                                    {
+	                                        share = serializer.Deserialize<TShare>(jreader);
+	                                    }
+	                                }
 
-								if (share == null)
-								{
-									logger.Error(() => "Unable to deserialize share received from ZeroMQ subscriber socket");
-									continue;
-								}
+	                                if (share == null)
+	                                {
+	                                    logger.Error(() => $"{LogCat}] Unable to deserialize share received from ZeroMQ subscriber socket");
+	                                    continue;
+	                                }
 
-							    // update network stats
-							    blockchainStats.BlockHeight = share.BlockHeight;
-							    blockchainStats.NetworkDifficulty = share.NetworkDifficulty;
+	                                // update network stats
+	                                blockchainStats.BlockHeight = share.BlockHeight;
+	                                blockchainStats.NetworkDifficulty = share.NetworkDifficulty;
 
-							    if (currentHeight != share.BlockHeight)
-							    {
-							        blockchainStats.LastNetworkBlockTime = clock.Now;
-							        currentHeight = share.BlockHeight;
-							        lastBlockTime = clock.Now;
-                                }
+	                                if (currentHeight != share.BlockHeight)
+	                                {
+	                                    blockchainStats.LastNetworkBlockTime = clock.Now;
+	                                    currentHeight = share.BlockHeight;
+	                                    lastBlockTime = clock.Now;
+	                                }
 
-                                else
-							        blockchainStats.LastNetworkBlockTime = lastBlockTime;
+	                                else
+	                                    blockchainStats.LastNetworkBlockTime = lastBlockTime;
 
-                                // fill in the blacks
-                                share.PoolId = poolConfig.Id;
-								share.Created = clock.Now;
+	                                // fill in the blacks
+	                                share.PoolId = poolConfig.Id;
+	                                share.Created = clock.Now;
 
-								// re-publish
-								shareSubject.OnNext(new ClientShare(null, share));
+	                                // re-publish
+	                                shareSubject.OnNext(new ClientShare(null, share));
 
-								logger.Info(() => $"[{LogCat}] External share accepted: D={Math.Round(share.Difficulty, 3)}");
-							}
-						}
-					}
+	                                var source = !string.IsNullOrEmpty(share.Source) ? $"[{share.Source.ToUpper()}]" : string.Empty;
+	                                logger.Info(() => $"[{LogCat}] External {source} share accepted: D={Math.Round(share.Difficulty, 3)}");
+	                            }
+	                        }
+	                    }
 
-					catch (Exception ex)
-					{
-						logger.Error(ex);
-					}
-				}
-			});
+	                    catch (Exception ex)
+	                    {
+	                        logger.Error(ex);
+	                    }
+	                }
+	            }) {Name = $"{poolConfig.Id} external stratum listener"};
 
-		    thread.Name = $"{poolConfig.Id} external stratum listener";
-			thread.Start();
+	            thread.Start(externalStratum);
+	        }
 	    }
 
         #region VarDiff
@@ -314,7 +318,8 @@ namespace MiningCore.Mining
 
         protected virtual void InitStats()
         {
-            LoadStats();
+            if(clusterConfig.ShareRelay == null)
+                LoadStats();
         }
 
         private void LoadStats()
@@ -390,8 +395,8 @@ Current Block Height:   {blockchainStats.BlockHeight}
 Current Connect Peers:  {blockchainStats.ConnectedPeers}
 Network Difficulty:     {blockchainStats.NetworkDifficulty}
 Network Hash Rate:      {FormatUtil.FormatHashrate(blockchainStats.NetworkHashrate)}
-Stratum Port(s):        {string.Join(", ", poolConfig.Ports.Keys)}
-Pool Fee:               {poolConfig.RewardRecipients.Sum(x => x.Percentage)}%
+Stratum Port(s):        {(poolConfig.Ports?.Any() == true ? string.Join(", ", poolConfig.Ports.Keys) : string.Empty )}
+Pool Fee:               {(poolConfig.RewardRecipients?.Any() == true ? poolConfig.RewardRecipients.Sum(x => x.Percentage) : 0)}%
 ";
 
             logger.Info(() => msg);
@@ -428,7 +433,7 @@ Pool Fee:               {poolConfig.RewardRecipients.Sum(x => x.Percentage)}%
 	            await SetupJobManager();
                 InitStats();
 
-                if (!poolConfig.ExternalStratum)
+                if (poolConfig.EnableInternalStratum == true)
 	            {
 		            var endpoints = poolConfig.Ports.Keys
 			            .Select(port =>
@@ -441,15 +446,8 @@ Pool Fee:               {poolConfig.RewardRecipients.Sum(x => x.Percentage)}%
 		            Start(poolConfig.Id, endpoints);
 	            }
 
-	            else
-	            {
-		            if (string.IsNullOrEmpty(poolConfig.ExternalStratumZmqSocket))
-						logger.ThrowLogPoolStartupException($"[{LogCat}] Requested external stratum but no publisher socket specified", LogCat);
-					else if (string.IsNullOrEmpty(poolConfig.ExternalStratumZmqTopic))
-			            logger.ThrowLogPoolStartupException($"[{LogCat}] Requested external stratum but no publisher topic specified", LogCat);
-
-					StartExternalStratumPublisherListener();
-	            }
+                if(poolConfig.ExternalStratums?.Length > 0)
+				    StartExternalStratumPublisherListeners();
 
                 logger.Info(() => $"[{LogCat}] Online");
                 OutputPoolInfo();

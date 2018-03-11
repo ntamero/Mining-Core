@@ -316,12 +316,14 @@ namespace MiningCore.Payments
             logger.Info(() => "Stopped");
         }
 
+        #endregion // API-Surface
+
         private void InitializeQueue()
         {
             queueSub = queue.GetConsumingEnumerable()
                 .ToObservable(TaskPoolScheduler.Default)
                 .Do(_ => CheckQueueBacklog())
-                .Buffer(TimeSpan.FromSeconds(1), 20)
+                .Buffer(TimeSpan.FromSeconds(1), 100)
                 .Where(shares => shares.Any())
                 .Subscribe(shares =>
                 {
@@ -393,7 +395,5 @@ namespace MiningCore.Payments
                 fallbackOnBrokenCircuit,
                 Policy.Wrap(fallback, breaker, retry));
         }
-
-        #endregion // API-Surface
     }
 }
