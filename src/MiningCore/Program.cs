@@ -42,6 +42,7 @@ using Microsoft.Extensions.CommandLineUtils;
 using MiningCore.Api;
 using MiningCore.Api.Responses;
 using MiningCore.Blockchain;
+using MiningCore.Blockchain.Bitcoin;
 using MiningCore.Blockchain.Bitcoin.DaemonResponses;
 using MiningCore.Blockchain.ZCash;
 using MiningCore.Configuration;

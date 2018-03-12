@@ -148,6 +148,7 @@ namespace MiningCore.Blockchain.Bitcoin
             switch(algorithm.ToLower())
             {
                 case "sha256d":
+                case "sha256":
                     return sha256Coin;
 
                 case "skein":
