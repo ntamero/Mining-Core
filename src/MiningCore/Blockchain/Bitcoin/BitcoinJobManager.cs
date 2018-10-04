@@ -347,15 +347,12 @@ namespace MiningCore.Blockchain.Bitcoin
 
         protected virtual void SetupCrypto()
         {
-            var coinProps = BitcoinProperties.GetCoinProperties(poolConfig.Coin.Type, poolConfig.Coin.Algorithm);
+            var coin = CoinAs<BitcoinDefinition>();
 
-            if (coinProps == null)
-                logger.ThrowLogPoolStartupException($"Coin Type '{poolConfig.Coin.Type}' not supported by this Job Manager");
-
-            coinbaseHasher = coinProps.CoinbaseHasher;
-            headerHasher = coinProps.HeaderHasher;
-            blockHasher = !isPoS ? coinProps.BlockHasher : (coinProps.PoSBlockHasher ?? coinProps.BlockHasher);
-            ShareMultiplier = coinProps.ShareMultiplier;
+            coinbaseHasher = HashFactory.GetHash(coin.CoinbaseHasher);
+            headerHasher = HashFactory.GetHash(coin.HeaderHasher);
+            blockHasher = !isPoS ? HashFactory.GetHash(coin.BlockHasher) : (HashFactory.GetHash(coin.CoinbaseHasher ?? coin.BlockHasher));
+            ShareMultiplier = coin.ShareMultiplier;
         }
 
         protected virtual async Task<bool> AreDaemonsHealthyLegacyAsync()
@@ -579,7 +576,7 @@ namespace MiningCore.Blockchain.Bitcoin
 
         #region Overrides
 
-        public override void Configure(PoolConfig poolConfig, ClusterConfig clusterConfig)
+        public override void Configure(PoolConfig poolConfig, ClusterConfig clusterConfig, CoinDefinition coin)
         {
             extraPoolConfig = poolConfig.Extra.SafeExtensionDataAs<BitcoinPoolConfigExtra>();
             extraPoolPaymentProcessingConfig = poolConfig.PaymentProcessing?.Extra?.SafeExtensionDataAs<BitcoinPoolPaymentProcessingConfigExtra>();
@@ -589,7 +586,7 @@ namespace MiningCore.Blockchain.Bitcoin
 
             hasLegacyDaemon = extraPoolConfig?.HasLegacyDaemon == true;
 
-            base.Configure(poolConfig, clusterConfig);
+            base.Configure(poolConfig, clusterConfig, coin);
         }
 
         protected virtual void PostChainIdentifyConfigure()
@@ -776,7 +773,7 @@ namespace MiningCore.Blockchain.Bitcoin
         {
             // Donation to MiningCore development
             if (networkType == BitcoinNetworkType.Main &&
-                DevDonation.Addresses.TryGetValue(poolConfig.Coin.Type, out var address))
+                DevDonation.Addresses.TryGetValue(CoinAs<BitcoinDefinition>().Symbol, out var address))
             {
                 poolConfig.RewardRecipients = poolConfig.RewardRecipients.Concat(new[]
                 {

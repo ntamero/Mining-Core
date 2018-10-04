@@ -47,7 +47,7 @@ using EC = MiningCore.Blockchain.Ethereum.EthCommands;
 
 namespace MiningCore.Blockchain.Ethereum
 {
-    [CoinMetadata(CoinType.ETH, CoinType.ETC, CoinType.EXP, CoinType.ELLA, CoinType.CLO)]
+    [CoinFamily(CoinFamily.Ethereum)]
     public class EthereumPayoutHandler : PayoutHandlerBase,
         IPayoutHandler
     {
@@ -77,16 +77,18 @@ namespace MiningCore.Blockchain.Ethereum
         private const int BlockSearchOffset = 50;
         private EthereumPoolConfigExtra extraPoolConfig;
         private EthereumPoolPaymentProcessingConfigExtra extraConfig;
+        private CoinDefinition coin;
         private bool isParity = true;
 
         protected override string LogCategory => "Ethereum Payout Handler";
 
         #region IPayoutHandler
 
-        public async Task ConfigureAsync(ClusterConfig clusterConfig, PoolConfig poolConfig)
+        public async Task ConfigureAsync(ClusterConfig clusterConfig, PoolConfig poolConfig, CoinDefinition coin)
         {
             this.poolConfig = poolConfig;
             this.clusterConfig = clusterConfig;
+            this.coin = coin;
             extraPoolConfig = poolConfig.Extra.SafeExtensionDataAs<EthereumPoolConfigExtra>();
             extraConfig = poolConfig.PaymentProcessing.Extra.SafeExtensionDataAs<EthereumPoolPaymentProcessingConfigExtra>();
 
@@ -262,7 +264,7 @@ namespace MiningCore.Blockchain.Ethereum
                 if (address != poolConfig.Address)
                 {
                     logger.Info(() => $"Adding {FormatAmount(amount)} to balance of {address}");
-                    balanceRepo.AddAmount(con, tx, poolConfig.Id, poolConfig.Coin.Type, address, amount, $"Reward for block {block.BlockHeight}");
+                    balanceRepo.AddAmount(con, tx, poolConfig.Id, poolConfig.Coin, address, amount, $"Reward for block {block.BlockHeight}");
                 }
             }
 

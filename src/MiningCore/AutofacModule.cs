@@ -25,16 +25,10 @@ using MiningCore.Api;
 using MiningCore.Banning;
 using MiningCore.Blockchain.Bitcoin;
 using MiningCore.Blockchain.Bitcoin.DaemonResponses;
-using MiningCore.Blockchain.BitcoinGold;
-using MiningCore.Blockchain.Dash;
-using MiningCore.Blockchain.Dash.DaemonResponses;
 using MiningCore.Blockchain.Ethereum;
-using MiningCore.Blockchain.Flo;
-using MiningCore.Blockchain.Monero;
-using MiningCore.Blockchain.Straks;
-using MiningCore.Blockchain.Straks.DaemonResponses;
-using MiningCore.Blockchain.ZCash;
-using MiningCore.Blockchain.ZCash.DaemonResponses;
+using MiningCore.Blockchain.Cryptonote;
+using MiningCore.Blockchain.Equihash;
+using MiningCore.Blockchain.Equihash.DaemonResponses;
 using MiningCore.Configuration;
 using MiningCore.Messaging;
 using MiningCore.Mining;
@@ -101,12 +95,12 @@ namespace MiningCore
                 .SingleInstance();
 
             builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
-                .Where(t => t.GetCustomAttributes<CoinMetadataAttribute>().Any() && t.GetInterfaces()
+                .Where(t => t.GetCustomAttributes<CoinFamilyAttribute>().Any() && t.GetInterfaces()
                     .Any(i =>
                         i.IsAssignableFrom(typeof(IMiningPool)) ||
                         i.IsAssignableFrom(typeof(IPayoutHandler)) ||
                         i.IsAssignableFrom(typeof(IPayoutScheme))))
-                .WithMetadataFrom<CoinMetadataAttribute>()
+                .WithMetadataFrom<CoinFamilyAttribute>()
                 .AsImplementedInterfaces();
 
             //////////////////////
@@ -126,28 +120,15 @@ namespace MiningCore
             builder.RegisterType<BitcoinJobManager<BitcoinJob<BlockTemplate>, BlockTemplate>>()
                 .AsSelf();
 
-            builder.RegisterType<BitcoinJobManager<DashJob, DashBlockTemplate>>()
-                .AsSelf();
-
-            builder.RegisterType<BitcoinJobManager<StraksJob, StraksBlockTemplate>>()
-                .AsSelf();
-
-            builder.RegisterType<BitcoinJobManager<ZCashJob, ZCashBlockTemplate>>()
-                .AsSelf();
-
-            builder.RegisterType<BitcoinJobManager<FloJob, BlockTemplate>>()
+            builder.RegisterType<BitcoinJobManager<EquihashJob, ZCashBlockTemplate>>()
                 .AsSelf();
 
             //////////////////////
             // Flo
-
-            builder.RegisterType<FloJobManager>()
-                .AsSelf();
-
             //////////////////////
             // Monero
 
-            builder.RegisterType<MoneroJobManager>()
+            builder.RegisterType<CryptonoteJobManager>()
                 .AsSelf();
 
             //////////////////////
@@ -159,13 +140,7 @@ namespace MiningCore
             //////////////////////
             // ZCash
 
-            builder.RegisterType<ZCashJobManager<ZCashJob>>()
-                .AsSelf();
-
-            //////////////////////
-            // Bitcoin Gold
-
-            builder.RegisterType<BitcoinGoldJobManager>()
+            builder.RegisterType<EquihashJobManager<EquihashJob>>()
                 .AsSelf();
 
             base.Load(builder);

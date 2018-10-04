@@ -84,9 +84,10 @@ namespace MiningCore.Payments
 
                 try
                 {
+#if false
                     // resolve payout handler
-                    var handlerImpl = ctx.Resolve<IEnumerable<Meta<Lazy<IPayoutHandler, CoinMetadataAttribute>>>>()
-                        .First(x => x.Value.Metadata.SupportedCoins.Contains(pool.Coin.Type)).Value;
+                    var handlerImpl = ctx.Resolve<IEnumerable<Meta<Lazy<IPayoutHandler, CoinFamilyAttribute>>>>()
+                        .First(x => x.Value.Metadata.SupportedFamilies.Contains(pool.Coin.Type)).Value;
 
                     var handler = handlerImpl.Value;
                     await handler.ConfigureAsync(clusterConfig, pool);
@@ -96,9 +97,10 @@ namespace MiningCore.Payments
 
                     await UpdatePoolBalancesAsync(pool, handler, scheme);
                     await PayoutPoolBalancesAsync(pool, handler);
+#endif
                 }
 
-                catch(InvalidOperationException ex)
+                catch (InvalidOperationException ex)
                 {
                     logger.Error(ex.InnerException ?? ex, () => $"[{pool.Id}] Payment processing failed");
                 }
@@ -213,7 +215,7 @@ namespace MiningCore.Payments
                 await handler.CalculateBlockEffortAsync(block, accumulatedShareDiffForBlock.Value);
         }
 
-        #region API-Surface
+#region API-Surface
 
         public void Configure(ClusterConfig clusterConfig)
         {
@@ -264,6 +266,6 @@ namespace MiningCore.Payments
             logger.Info(() => "Stopped");
         }
 
-        #endregion // API-Surface
+#endregion // API-Surface
     }
 }

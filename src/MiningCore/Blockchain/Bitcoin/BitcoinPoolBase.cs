@@ -300,7 +300,7 @@ namespace MiningCore.Blockchain.Bitcoin
         protected override async Task SetupJobManager(CancellationToken ct)
         {
             manager = CreateJobManager();
-            manager.Configure(poolConfig, clusterConfig);
+            manager.Configure(poolConfig, clusterConfig, CoinAs<BitcoinDefinition>());
 
             await manager.StartAsync(ct);
 
@@ -394,17 +394,7 @@ namespace MiningCore.Blockchain.Bitcoin
             var multiplier = BitcoinConstants.Pow2x32 / manager.ShareMultiplier;
             var result = shares * multiplier / interval;
 
-            // OW: tmp hotfix
-            if (poolConfig.Coin.Type == CoinType.MONA || poolConfig.Coin.Type == CoinType.VTC ||
-                poolConfig.Coin.Type == CoinType.STAK ||
-                (poolConfig.Coin.Type == CoinType.XVG && poolConfig.Coin.Algorithm.ToLower() == "lyra"))
-                result *= 4;
-
-            if ((poolConfig.Coin.Type == CoinType.XVG && poolConfig.Coin.Algorithm.ToLower() == "x17"))
-                result *= 2.55;
-
-            if (poolConfig?.Coin?.Algorithm?.ToLower() == "scrypt")
-                result *= 1.5;
+            result *= CoinAs<BitcoinDefinition>().HashrateMultiplier;
 
             return result;
         }

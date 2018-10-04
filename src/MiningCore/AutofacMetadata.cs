@@ -24,22 +24,6 @@ using MiningCore.Configuration;
 
 namespace MiningCore
 {
-    public class CoinMetadataAttribute : Attribute
-    {
-        public CoinMetadataAttribute(IDictionary<string, object> values)
-        {
-            if (values.ContainsKey(nameof(SupportedCoins)))
-                SupportedCoins = (CoinType[]) values[nameof(SupportedCoins)];
-        }
-
-        public CoinMetadataAttribute(params CoinType[] supportedCoins)
-        {
-            SupportedCoins = supportedCoins;
-        }
-
-        public CoinType[] SupportedCoins { get; }
-    }
-
     public class CoinFamilyAttribute : Attribute
     {
         public CoinFamilyAttribute(IDictionary<string, object> values)

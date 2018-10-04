@@ -52,6 +52,7 @@ using MiningCore.Persistence.Postgres;
 using MiningCore.Persistence.Postgres.Repositories;
 using MiningCore.Util;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using NLog;
 using NLog.Conditions;
@@ -486,7 +487,7 @@ namespace MiningCore
 
             LogManager.Configuration = loggingConfig;
 
-            logger = LogManager.GetCurrentClassLogger();
+            logger = LogManager.GetLogger("Core");
         }
 
         private static Layout GetLogPath(ClusterLoggingConfig config, string name)
@@ -561,8 +562,72 @@ namespace MiningCore
                 .SingleInstance();
         }
 
+        private static IEnumerable<KeyValuePair<string, CoinDefinition>> LoadCoinDefinitions(string filename, JsonSerializer serializer)
+        {
+            using (var jreader = new JsonTextReader(File.OpenText(filename)))
+            {
+                var jo = serializer.Deserialize<JObject>(jreader);
+
+                foreach (var o in jo)
+                {
+                    if (o.Value.Type != JTokenType.Object)
+                        logger.ThrowLogPoolStartupException("Invalid coin definition file contents: dictionary of coin definitions expected");
+
+                    var value = o.Value[nameof(CoinDefinition.Family).ToLower()];
+                    if (value == null)
+                        logger.ThrowLogPoolStartupException("Invalid coin definition file contents: missing 'family' property");
+
+                    var family = value.ToObject<CoinFamily>();
+
+                    yield return KeyValuePair.Create(o.Key, (CoinDefinition)o.Value.ToObject(CoinDefinition.Families[family]));
+                }
+            }
+        }
+
+        private static Dictionary<string, CoinDefinition> LoadCoinDefinitions()
+        {
+            if (clusterConfig.CoinDefs == null || clusterConfig.CoinDefs.Length == 0)
+            {
+                var basePath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+                var defaultDefinitions = Path.Combine(basePath, "coins.json");
+
+                clusterConfig.CoinDefs = new[]
+                {
+                    defaultDefinitions
+                };
+            }
+
+            var serializer = new JsonSerializer
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                Formatting = Formatting.Indented,
+                NullValueHandling = NullValueHandling.Ignore,
+            };
+
+            var result = new Dictionary<string, CoinDefinition>();
+
+            foreach (var filename in clusterConfig.CoinDefs)
+            {
+                var definitions = LoadCoinDefinitions(filename, serializer).ToArray();
+
+                foreach (var definition in definitions)
+                {
+                    var coinId = definition.Key;
+
+                    if(result.ContainsKey(coinId))
+                        logger.ThrowLogPoolStartupException($"Duplicate definition of coin '{coinId}' in file {filename}");
+
+                    result[coinId] = definition.Value;
+                }
+            }
+
+            return result;
+        }
+
         private static async Task Start()
         {
+            var coins = LoadCoinDefinitions();
+
             notificationService = container.Resolve<NotificationService>();
 
             if (clusterConfig.ShareRelay == null)
@@ -614,13 +679,17 @@ namespace MiningCore
             // start pools
             await Task.WhenAll(clusterConfig.Pools.Where(x => x.Enabled).Select(async poolConfig =>
             {
+                // Lookup coin definition
+                if(!coins.TryGetValue(poolConfig.Coin, out var coinDefinition))
+                    logger.ThrowLogPoolStartupException($"Pool {poolConfig.Id} references undefined coin '{poolConfig.Coin}'");
+
                 // resolve pool implementation
-                var poolImpl = container.Resolve<IEnumerable<Meta<Lazy<IMiningPool, CoinMetadataAttribute>>>>()
-                    .First(x => x.Value.Metadata.SupportedCoins.Contains(poolConfig.Coin.Type)).Value;
+                var poolImpl = container.Resolve<IEnumerable<Meta<Lazy<IMiningPool, CoinFamilyAttribute>>>>()
+                    .First(x => x.Value.Metadata.SupportedFamilies.Contains(coinDefinition.Family)).Value;
 
                 // create and configure
                 var pool = poolImpl.Value;
-                pool.Configure(poolConfig, clusterConfig);
+                pool.Configure(poolConfig, clusterConfig, coinDefinition);
                 pools[poolConfig.Id] = pool;
 
                 // pre-start attachments

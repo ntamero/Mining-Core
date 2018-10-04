@@ -43,7 +43,7 @@ using Newtonsoft.Json;
 
 namespace MiningCore.Blockchain.Ethereum
 {
-    [CoinMetadata(CoinType.ETH, CoinType.ETC, CoinType.EXP, CoinType.ELLA, CoinType.CLO)]
+    [CoinFamily(CoinFamily.Ethereum)]
     public class EthereumPool : PoolBase
     {
         public EthereumPool(IComponentContext ctx,
@@ -378,9 +378,9 @@ namespace MiningCore.Blockchain.Ethereum
             }
         }
 
-        public override void Configure(PoolConfig poolConfig, ClusterConfig clusterConfig)
+        public override void Configure(PoolConfig poolConfig, ClusterConfig clusterConfig, CoinDefinition coin)
         {
-            base.Configure(poolConfig, clusterConfig);
+            base.Configure(poolConfig, clusterConfig, coin);
 
             // validate mandatory extra config
             var extraConfig = poolConfig.PaymentProcessing?.Extra?.SafeExtensionDataAs<EthereumPoolPaymentProcessingConfigExtra>();

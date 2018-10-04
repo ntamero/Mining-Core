@@ -41,6 +41,7 @@ namespace MiningCore.Blockchain.Bitcoin
     public class BitcoinJob<TBlockTemplate>
         where TBlockTemplate : BlockTemplate
     {
+        private BitcoinDefinition coin;
         protected IHashAlgorithm blockHasher;
         protected ClusterConfig clusterConfig;
         protected IMasterClock clock;
@@ -434,7 +435,7 @@ namespace MiningCore.Blockchain.Bitcoin
 
         public string JobId { get; protected set; }
 
-        public virtual void Init(TBlockTemplate blockTemplate, string jobId,
+        public virtual void Init(CoinDefinition coin, TBlockTemplate blockTemplate, string jobId,
             PoolConfig poolConfig, ClusterConfig clusterConfig, IMasterClock clock,
             IDestination poolAddressDestination, BitcoinNetworkType networkType,
             bool isPoS, double shareMultiplier, decimal? blockrewardMultiplier,
@@ -452,6 +453,7 @@ namespace MiningCore.Blockchain.Bitcoin
 
             this.poolConfig = poolConfig;
             this.clusterConfig = clusterConfig;
+            this.coin = (BitcoinDefinition)coin;
             this.clock = clock;
             this.poolAddressDestination = poolAddressDestination;
             this.networkType = networkType;

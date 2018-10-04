@@ -42,7 +42,7 @@ namespace MiningCore.Persistence.Postgres.Repositories
         private readonly IMapper mapper;
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
 
-        public void AddAmount(IDbConnection con, IDbTransaction tx, string poolId, CoinType coin, string address, decimal amount, string usage)
+        public void AddAmount(IDbConnection con, IDbTransaction tx, string poolId, string coin, string address, decimal amount, string usage)
         {
             logger.LogInvoke();
 

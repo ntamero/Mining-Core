@@ -22,11 +22,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.Serialization;
-using MiningCore.Blockchain.ZCash;
-using MiningCore.Crypto;
-using MiningCore.Crypto.Hashing.Equihash;
-using NBitcoin;
-using NBitcoin.BouncyCastle.Math;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -88,6 +83,18 @@ namespace MiningCore.Configuration
         /// Supported placeholders: {0}
         /// </summary>
         public string ExplorerAccountLink { get; set; }
+
+        /// <summary>
+        /// Coin Family associciations
+        /// </summary>
+        [JsonIgnore]
+        public static readonly Dictionary<CoinFamily, Type> Families = new Dictionary<CoinFamily, Type>
+        {
+            {CoinFamily.Bitcoin, typeof(BitcoinDefinition)},
+            {CoinFamily.Equihash, typeof(EquihashCoinDefinition)},
+            {CoinFamily.Cryptonote, typeof(CryptonoteCoinDefinition)},
+            {CoinFamily.Ethereum, typeof(CoinDefinition)},
+        };
     }
 
     public class BitcoinDefinition : CoinDefinition
@@ -214,79 +221,30 @@ namespace MiningCore.Configuration
 
         /// <summary>
         /// Prefix of a valid address
+        /// See: namespace config -> CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX in src/cryptonote_config.h 
         /// </summary>
         public ulong AddressPrefix { get; set; }
 
         /// <summary>
         /// Prefix of a valid testnet-address
+        /// See: namespace config -> CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX in src/cryptonote_config.h 
         /// </summary>
         public ulong AddressPrefixTestnet { get; set; }
 
         /// <summary>
         /// Prefix of a valid integrated address
+        /// See: namespace testnet -> CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX  in src/cryptonote_config.h 
         /// </summary>
         public ulong AddressPrefixIntegrated { get; set; }
 
         /// <summary>
         /// Prefix of a valid integrated testnet-address
+        /// See: namespace testnet -> CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX in src/cryptonote_config.h 
         /// </summary>
         public ulong AddressPrefixIntegratedTestnet { get; set; }
     }
 
     #endregion // Coin Definitions
-
-    public enum CoinType
-    {
-        // ReSharper disable InconsistentNaming
-        BTC = 1, // Bitcoin
-        BCH, // Bitcoin Cash
-        LTC, // Litecoin
-        DOGE, // Dogecoin,
-        XMR, // Monero
-        GRS, // GroestlCoin
-        DGB, // Digibyte
-        NMC, // Namecoin
-        VIA, // Viacoin
-        PPC, // Peercoin
-        ZEC, // ZCash
-        ZCL, // ZClassic
-        ZEN, // Zencash
-        ETH, // Ethereum
-        ETC, // Ethereum Classic
-        EXP, // Expanse
-        DASH, // Dash
-        MONA, // Monacoin
-        VTC, // Vertcoin
-        BTG, // Bitcoin Gold
-        GLT, // Globaltoken
-        ELLA, // Ellaism
-        AEON, // AEON
-        STAK, // Straks
-        ETN, // Electroneum
-        MOON, // MoonCoin
-        XVG, // Verge
-        GBX, // GoByte
-        CRC, // CrowdCoin
-        BTCP, // Bitcoin Private
-        CLO, // Callisto
-        FLO, // Flo
-        PAK, // PAKcoin
-        CANN, // CannabisCoin
-        RVN, // Ravencoin
-        PGN, // Pigeoncoin
-        BCD, // Bitcoin Diamond
-        TUBE, // Bittube
-    }
-
-    public class CoinConfig
-    {
-        public CoinType Type { get; set; }
-
-        /// <summary>
-        /// For coins like DGB which support multiple POW methods
-        /// </summary>
-        public string Algorithm { get; set; }
-    }
 
     public enum PayoutScheme
     {
@@ -594,7 +552,7 @@ namespace MiningCore.Configuration
         public string Id { get; set; }
         public string PoolName { get; set; }
         public bool Enabled { get; set; }
-        public CoinConfig Coin { get; set; }
+        public string Coin { get; set; }
         public Dictionary<int, PoolEndpoint> Ports { get; set; }
         public DaemonEndpointConfig[] Daemons { get; set; }
         public PoolPaymentProcessingConfig PaymentProcessing { get; set; }
@@ -617,6 +575,11 @@ namespace MiningCore.Configuration
 
     public partial class ClusterConfig
     {
+        /// <summary>
+        /// One or more files containing coin definitions
+        /// </summary>
+        public string[] CoinDefs { get; set; }
+
         public string ClusterName { get; set; }
         public ClusterLoggingConfig Logging { get; set; }
         public ClusterBanningConfig Banning { get; set; }

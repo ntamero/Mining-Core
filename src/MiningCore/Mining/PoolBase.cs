@@ -329,7 +329,7 @@ namespace MiningCore.Mining
             var msg = $@"
 
 Mining Pool:            {poolConfig.Id}
-Coin Type:              {poolConfig.Coin.Type}
+Coin Type:              {poolConfig.Coin}
 Network Connected:      {blockchainStats.NetworkType}
 Detected Reward Type:   {blockchainStats.RewardType}
 Current Block Height:   {blockchainStats.BlockHeight}
@@ -346,10 +346,16 @@ Pool Fee:               {(poolConfig.RewardRecipients?.Any() == true ? poolConfi
         #region API-Surface
 
         public PoolConfig Config => poolConfig;
+        public CoinDefinition Coin { get; private set; }
         public PoolStats PoolStats => poolStats;
         public BlockchainStats NetworkStats => blockchainStats;
 
-        public virtual void Configure(PoolConfig poolConfig, ClusterConfig clusterConfig)
+        protected T CoinAs<T>() where T : CoinDefinition
+        {
+            return (T) Coin;
+        }
+
+        public virtual void Configure(PoolConfig poolConfig, ClusterConfig clusterConfig, CoinDefinition coin)
         {
             Contract.RequiresNonNull(poolConfig, nameof(poolConfig));
             Contract.RequiresNonNull(clusterConfig, nameof(clusterConfig));
@@ -357,6 +363,7 @@ Pool Fee:               {(poolConfig.RewardRecipients?.Any() == true ? poolConfi
             logger = LogUtil.GetPoolScopedLogger(typeof(PoolBase), poolConfig);
             this.poolConfig = poolConfig;
             this.clusterConfig = clusterConfig;
+            this.Coin = coin;
         }
 
         public abstract double HashrateFromShares(double shares, double interval);

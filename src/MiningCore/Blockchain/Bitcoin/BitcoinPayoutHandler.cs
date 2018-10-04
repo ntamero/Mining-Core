@@ -45,13 +45,7 @@ using Contract = MiningCore.Contracts.Contract;
 
 namespace MiningCore.Blockchain.Bitcoin
 {
-    [CoinMetadata(
-        CoinType.BTC, CoinType.BCH, CoinType.NMC, CoinType.PPC,
-        CoinType.LTC, CoinType.DOGE, CoinType.DGB, CoinType.VIA,
-        CoinType.GRS, CoinType.MONA, CoinType.VTC, CoinType.BTG,
-        CoinType.GLT, CoinType.STAK, CoinType.MOON, CoinType.XVG,
-        CoinType.PAK, CoinType.CANN, CoinType.RVN, CoinType.PGN,
-        CoinType.BCD)]
+    [CoinFamily(CoinFamily.Bitcoin)]
     public class BitcoinPayoutHandler : PayoutHandlerBase,
         IPayoutHandler
     {
@@ -76,7 +70,7 @@ namespace MiningCore.Blockchain.Bitcoin
 
         protected readonly IComponentContext ctx;
         protected DaemonClient daemon;
-        protected BitcoinCoinProperties coinProperties;
+        protected BitcoinDefinition coin;
         protected BitcoinDaemonEndpointConfigExtra extraPoolConfig;
         protected BitcoinPoolPaymentProcessingConfigExtra extraPoolPaymentProcessingConfig;
 
@@ -84,7 +78,7 @@ namespace MiningCore.Blockchain.Bitcoin
 
         #region IPayoutHandler
 
-        public virtual Task ConfigureAsync(ClusterConfig clusterConfig, PoolConfig poolConfig)
+        public virtual Task ConfigureAsync(ClusterConfig clusterConfig, PoolConfig poolConfig, CoinDefinition coin)
         {
             Contract.RequiresNonNull(poolConfig, nameof(poolConfig));
 
@@ -93,7 +87,7 @@ namespace MiningCore.Blockchain.Bitcoin
 
             extraPoolConfig = poolConfig.Extra.SafeExtensionDataAs<BitcoinDaemonEndpointConfigExtra>();
             extraPoolPaymentProcessingConfig = poolConfig.PaymentProcessing.Extra.SafeExtensionDataAs<BitcoinPoolPaymentProcessingConfigExtra>();
-            coinProperties = BitcoinProperties.GetCoinProperties(poolConfig.Coin.Type, poolConfig.Coin.Algorithm);
+            this.coin = (BitcoinDefinition) coin;
 
             logger = LogUtil.GetPoolScopedLogger(typeof(BitcoinPayoutHandler), poolConfig);
 
@@ -216,7 +210,7 @@ namespace MiningCore.Blockchain.Bitcoin
                 if (address != poolConfig.Address)
                 {
                     logger.Info(() => $"Adding {FormatAmount(amount)} to balance of {address}");
-                    balanceRepo.AddAmount(con, tx, poolConfig.Id, poolConfig.Coin.Type, address, amount, $"Reward for block {block.BlockHeight}");
+                    balanceRepo.AddAmount(con, tx, poolConfig.Id, poolConfig.Coin, address, amount, $"Reward for block {block.BlockHeight}");
                 }
             }
 
