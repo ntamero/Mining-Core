@@ -99,12 +99,12 @@ namespace MiningCore.Configuration
 
     public class BitcoinDefinition : CoinDefinition
     {
-        public string CoinbaseHasher { get; set; }
-        public string HeaderHasher { get; set; }
-        public string BlockHasher { get; set; }
+        public JObject CoinbaseHasher { get; set; }
+        public JObject HeaderHasher { get; set; }
+        public JObject BlockHasher { get; set; }
 
         [JsonProperty("posBlockHasher")]
-        public string PoSBlockHasher { get; set; }
+        public JObject PoSBlockHasher { get; set; }
 
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public bool HasMasterNodes { get; set; }
@@ -122,17 +122,11 @@ namespace MiningCore.Configuration
     {
         public class EquihashNetworkDefinition
         {
-            public class EquihashSolverDefinition
-            {
-                public string Type { get; set; }
-                public string Personalization { get; set; }
-            }
-
             public string Diff1 { get; set; }
 
             public int SolutionSize { get; set; } = 1344;
             public int SolutionPreambleSize { get; set; } = 3;
-            public EquihashSolverDefinition Solver { get; set; }
+            public JObject Solver { get; set; }
             public string CoinbaseTxNetwork { get; set; }
 
             public bool PayFoundersReward { get; set; }
@@ -221,25 +215,25 @@ namespace MiningCore.Configuration
 
         /// <summary>
         /// Prefix of a valid address
-        /// See: namespace config -> CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX in src/cryptonote_config.h 
+        /// See: namespace config -> CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX in src/cryptonote_config.h
         /// </summary>
         public ulong AddressPrefix { get; set; }
 
         /// <summary>
         /// Prefix of a valid testnet-address
-        /// See: namespace config -> CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX in src/cryptonote_config.h 
+        /// See: namespace config -> CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX in src/cryptonote_config.h
         /// </summary>
         public ulong AddressPrefixTestnet { get; set; }
 
         /// <summary>
         /// Prefix of a valid integrated address
-        /// See: namespace testnet -> CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX  in src/cryptonote_config.h 
+        /// See: namespace testnet -> CRYPTONOTE_PUBLIC_INTEGRATED_ADDRESS_BASE58_PREFIX  in src/cryptonote_config.h
         /// </summary>
         public ulong AddressPrefixIntegrated { get; set; }
 
         /// <summary>
         /// Prefix of a valid integrated testnet-address
-        /// See: namespace testnet -> CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX in src/cryptonote_config.h 
+        /// See: namespace testnet -> CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX in src/cryptonote_config.h
         /// </summary>
         public ulong AddressPrefixIntegratedTestnet { get; set; }
     }

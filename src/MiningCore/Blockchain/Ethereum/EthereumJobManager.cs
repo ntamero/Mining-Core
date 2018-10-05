@@ -386,7 +386,7 @@ namespace MiningCore.Blockchain.Ethereum
 
         public IObservable<object> Jobs { get; private set; }
 
-        public override void Configure(PoolConfig poolConfig, ClusterConfig clusterConfig)
+        public override void Configure(PoolConfig poolConfig, ClusterConfig clusterConfig, CoinDefinition coin)
         {
             extraPoolConfig = poolConfig.Extra.SafeExtensionDataAs<EthereumPoolConfigExtra>();
 
@@ -395,7 +395,7 @@ namespace MiningCore.Blockchain.Ethereum
                 .Where(x => string.IsNullOrEmpty(x.Category))
                 .ToArray();
 
-            base.Configure(poolConfig, clusterConfig);
+            base.Configure(poolConfig, clusterConfig, coin);
 
             if (poolConfig.EnableInternalStratum == true)
             {
@@ -630,7 +630,7 @@ namespace MiningCore.Blockchain.Ethereum
             // Donation to MiningCore development
             if (networkType == EthereumNetworkType.Main &&
                 chainType == ParityChainType.Mainnet &&
-                DevDonation.Addresses.TryGetValue(poolConfig.Coin.Type, out var address))
+                DevDonation.Addresses.TryGetValue(CoinAs<CoinDefinition>().Symbol, out var address))
             {
                 poolConfig.RewardRecipients = poolConfig.RewardRecipients.Concat(new[]
                 {

@@ -816,7 +816,7 @@ namespace MiningCore.Blockchain.Bitcoin
                 {
                     job = new TJob();
 
-                    job.Init(blockTemplate, NextJobId(),
+                    job.Init(CoinAs<BitcoinDefinition>(), blockTemplate, NextJobId(),
                         poolConfig, clusterConfig, clock, poolAddressDestination, networkType, isPoS,
                         ShareMultiplier, extraPoolPaymentProcessingConfig?.BlockrewardMultiplier,
                         coinbaseHasher, headerHasher, blockHasher);

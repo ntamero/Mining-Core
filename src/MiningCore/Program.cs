@@ -67,7 +67,6 @@ namespace MiningCore
     {
         private static readonly CancellationTokenSource cts = new CancellationTokenSource();
         private static ILogger logger;
-        private static IContainer container;
         private static CommandOption dumpConfigOption;
         private static CommandOption shareRecoveryOption;
         private static ShareRecorder shareRecorder;
@@ -81,6 +80,7 @@ namespace MiningCore
         private static readonly Dictionary<string, IMiningPool> pools = new Dictionary<string, IMiningPool>();
 
         public static AdminGcStats gcStats = new AdminGcStats();
+        public static IContainer Container { get; private set; }
 
         private static readonly Regex regexJsonTypeConversionError =
             new Regex("\"([^\"]+)\"[^\']+\'([^\']+)\'.+\\s(\\d+),.+\\s(\\d+)", RegexOptions.Compiled);
@@ -254,7 +254,7 @@ namespace MiningCore
             builder.Register((ctx, parms) => amConf.CreateMapper());
 
             ConfigurePersistence(builder);
-            container = builder.Build();
+            Container = builder.Build();
             ConfigureLogging();
             ConfigureMisc();
             ValidateRuntimeEnvironment();
@@ -311,11 +311,8 @@ namespace MiningCore
                 var line = m.Groups[3].Value;
                 var col = m.Groups[4].Value;
 
-                if (type == typeof(CoinType))
-                    Console.WriteLine($"Error: Coin '{value}' is not (yet) supported (line {line}, column {col})");
-                else if (type == typeof(PayoutScheme))
-                    Console.WriteLine(
-                        $"Error: Payout scheme '{value}' is not (yet) supported (line {line}, column {col})");
+                if (type == typeof(PayoutScheme))
+                    Console.WriteLine($"Error: Payout scheme '{value}' is not (yet) supported (line {line}, column {col})");
             }
 
             else
@@ -628,30 +625,30 @@ namespace MiningCore
         {
             var coins = LoadCoinDefinitions();
 
-            notificationService = container.Resolve<NotificationService>();
+            notificationService = Container.Resolve<NotificationService>();
 
             if (clusterConfig.ShareRelay == null)
             {
                 // start share recorder
-                shareRecorder = container.Resolve<ShareRecorder>();
+                shareRecorder = Container.Resolve<ShareRecorder>();
                 shareRecorder.Start(clusterConfig);
 
                 // start share receiver (for external shares)
-                shareReceiver = container.Resolve<ShareReceiver>();
+                shareReceiver = Container.Resolve<ShareReceiver>();
                 shareReceiver.Start(clusterConfig);
             }
 
             else
             {
                 // start share relay
-                shareRelay = container.Resolve<ShareRelay>();
+                shareRelay = Container.Resolve<ShareRelay>();
                 shareRelay.Start(clusterConfig);
             }
 
             // start API
             if (clusterConfig.Api == null || clusterConfig.Api.Enabled)
             {
-                apiServer = container.Resolve<ApiServer>();
+                apiServer = Container.Resolve<ApiServer>();
                 apiServer.Start(clusterConfig);
             }
 
@@ -659,7 +656,7 @@ namespace MiningCore
             if (clusterConfig.PaymentProcessing?.Enabled == true &&
                 clusterConfig.Pools.Any(x => x.PaymentProcessing?.Enabled == true))
             {
-                payoutManager = container.Resolve<PayoutManager>();
+                payoutManager = Container.Resolve<PayoutManager>();
                 payoutManager.Configure(clusterConfig);
 
                 payoutManager.Start();
@@ -671,7 +668,7 @@ namespace MiningCore
             if (clusterConfig.ShareRelay == null)
             {
                 // start pool stats updater
-                statsRecorder = container.Resolve<StatsRecorder>();
+                statsRecorder = Container.Resolve<StatsRecorder>();
                 statsRecorder.Configure(clusterConfig);
                 statsRecorder.Start();
             }
@@ -684,7 +681,7 @@ namespace MiningCore
                     logger.ThrowLogPoolStartupException($"Pool {poolConfig.Id} references undefined coin '{poolConfig.Coin}'");
 
                 // resolve pool implementation
-                var poolImpl = container.Resolve<IEnumerable<Meta<Lazy<IMiningPool, CoinFamilyAttribute>>>>()
+                var poolImpl = Container.Resolve<IEnumerable<Meta<Lazy<IMiningPool, CoinFamilyAttribute>>>>()
                     .First(x => x.Value.Metadata.SupportedFamilies.Contains(coinDefinition.Family)).Value;
 
                 // create and configure
@@ -706,7 +703,7 @@ namespace MiningCore
 
         private static void RecoverShares(string recoveryFilename)
         {
-            shareRecorder = container.Resolve<ShareRecorder>();
+            shareRecorder = Container.Resolve<ShareRecorder>();
             shareRecorder.RecoverShares(clusterConfig, recoveryFilename);
         }
 

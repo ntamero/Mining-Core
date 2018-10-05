@@ -30,6 +30,7 @@ using MiningCore.Blockchain.Cryptonote;
 using MiningCore.Blockchain.Equihash;
 using MiningCore.Blockchain.Equihash.DaemonResponses;
 using MiningCore.Configuration;
+using MiningCore.Crypto;
 using MiningCore.Messaging;
 using MiningCore.Mining;
 using MiningCore.Notifications;
@@ -102,6 +103,10 @@ namespace MiningCore
                         i.IsAssignableFrom(typeof(IPayoutScheme))))
                 .WithMetadataFrom<CoinFamilyAttribute>()
                 .AsImplementedInterfaces();
+
+            builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+                .Where(t => t.IsAssignableFrom(typeof(IHashAlgorithm)))
+                .AsSelf();
 
             //////////////////////
             // Payment Schemes

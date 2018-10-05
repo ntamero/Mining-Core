@@ -1,48 +1,47 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using Autofac;
+using MiningCore.Configuration;
 using MiningCore.Crypto.Hashing.Algorithms;
 using MiningCore.Crypto.Hashing.Special;
+using Newtonsoft.Json.Linq;
 
 namespace MiningCore.Crypto
 {
     public static class HashFactory
     {
-        private static readonly ConcurrentDictionary<string, IHashAlgorithm> algos = new ConcurrentDictionary<string, IHashAlgorithm>();
-
-        public static IHashAlgorithm GetHash(string definition)
+        public static IHashAlgorithm GetHash(JObject definition)
         {
-            if (algos.TryGetValue(definition, out var result))
-                return result;
+            var hash = definition["hash"]?.Value<string>().ToLower();
 
-            result = HashFromDefinition(definition);
-            algos.TryAdd(definition, result);
+            if(string.IsNullOrEmpty(hash))
+                throw new NotSupportedException("$Invalid or empty hash value {hash}");
 
-            return result;
+            var args = definition["args"]?
+                .Select(token => token.Type == JTokenType.Object ? GetHash((JObject)token) : token.Value<object>())
+                .ToArray();
+
+            return InstantiateHash(hash, args);
         }
 
-        private static IHashAlgorithm HashFromDefinition(string definition)
+        private static IHashAlgorithm InstantiateHash(string name, object[] args)
         {
-            var index = definition.IndexOf("-reverse");
+            if (name == "digest")
+                name = nameof(DigestReverser);
 
-            if (index != -1)
-            {
-                var hashName = definition.Substring(0, index);
-                var inner = InstantiateHash(hashName);
-                var reverser = new DigestReverser(inner);
-                return reverser;
-            }
-
-            return InstantiateHash(definition);
-        }
-
-        private static IHashAlgorithm InstantiateHash(string name)
-        {
             var hashClass = (typeof(Sha256D).Namespace + "." + name).ToLower();
             var hashType = Type.GetType(hashClass, true, false);
-            var hashInstance = Activator.CreateInstance(hashType);
-            return (IHashAlgorithm) hashInstance;
+
+            var container = Program.Container;
+            var parameters = args.Select(x =>
+            {
+                new NamedParameter()
+            });
+
+            var result = (IHashAlgorithm) container.Resolve(hashType, parameters);
         }
     }
 }
