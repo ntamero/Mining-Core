@@ -38,9 +38,9 @@ namespace MiningCore.Crypto
 
             var hashClass = (typeof(Sha256D).Namespace + "." + name).ToLower();
             var hashType = typeof(Sha256D).Assembly.GetType(hashClass, true, true);
-
             var parameters = args?.Select((x, i) => new PositionalParameter(i, x)).ToArray();
 
+            // create it
             result = (IHashAlgorithm) (parameters != null && parameters.Length > 0 ?
                 Program.Container.Resolve(hashType, parameters) :
                 Program.Container.Resolve(hashType));
