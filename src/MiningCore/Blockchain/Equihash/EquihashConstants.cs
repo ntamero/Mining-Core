@@ -29,11 +29,6 @@ namespace MiningCore.Blockchain.Equihash
 
         public static readonly System.Numerics.BigInteger ZCashDiff1b =
             System.Numerics.BigInteger.Parse("0007ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", NumberStyles.HexNumber);
-
-        static EquihashConstants()
-        {
-            ZcashNetworks.Instance.EnsureRegistered();
-        }
     }
 
     public enum ZOperationStatus

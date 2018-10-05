@@ -78,7 +78,19 @@ namespace MiningCore.Configuration
 
         public EquihashNetworkDefinition GetNetwork(BitcoinNetworkType networkType)
         {
-            return Networks[Network.GetNetwork(networkType.ToString().ToLower()).Name.ToLower()];
+            switch(networkType)
+            {
+                case BitcoinNetworkType.Main:
+                    return Networks["main"];
+
+                case BitcoinNetworkType.Test:
+                    return Networks["test"];
+
+                case BitcoinNetworkType.RegTest:
+                    return Networks["regtest"];
+            }
+
+            throw new NotSupportedException();
         }
 
         #region Overrides of CoinDefinition

@@ -39,11 +39,8 @@ using FluentValidation;
 using Microsoft.Extensions.CommandLineUtils;
 using MiningCore.Api;
 using MiningCore.Api.Responses;
-using MiningCore.Blockchain;
 using MiningCore.Configuration;
-using MiningCore.Crypto.Hashing.Algorithms;
 using MiningCore.Crypto.Hashing.Equihash;
-using MiningCore.Extensions;
 using MiningCore.Mining;
 using MiningCore.Notifications;
 using MiningCore.Payments;
@@ -51,8 +48,8 @@ using MiningCore.Persistence.Dummy;
 using MiningCore.Persistence.Postgres;
 using MiningCore.Persistence.Postgres.Repositories;
 using MiningCore.Util;
+using NBitcoin.Zcash;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using NLog;
 using NLog.Conditions;
@@ -243,6 +240,8 @@ namespace MiningCore
 
         private static void Bootstrap()
         {
+            ZcashNetworks.Instance.EnsureRegistered();
+
             // Service collection
             var builder = new ContainerBuilder();
 
