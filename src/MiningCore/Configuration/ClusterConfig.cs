@@ -32,9 +32,16 @@ namespace MiningCore.Configuration
 
     public enum CoinFamily
     {
+        [EnumMember(Value = "bitcoin")]
         Bitcoin,
+
+        [EnumMember(Value = "equihash")]
         Equihash,
+
+        [EnumMember(Value = "cryptonote")]
         Cryptonote,
+
+        [EnumMember(Value = "ethereum")]
         Ethereum
     }
 
@@ -183,13 +190,13 @@ namespace MiningCore.Configuration
 
     public enum CryptonightHashType
     {
-        [EnumMember(Value = "Cryptonight")]
+        [EnumMember(Value = "cryptonight")]
         Normal = 1,
 
-        [EnumMember(Value = "Cryptonight-Lite")]
+        [EnumMember(Value = "cryptonight-lite")]
         Lite,
 
-        [EnumMember(Value = "Cryptonight-Heavy")]
+        [EnumMember(Value = "cryptonight-heavy")]
         Heavy
     }
 
@@ -236,6 +243,14 @@ namespace MiningCore.Configuration
         /// See: namespace testnet -> CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX in src/cryptonote_config.h
         /// </summary>
         public ulong AddressPrefixIntegratedTestnet { get; set; }
+
+        /// <summary>
+        /// Fraction of block reward, the pool really gets
+        /// Default: 1.0 (all)
+        /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+        [DefaultValue(1.0d)]
+        public decimal BlockRewardShare { get; set; } = 1.0m;
     }
 
     public partial class EthereumCoinTemplate : CoinTemplate

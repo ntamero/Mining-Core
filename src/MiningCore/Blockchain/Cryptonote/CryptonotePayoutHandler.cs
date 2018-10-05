@@ -33,7 +33,6 @@ using MiningCore.DaemonInterface;
 using MiningCore.Extensions;
 using MiningCore.Messaging;
 using MiningCore.Native;
-using MiningCore.Notifications;
 using MiningCore.Payments;
 using MiningCore.Persistence;
 using MiningCore.Persistence.Model;
@@ -372,7 +371,7 @@ namespace MiningCore.Blockchain.Cryptonote
                     {
                         block.Status = BlockStatus.Confirmed;
                         block.ConfirmationProgress = 1;
-                        block.Reward = (decimal) blockHeader.Reward / coin.SmallestUnit;
+                        block.Reward = ((decimal) blockHeader.Reward / coin.SmallestUnit) * coin.BlockRewardShare;
 
                         logger.Info(() => $"[{LogCategory}] Unlocked block {block.BlockHeight} worth {FormatAmount(block.Reward)}");
                     }

@@ -1319,7 +1319,8 @@
     "addressPrefixIntegrated": 16463,
     "addressPrefixIntegratedTestnet": 16463,
     "explorerBlockLink": "https://explorer.bit.tube/block/$height$",
-    "explorerTxLink": "https://explorer.bit.tube/tx/{0}"
+    "explorerTxLink": "https://explorer.bit.tube/tx/{0}",
+    "blockRewardShare": 0.7
   },
   "ethereum": {
     "name": "Ethereum",
