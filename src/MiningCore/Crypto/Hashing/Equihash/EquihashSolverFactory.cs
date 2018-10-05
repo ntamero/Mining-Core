@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Autofac;
-using MiningCore.Crypto.Hashing.Algorithms;
-using MiningCore.Crypto.Hashing.Special;
 using Newtonsoft.Json.Linq;
 
 namespace MiningCore.Crypto.Hashing.Equihash
@@ -11,7 +8,7 @@ namespace MiningCore.Crypto.Hashing.Equihash
     {
         private const string HashName = "equihash";
 
-        public static EquihashSolverBase GetSolver(JObject definition)
+        public static EquihashSolver GetSolver(JObject definition)
         {
             var hash = definition["hash"]?.Value<string>().ToLower();
 
@@ -28,20 +25,13 @@ namespace MiningCore.Crypto.Hashing.Equihash
             return InstantiateSolver(args);
         }
 
-        private static EquihashSolverBase InstantiateSolver(object[] args)
+        private static EquihashSolver InstantiateSolver(object[] args)
         {
-            var n = Convert.ChangeType(args[0], typeof(int));
-            var k = Convert.ChangeType(args[1], typeof(int));
-            var personalization = (string)args[2];
+            var n = (int) Convert.ChangeType(args[0], typeof(int));
+            var k = (int) Convert.ChangeType(args[1], typeof(int));
+            var personalization = args[2].ToString();
 
-            var name = $"EquihashSolver_{n}_{k}";
-            var hashClass = (typeof(EquihashSolverBase).Namespace + "." + name).ToLower();
-            var hashType = Type.GetType(hashClass, true, false);
-
-            var parameters = new []{ new PositionalParameter(0, personalization) };
-            var result = Program.Container.Resolve(hashType, parameters);
-
-            return (EquihashSolverBase) result;
+            return new EquihashSolver(n, k, personalization);
         }
     }
 }

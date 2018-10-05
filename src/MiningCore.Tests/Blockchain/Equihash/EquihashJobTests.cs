@@ -7,9 +7,9 @@ using MiningCore.Configuration;
 using MiningCore.Crypto;
 using MiningCore.Crypto.Hashing.Algorithms;
 using MiningCore.Crypto.Hashing.Equihash;
-using MiningCore.Crypto.Hashing.Special;
 using MiningCore.Tests.Util;
 using NBitcoin;
+using NBitcoin.Zcash;
 using Xunit;
 
 namespace MiningCore.Tests.Blockchain.Equihash
@@ -18,6 +18,8 @@ namespace MiningCore.Tests.Blockchain.Equihash
     {
         public EquihashJobTests()
         {
+            ZcashNetworks.Instance.EnsureRegistered();
+
             poolConfig = new PoolConfig
             {
                 Coin = "zcash",
@@ -37,7 +39,7 @@ namespace MiningCore.Tests.Blockchain.Equihash
         public void ZCashUtils_EncodeTarget()
         {
             var equihashCoin = poolConfig.CoinTemplate.As<EquihashCoinTemplate>();
-            var chainConfig = equihashCoin.Networks[Network.GetNetwork(BitcoinNetworkType.Main.ToString().ToLower()).Name];
+            var chainConfig = equihashCoin.GetNetwork(BitcoinNetworkType.Main);
 
             var result = EquihashUtils.EncodeTarget(0.5, chainConfig);
             Assert.Equal(result, "0010102040810204081020408102040810204081020408102040810204080fe0");
@@ -67,7 +69,7 @@ namespace MiningCore.Tests.Blockchain.Equihash
             var clock = new MockMasterClock { CurrentTime = DateTimeOffset.FromUnixTimeSeconds(1508869874).UtcDateTime };
 
             var equihashCoin = poolConfig.CoinTemplate.As<EquihashCoinTemplate>();
-            var chainConfig = equihashCoin.Networks[Network.GetNetwork(BitcoinNetworkType.Main.ToString().ToLower()).Name];
+            var chainConfig = equihashCoin.GetNetwork(BitcoinNetworkType.Main);
             var solver = EquihashSolverFactory.GetSolver(chainConfig.Solver);
 
             job.Init(bt, "1", poolConfig, clusterConfig, clock, poolAddressDestination, BitcoinNetworkType.Test,

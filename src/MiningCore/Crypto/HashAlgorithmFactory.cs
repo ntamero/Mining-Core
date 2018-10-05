@@ -2,18 +2,16 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Autofac;
-using Autofac.Core;
-using MiningCore.Configuration;
 using MiningCore.Crypto.Hashing.Algorithms;
-using MiningCore.Crypto.Hashing.Special;
 using Newtonsoft.Json.Linq;
 
 namespace MiningCore.Crypto
 {
     public static class HashAlgorithmFactory
     {
+        private static readonly ConcurrentDictionary<string, IHashAlgorithm> cache = new ConcurrentDictionary<string, IHashAlgorithm>();
+
         public static IHashAlgorithm GetHash(JObject definition)
         {
             var hash = definition["hash"]?.Value<string>().ToLower();
@@ -30,16 +28,27 @@ namespace MiningCore.Crypto
 
         private static IHashAlgorithm InstantiateHash(string name, object[] args)
         {
-            if (name == "digest")
+            // special handling for DigestReverser
+            if (name == "reverse")
                 name = nameof(DigestReverser);
 
+            var allowCache = args == null || args.Length == 0;
+            if (allowCache && cache.TryGetValue(name, out var result))
+                return result;
+
             var hashClass = (typeof(Sha256D).Namespace + "." + name).ToLower();
-            var hashType = Type.GetType(hashClass, true, false);
+            var hashType = typeof(Sha256D).Assembly.GetType(hashClass, true, true);
 
-            var parameters = args.Select((x, i) => new PositionalParameter(i, x));
-            var result = Program.Container.Resolve(hashType, parameters);
+            var parameters = args?.Select((x, i) => new PositionalParameter(i, x)).ToArray();
 
-            return (IHashAlgorithm) result;
+            result = (IHashAlgorithm) (parameters != null && parameters.Length > 0 ?
+                Program.Container.Resolve(hashType, parameters) :
+                Program.Container.Resolve(hashType));
+
+            if(allowCache)
+                cache.TryAdd(name, result);
+
+            return result;
         }
     }
 }

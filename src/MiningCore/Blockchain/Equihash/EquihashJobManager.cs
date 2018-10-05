@@ -51,7 +51,7 @@ namespace MiningCore.Blockchain.Equihash
         protected override void PostChainIdentifyConfigure()
         {
             var coin = poolConfig.CoinTemplate.As<EquihashCoinTemplate>();
-            chainConfig = coin.Networks[Network.GetNetwork(networkType.ToString().ToLower()).Name];
+            chainConfig = coin.GetNetwork(networkType);
 
             var solver = EquihashSolverFactory.GetSolver(chainConfig.Solver);
             jobExtra = solver;  // This is ugly

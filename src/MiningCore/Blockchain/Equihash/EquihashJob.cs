@@ -54,7 +54,7 @@ namespace MiningCore.Blockchain.Equihash
         protected byte[] merkleRoot;
         protected byte[] merkleRootReversed;
         protected string merkleRootReversedHex;
-        protected EquihashSolverBase equihash;
+        protected EquihashSolver equihash;
 
         // ZCash Sapling & Overwinter support
         protected bool isOverwinterActive = false;
@@ -205,7 +205,7 @@ namespace MiningCore.Blockchain.Equihash
 
             this.headerHasher = headerHasher;
             this.blockHasher = blockHasher;
-            this.equihash = (EquihashSolverBase) extra;
+            this.equihash = (EquihashSolver) extra;
 
             if (!string.IsNullOrEmpty(BlockTemplate.Target))
                 blockTargetValue = new uint256(BlockTemplate.Target);

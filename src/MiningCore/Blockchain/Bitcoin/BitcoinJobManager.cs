@@ -35,7 +35,6 @@ using MiningCore.Configuration;
 using MiningCore.Contracts;
 using MiningCore.Crypto;
 using MiningCore.Crypto.Hashing.Algorithms;
-using MiningCore.Crypto.Hashing.Special;
 using MiningCore.DaemonInterface;
 using MiningCore.Extensions;
 using MiningCore.JsonRpc;

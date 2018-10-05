@@ -20,23 +20,13 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
 
-namespace MiningCore.Crypto.Hashing.Special
+namespace MiningCore.Crypto.Hashing.Algorithms
 {
-    public class DigestReverser : IHashAlgorithm
+    public class Null : IHashAlgorithm
     {
-        public DigestReverser(IHashAlgorithm upstream)
-        {
-            this.upstream = upstream;
-        }
-
-        private readonly IHashAlgorithm upstream;
-
-        public IHashAlgorithm Upstream => upstream;
-
         public void Digest(ReadOnlySpan<byte> data, Span<byte> result, params object[] extra)
         {
-            upstream.Digest(data, result, extra);
-            result.Reverse();
+            throw new InvalidOperationException("Don't call me");
         }
     }
 }

@@ -3,7 +3,6 @@ using MiningCore.Blockchain.Bitcoin;
 using MiningCore.Configuration;
 using MiningCore.Crypto;
 using MiningCore.Crypto.Hashing.Algorithms;
-using MiningCore.Crypto.Hashing.Special;
 using MiningCore.Extensions;
 using MiningCore.Stratum;
 using MiningCore.Tests.Util;

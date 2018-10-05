@@ -499,7 +499,7 @@ namespace MiningCore
         {
             // Configure Equihash
             if (clusterConfig.EquihashMaxThreads.HasValue)
-                EquihashSolverBase.MaxThreads = clusterConfig.EquihashMaxThreads.Value;
+                EquihashSolver.MaxThreads = clusterConfig.EquihashMaxThreads.Value;
         }
 
         private static void ConfigurePersistence(ContainerBuilder builder)

@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Numerics;
 using System.Text;
+using MiningCore.Blockchain.Bitcoin;
 using MiningCore.Crypto;
-using MiningCore.Crypto.Hashing.Special;
+using MiningCore.Crypto.Hashing.Algorithms;
+using NBitcoin;
 using Newtonsoft.Json;
 
 namespace MiningCore.Configuration
@@ -81,6 +83,11 @@ namespace MiningCore.Configuration
 
             [JsonIgnore]
             public ulong LastFoundersRewardBlockHeight => FoundersRewardSubsidyHalvingInterval + FoundersRewardSubsidySlowStartShift - 1;
+        }
+
+        public EquihashNetworkDefinition GetNetwork(BitcoinNetworkType networkType)
+        {
+            return Networks[Network.GetNetwork(networkType.ToString().ToLower()).Name.ToLower()];
         }
 
         #region Overrides of CoinDefinition

@@ -106,12 +106,7 @@ namespace MiningCore
                 .AsImplementedInterfaces();
 
             builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
-                .Where(t => t.IsAssignableFrom(typeof(IHashAlgorithm)))
-                .PropertiesAutowired()
-                .AsSelf();
-
-            builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
-                .Where(t => t.IsAssignableFrom(typeof(EquihashSolverBase)))
+                .Where(t => t.GetInterfaces().Any(i => i.IsAssignableFrom(typeof(IHashAlgorithm))))
                 .PropertiesAutowired()
                 .AsSelf();
 
