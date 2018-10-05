@@ -84,10 +84,9 @@ namespace MiningCore.Payments
 
                 try
                 {
-#if false
                     // resolve payout handler
                     var handlerImpl = ctx.Resolve<IEnumerable<Meta<Lazy<IPayoutHandler, CoinFamilyAttribute>>>>()
-                        .First(x => x.Value.Metadata.SupportedFamilies.Contains(pool.Coin.Type)).Value;
+                        .First(x => x.Value.Metadata.SupportedFamilies.Contains(pool.CoinTemplate.Family)).Value;
 
                     var handler = handlerImpl.Value;
                     await handler.ConfigureAsync(clusterConfig, pool);
@@ -97,7 +96,6 @@ namespace MiningCore.Payments
 
                     await UpdatePoolBalancesAsync(pool, handler, scheme);
                     await PayoutPoolBalancesAsync(pool, handler);
-#endif
                 }
 
                 catch (InvalidOperationException ex)

@@ -54,8 +54,8 @@ namespace MiningCore.Blockchain.Equihash
         {
         }
 
-        private EquihashChainConfig chainConfig;
         private double hashrateDivisor;
+        private EquihashJobManager<TJob> equihashJobManager;
 
         protected override BitcoinJobManager<TJob, ZCashBlockTemplate> CreateJobManager()
         {
@@ -71,11 +71,9 @@ namespace MiningCore.Blockchain.Equihash
         {
             await base.SetupJobManager(ct);
 
-            if (EquihashConstants.Chains.TryGetValue(poolConfig.Coin.Type, out var coinbaseTx))
-                coinbaseTx.TryGetValue(manager.NetworkType, out chainConfig);
+            equihashJobManager = (EquihashJobManager<TJob>) manager;
 
-            hashrateDivisor = (double) new BigRational(chainConfig.Diff1b,
-                EquihashConstants.Chains[CoinType.ZEC][manager.NetworkType].Diff1b);
+            hashrateDivisor = (double) new BigRational(equihashJobManager.ChainConfig.Diff1BValue, EquihashConstants.ZCashDiff1b);
         }
 
         #endregion
@@ -133,7 +131,7 @@ namespace MiningCore.Blockchain.Equihash
             {
                 if (System.Numerics.BigInteger.TryParse(target, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var targetBig))
                 {
-                    var newDiff = (double) new BigRational(chainConfig.Diff1b, targetBig);
+                    var newDiff = (double) new BigRational(equihashJobManager.ChainConfig.Diff1BValue, targetBig);
                     var poolEndpoint = poolConfig.Ports[client.PoolEndpoint.Port];
 
                     if (newDiff >= poolEndpoint.Difficulty)
@@ -264,7 +262,7 @@ namespace MiningCore.Blockchain.Equihash
 
         private string EncodeTarget(double difficulty)
         {
-            return EquihashUtils.EncodeTarget(difficulty, chainConfig);
+            return EquihashUtils.EncodeTarget(difficulty, equihashJobManager.ChainConfig);
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Autofac;
+using Autofac.Core;
 using MiningCore.Configuration;
 using MiningCore.Crypto.Hashing.Algorithms;
 using MiningCore.Crypto.Hashing.Special;
@@ -11,7 +12,7 @@ using Newtonsoft.Json.Linq;
 
 namespace MiningCore.Crypto
 {
-    public static class HashFactory
+    public static class HashAlgorithmFactory
     {
         public static IHashAlgorithm GetHash(JObject definition)
         {
@@ -35,13 +36,10 @@ namespace MiningCore.Crypto
             var hashClass = (typeof(Sha256D).Namespace + "." + name).ToLower();
             var hashType = Type.GetType(hashClass, true, false);
 
-            var container = Program.Container;
-            var parameters = args.Select(x =>
-            {
-                new NamedParameter()
-            });
+            var parameters = args.Select((x, i) => new PositionalParameter(i, x));
+            var result = Program.Container.Resolve(hashType, parameters);
 
-            var result = (IHashAlgorithm) container.Resolve(hashType, parameters);
+            return (IHashAlgorithm) result;
         }
     }
 }

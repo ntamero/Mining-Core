@@ -38,7 +38,7 @@ namespace MiningCore.Configuration
         Ethereum
     }
 
-    public class CoinDefinition
+    public abstract partial class CoinTemplate
     {
         /// <summary>
         /// Name
@@ -90,14 +90,14 @@ namespace MiningCore.Configuration
         [JsonIgnore]
         public static readonly Dictionary<CoinFamily, Type> Families = new Dictionary<CoinFamily, Type>
         {
-            {CoinFamily.Bitcoin, typeof(BitcoinDefinition)},
-            {CoinFamily.Equihash, typeof(EquihashCoinDefinition)},
-            {CoinFamily.Cryptonote, typeof(CryptonoteCoinDefinition)},
-            {CoinFamily.Ethereum, typeof(CoinDefinition)},
+            {CoinFamily.Bitcoin, typeof(BitcoinTemplate)},
+            {CoinFamily.Equihash, typeof(EquihashCoinTemplate)},
+            {CoinFamily.Cryptonote, typeof(CryptonoteCoinTemplate)},
+            {CoinFamily.Ethereum, typeof(EthereumCoinTemplate)},
         };
     }
 
-    public class BitcoinDefinition : CoinDefinition
+    public partial class BitcoinTemplate : CoinTemplate
     {
         public JObject CoinbaseHasher { get; set; }
         public JObject HeaderHasher { get; set; }
@@ -118,9 +118,9 @@ namespace MiningCore.Configuration
         public double HashrateMultiplier { get; set; } = 1.0d;
     }
 
-    public class EquihashCoinDefinition : CoinDefinition
+    public partial class EquihashCoinTemplate : CoinTemplate
     {
-        public class EquihashNetworkDefinition
+        public partial class EquihashNetworkDefinition
         {
             public string Diff1 { get; set; }
 
@@ -193,7 +193,7 @@ namespace MiningCore.Configuration
         Heavy
     }
 
-    public class CryptonoteCoinDefinition : CoinDefinition
+    public partial class CryptonoteCoinTemplate : CoinTemplate
     {
         /// <summary>
         /// Broader Cryptonight hash family
@@ -236,6 +236,10 @@ namespace MiningCore.Configuration
         /// See: namespace testnet -> CRYPTONOTE_PUBLIC_ADDRESS_BASE58_PREFIX in src/cryptonote_config.h
         /// </summary>
         public ulong AddressPrefixIntegratedTestnet { get; set; }
+    }
+
+    public partial class EthereumCoinTemplate : CoinTemplate
+    {
     }
 
     #endregion // Coin Definitions

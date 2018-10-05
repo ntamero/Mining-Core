@@ -11,6 +11,7 @@ using MiningCore.Blockchain.Equihash.Configuration;
 using MiningCore.Blockchain.Equihash.DaemonResponses;
 using MiningCore.Configuration;
 using MiningCore.Contracts;
+using MiningCore.Crypto.Hashing.Equihash;
 using MiningCore.DaemonInterface;
 using MiningCore.Extensions;
 using MiningCore.JsonRpc;
@@ -42,26 +43,18 @@ namespace MiningCore.Blockchain.Equihash
             };
         }
 
-        protected EquihashChainConfig chainConfig;
-        private EquihashPoolConfigExtra zcashExtraPoolConfig;
-
-        #region Overrides of JobManagerBase<TJob>
-
-        public override void Configure(PoolConfig poolConfig, ClusterConfig clusterConfig, BitcoinDefinition coinAs)
-        {
-            zcashExtraPoolConfig = poolConfig.Extra.SafeExtensionDataAs<EquihashPoolConfigExtra>();
-
-            base.Configure(poolConfig, clusterConfig);
-        }
-
-        #endregion
+        private EquihashCoinTemplate.EquihashNetworkDefinition chainConfig;
+        public EquihashCoinTemplate.EquihashNetworkDefinition ChainConfig => chainConfig;
 
         #region Overrides of BitcoinJobManager<TJob,ZCashBlockTemplate>
 
         protected override void PostChainIdentifyConfigure()
         {
-            if (EquihashConstants.Chains.TryGetValue(poolConfig.Coin.Type, out var coinbaseTx))
-                coinbaseTx.TryGetValue(networkType, out chainConfig);
+            var coin = poolConfig.CoinTemplate.As<EquihashCoinTemplate>();
+            chainConfig = coin.Networks[Network.GetNetwork(networkType.ToString().ToLower()).Name];
+
+            var solver = EquihashSolverFactory.GetSolver(chainConfig.Solver);
+            jobExtra = solver;  // This is ugly
 
             base.PostChainIdentifyConfigure();
         }
@@ -120,7 +113,9 @@ namespace MiningCore.Blockchain.Equihash
 
         protected override IDestination AddressToDestination(string address)
         {
-            if (!chainConfig.UsesZCashAddressFormat)
+            var coin = poolConfig.CoinTemplate.As<EquihashCoinTemplate>();
+
+            if (!coin.UsesZCashAddressFormat)
                 return base.AddressToDestination(address);
 
             var decoded = Encoders.Base58.DecodeData(address);

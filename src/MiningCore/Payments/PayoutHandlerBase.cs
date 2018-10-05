@@ -105,6 +105,8 @@ namespace MiningCore.Payments
 
         protected virtual void PersistPayments(Balance[] balances, string transactionConfirmation)
         {
+            var coin = poolConfig.CoinTemplate.As<CoinTemplate>();
+
             try
             {
                 faultPolicy.Execute(() =>
@@ -120,7 +122,7 @@ namespace MiningCore.Payments
                                 var payment = new Payment
                                 {
                                     PoolId = poolConfig.Id,
-                                    Coin = poolConfig.Coin.Type,
+                                    Coin = coin.Symbol,
                                     Address = balance.Address,
                                     Amount = balance.Amount,
                                     Created = clock.Now,
@@ -132,7 +134,7 @@ namespace MiningCore.Payments
 
                             // reset balance
                             logger.Debug(() => $"[{LogCategory}] Resetting balance of {balance.Address}");
-                            balanceRepo.AddAmount(con, tx, poolConfig.Id, poolConfig.Coin.Type, balance.Address, -balance.Amount, $"Balance reset after payment");
+                            balanceRepo.AddAmount(con, tx, poolConfig.Id, coin.Symbol, balance.Address, -balance.Amount, $"Balance reset after payment");
                         }
                     });
                 });
@@ -148,19 +150,23 @@ namespace MiningCore.Payments
 
         public string FormatAmount(decimal amount)
         {
-            return $"{amount:0.#####} {poolConfig.Coin.Type}";
+            var coin = poolConfig.CoinTemplate.As<CoinTemplate>();
+            return $"{amount:0.#####} {coin.Symbol}";
         }
 
         protected virtual void NotifyPayoutSuccess(string poolId, Balance[] balances, string[] txHashes, decimal? txFee)
         {
+            var coin = poolConfig.CoinTemplate.As<CoinTemplate>();
+
             // admin notifications
             if (clusterConfig.Notifications?.Admin?.Enabled == true &&
                 clusterConfig.Notifications?.Admin?.NotifyPaymentSuccess == true)
             {
                 // prepare tx link
                 var txInfo = string.Join(", ", txHashes);
+                var baseUrl = coin.ExplorerTxLink;
 
-                if (CoinMetaData.TxInfoLinks.TryGetValue(poolConfig.Coin.Type, out var baseUrl))
+                if(!string.IsNullOrEmpty(baseUrl))
                     txInfo = string.Join(", ", txHashes.Select(txHash => $"<a href=\"{string.Format(baseUrl, txHash)}\">{txHash}</a>"));
 
                 messageBus.SendMessage(new PaymentNotification(poolId, null, balances.Sum(x => x.Amount), balances.Length, txInfo, txFee));

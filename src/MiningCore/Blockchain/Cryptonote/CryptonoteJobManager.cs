@@ -262,18 +262,19 @@ namespace MiningCore.Blockchain.Cryptonote
 
             var addressPrefix = LibCryptonote.DecodeAddress(address);
             var addressIntegratedPrefix = LibCryptonote.DecodeIntegratedAddress(address);
+            var coin = poolConfig.CoinTemplate.As<CryptonoteCoinTemplate>();
 
             switch(networkType)
             {
                 case CryptonoteNetworkType.Main:
-                    if (addressPrefix != CryptonoteConstants.AddressPrefix[poolConfig.Coin.Type] &&
-                        addressIntegratedPrefix != CryptonoteConstants.AddressPrefixIntegrated[poolConfig.Coin.Type])
+                    if (addressPrefix != coin.AddressPrefix &&
+                        addressIntegratedPrefix != coin.AddressPrefixIntegrated)
                         return false;
                     break;
 
                 case CryptonoteNetworkType.Test:
-                    if (addressPrefix != CryptonoteConstants.AddressPrefixTestnet[poolConfig.Coin.Type] &&
-                        addressIntegratedPrefix != CryptonoteConstants.AddressPrefixIntegratedTestnet[poolConfig.Coin.Type])
+                    if (addressPrefix != coin.AddressPrefixTestnet &&
+                        addressIntegratedPrefix != coin.AddressPrefixIntegratedTestnet)
                         return false;
                     break;
             }
@@ -445,6 +446,7 @@ namespace MiningCore.Blockchain.Cryptonote
 
         protected override async Task PostStartInitAsync(CancellationToken ct)
         {
+            var coin = poolConfig.CoinTemplate.As<CryptonoteCoinTemplate>();
             var infoResponse = await daemon.ExecuteCmdAnyAsync(logger, CryptonoteCommands.GetInfo);
 
             if (infoResponse.Error != null)
@@ -472,13 +474,13 @@ namespace MiningCore.Blockchain.Cryptonote
             switch(networkType)
             {
                 case CryptonoteNetworkType.Main:
-                    if (poolAddressBase58Prefix != CryptonoteConstants.AddressPrefix[poolConfig.Coin.Type])
-                        logger.ThrowLogPoolStartupException($"Invalid pool address prefix. Expected {CryptonoteConstants.AddressPrefix[poolConfig.Coin.Type]}, got {poolAddressBase58Prefix}");
+                    if (poolAddressBase58Prefix != coin.AddressPrefix)
+                        logger.ThrowLogPoolStartupException($"Invalid pool address prefix. Expected {coin.AddressPrefix}, got {poolAddressBase58Prefix}");
                     break;
 
                 case CryptonoteNetworkType.Test:
-                    if (poolAddressBase58Prefix != CryptonoteConstants.AddressPrefixTestnet[poolConfig.Coin.Type])
-                        logger.ThrowLogPoolStartupException($"Invalid pool address prefix. Expected {CryptonoteConstants.AddressPrefix[poolConfig.Coin.Type]}, got {poolAddressBase58Prefix}");
+                    if (poolAddressBase58Prefix != coin.AddressPrefixTestnet)
+                        logger.ThrowLogPoolStartupException($"Invalid pool address prefix. Expected {coin.AddressPrefix}, got {poolAddressBase58Prefix}");
                     break;
             }
 
@@ -515,7 +517,7 @@ namespace MiningCore.Blockchain.Cryptonote
         {
             // Donation to MiningCore development
             if (networkType == CryptonoteNetworkType.Main &&
-                DevDonation.Addresses.TryGetValue(poolConfig.Coin.Type, out var address))
+                DevDonation.Addresses.TryGetValue(poolConfig.CoinTemplate.Symbol, out var address))
             {
                 poolConfig.RewardRecipients = poolConfig.RewardRecipients.Concat(new[]
                 {

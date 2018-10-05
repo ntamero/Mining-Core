@@ -93,6 +93,7 @@ namespace MiningCore.Blockchain.Bitcoin
         protected TimeSpan jobRebroadcastTimeout;
         protected BitcoinNetworkType networkType;
         protected IDestination poolAddressDestination;
+        protected object jobExtra;
 
         protected object[] getBlockTemplateParams =
         {
@@ -347,11 +348,11 @@ namespace MiningCore.Blockchain.Bitcoin
 
         protected virtual void SetupCrypto()
         {
-            var coin = CoinAs<BitcoinDefinition>();
+            var coin = poolConfig.CoinTemplate.As<BitcoinTemplate>();
 
-            coinbaseHasher = HashFactory.GetHash(coin.CoinbaseHasher);
-            headerHasher = HashFactory.GetHash(coin.HeaderHasher);
-            blockHasher = !isPoS ? HashFactory.GetHash(coin.BlockHasher) : (HashFactory.GetHash(coin.CoinbaseHasher ?? coin.BlockHasher));
+            coinbaseHasher = HashAlgorithmFactory.GetHash(coin.CoinbaseHasher);
+            headerHasher = HashAlgorithmFactory.GetHash(coin.HeaderHasher);
+            blockHasher = !isPoS ? HashAlgorithmFactory.GetHash(coin.BlockHasher) : (HashAlgorithmFactory.GetHash(coin.CoinbaseHasher ?? coin.BlockHasher));
             ShareMultiplier = coin.ShareMultiplier;
         }
 
@@ -576,7 +577,7 @@ namespace MiningCore.Blockchain.Bitcoin
 
         #region Overrides
 
-        public override void Configure(PoolConfig poolConfig, ClusterConfig clusterConfig, CoinDefinition coin)
+        public override void Configure(PoolConfig poolConfig, ClusterConfig clusterConfig)
         {
             extraPoolConfig = poolConfig.Extra.SafeExtensionDataAs<BitcoinPoolConfigExtra>();
             extraPoolPaymentProcessingConfig = poolConfig.PaymentProcessing?.Extra?.SafeExtensionDataAs<BitcoinPoolPaymentProcessingConfigExtra>();
@@ -586,7 +587,7 @@ namespace MiningCore.Blockchain.Bitcoin
 
             hasLegacyDaemon = extraPoolConfig?.HasLegacyDaemon == true;
 
-            base.Configure(poolConfig, clusterConfig, coin);
+            base.Configure(poolConfig, clusterConfig);
         }
 
         protected virtual void PostChainIdentifyConfigure()
@@ -773,7 +774,7 @@ namespace MiningCore.Blockchain.Bitcoin
         {
             // Donation to MiningCore development
             if (networkType == BitcoinNetworkType.Main &&
-                DevDonation.Addresses.TryGetValue(CoinAs<BitcoinDefinition>().Symbol, out var address))
+                DevDonation.Addresses.TryGetValue(poolConfig.CoinTemplate.As<BitcoinTemplate>().Symbol, out var address))
             {
                 poolConfig.RewardRecipients = poolConfig.RewardRecipients.Concat(new[]
                 {
@@ -816,10 +817,10 @@ namespace MiningCore.Blockchain.Bitcoin
                 {
                     job = new TJob();
 
-                    job.Init(CoinAs<BitcoinDefinition>(), blockTemplate, NextJobId(),
+                    job.Init(blockTemplate, NextJobId(),
                         poolConfig, clusterConfig, clock, poolAddressDestination, networkType, isPoS,
                         ShareMultiplier, extraPoolPaymentProcessingConfig?.BlockrewardMultiplier,
-                        coinbaseHasher, headerHasher, blockHasher);
+                        coinbaseHasher, headerHasher, blockHasher, jobExtra);
 
                     lock(jobLock)
                     {

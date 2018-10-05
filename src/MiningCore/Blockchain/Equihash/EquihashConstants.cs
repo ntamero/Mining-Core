@@ -18,6 +18,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+using System.Globalization;
 using NBitcoin.Zcash;
 
 namespace MiningCore.Blockchain.Equihash
@@ -25,6 +26,9 @@ namespace MiningCore.Blockchain.Equihash
     public class EquihashConstants
     {
         public const int TargetPaddingLength = 32;
+
+        public static readonly System.Numerics.BigInteger ZCashDiff1b =
+            System.Numerics.BigInteger.Parse("0007ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", NumberStyles.HexNumber);
 
         static EquihashConstants()
         {

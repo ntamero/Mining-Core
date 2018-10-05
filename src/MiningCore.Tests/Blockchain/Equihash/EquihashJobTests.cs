@@ -6,6 +6,7 @@ using MiningCore.Blockchain.Equihash.DaemonResponses;
 using MiningCore.Configuration;
 using MiningCore.Crypto;
 using MiningCore.Crypto.Hashing.Algorithms;
+using MiningCore.Crypto.Hashing.Equihash;
 using MiningCore.Crypto.Hashing.Special;
 using MiningCore.Tests.Util;
 using NBitcoin;
@@ -15,10 +16,16 @@ namespace MiningCore.Tests.Blockchain.Equihash
 {
     public class EquihashJobTests : TestBase
     {
-        readonly PoolConfig poolConfig = new PoolConfig
+        public EquihashJobTests()
         {
-            Coin = new CoinConfig { Type = CoinType.ZEC }
-        };
+            poolConfig = new PoolConfig
+            {
+                Coin = "zcash",
+                CoinTemplate = ModuleInitializer.CoinTemplates["zcash"]
+            };
+        }
+
+        readonly PoolConfig poolConfig;
 
         readonly ClusterConfig clusterConfig = new ClusterConfig();
         private readonly IDestination poolAddressDestination = BitcoinUtils.AddressToDestination("tmUEUSYYGQY3G5KMNkxAqkYYNfstaCsRCM5");
@@ -29,7 +36,8 @@ namespace MiningCore.Tests.Blockchain.Equihash
         [Fact]
         public void ZCashUtils_EncodeTarget()
         {
-            var chainConfig = EquihashConstants.Chains[CoinType.ZEC][BitcoinNetworkType.Main];
+            var equihashCoin = poolConfig.CoinTemplate.As<EquihashCoinTemplate>();
+            var chainConfig = equihashCoin.Networks[Network.GetNetwork(BitcoinNetworkType.Main.ToString().ToLower()).Name];
 
             var result = EquihashUtils.EncodeTarget(0.5, chainConfig);
             Assert.Equal(result, "0010102040810204081020408102040810204081020408102040810204080fe0");
@@ -58,8 +66,12 @@ namespace MiningCore.Tests.Blockchain.Equihash
 
             var clock = new MockMasterClock { CurrentTime = DateTimeOffset.FromUnixTimeSeconds(1508869874).UtcDateTime };
 
+            var equihashCoin = poolConfig.CoinTemplate.As<EquihashCoinTemplate>();
+            var chainConfig = equihashCoin.Networks[Network.GetNetwork(BitcoinNetworkType.Main.ToString().ToLower()).Name];
+            var solver = EquihashSolverFactory.GetSolver(chainConfig.Solver);
+
             job.Init(bt, "1", poolConfig, clusterConfig, clock, poolAddressDestination, BitcoinNetworkType.Test,
-                false, 1, 1, sha256d, sha256d, sha256dReverse);
+                false, 1, 1, sha256d, sha256d, sha256dReverse, solver);
 
             bt.Height = 1;
             Assert.Equal(job.GetFoundersRewardAddress(), "t2UNzUUx8mWBCRYPRezvA363EYXyEpHokyi");

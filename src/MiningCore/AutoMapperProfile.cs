@@ -58,7 +58,6 @@ namespace MiningCore
             CreateMap<Block, Api.Responses.Block>();
             CreateMap<Payment, Api.Responses.Payment>();
             CreateMap<BalanceChange, Api.Responses.BalanceChange>();
-            CreateMap<CoinConfig, Api.Responses.ApiCoinConfig>();
             CreateMap<PoolPaymentProcessingConfig, Api.Responses.ApiPoolPaymentProcessingConfig>();
 
             CreateMap<MinerStats, Api.Responses.MinerStats>()

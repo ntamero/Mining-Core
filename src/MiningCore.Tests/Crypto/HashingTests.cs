@@ -87,7 +87,9 @@ namespace MiningCore.Tests.Crypto
         public void ScryptN_Hash()
         {
             var clock = new MockMasterClock { CurrentTime = new DateTime(2017, 10, 16) };
-            var hasher = new ScryptN(clock, new[] { Tuple.Create(2048L, 1389306217L) });
+            var hasher = new ScryptN(new[] { Tuple.Create(2048L, 1389306217L) });
+            hasher.Clock = clock;
+
             var hash = new byte[32];
             hasher.Digest(testValue, hash);
             var result = hash.ToHexString();

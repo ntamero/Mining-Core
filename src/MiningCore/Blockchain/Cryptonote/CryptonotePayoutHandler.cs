@@ -74,12 +74,13 @@ namespace MiningCore.Blockchain.Cryptonote
         private CryptonoteNetworkType? networkType;
         private CryptonotePoolPaymentProcessingConfigExtra extraConfig;
         private bool walletSupportsTransferSplit;
-        private CryptonoteCoinDefinition coin;
 
         protected override string LogCategory => "Monero Payout Handler";
 
         private bool HandleTransferResponse(DaemonResponse<TransferResponse> response, params Balance[] balances)
         {
+            var coin = poolConfig.CoinTemplate.As<CryptonoteCoinTemplate>();
+
             if (response.Error == null)
             {
                 var txHash = response.Response.TxHash;
@@ -103,6 +104,8 @@ namespace MiningCore.Blockchain.Cryptonote
 
         private bool HandleTransferResponse(DaemonResponse<TransferSplitResponse> response, params Balance[] balances)
         {
+            var coin = poolConfig.CoinTemplate.As<CryptonoteCoinTemplate>();
+
             if (response.Error == null)
             {
                 var txHashes = response.Response.TxHashList;
@@ -139,6 +142,8 @@ namespace MiningCore.Blockchain.Cryptonote
 
         private async Task<bool> PayoutBatch(Balance[] balances)
         {
+            var coin = poolConfig.CoinTemplate.As<CryptonoteCoinTemplate>();
+
             // build request
             var request = new TransferRequest
             {
@@ -208,6 +213,8 @@ namespace MiningCore.Blockchain.Cryptonote
 
         private async Task PayoutToPaymentId(Balance balance)
         {
+            var coin = poolConfig.CoinTemplate.As<CryptonoteCoinTemplate>();
+
             ExtractAddressAndPaymentId(balance.Address, out var address, out var paymentId);
 
             var isIntegratedAddress = string.IsNullOrEmpty(paymentId);
@@ -254,13 +261,12 @@ namespace MiningCore.Blockchain.Cryptonote
 
         #region IPayoutHandler
 
-        public async Task ConfigureAsync(ClusterConfig clusterConfig, PoolConfig poolConfig, CoinDefinition coin)
+        public async Task ConfigureAsync(ClusterConfig clusterConfig, PoolConfig poolConfig)
         {
             Contract.RequiresNonNull(poolConfig, nameof(poolConfig));
 
             this.poolConfig = poolConfig;
             this.clusterConfig = clusterConfig;
-            this.coin = (CryptonoteCoinDefinition) coin;
             extraConfig = poolConfig.PaymentProcessing.Extra.SafeExtensionDataAs<CryptonotePoolPaymentProcessingConfigExtra>();
 
             logger = LogUtil.GetPoolScopedLogger(typeof(CryptonotePayoutHandler), poolConfig);
@@ -310,6 +316,7 @@ namespace MiningCore.Blockchain.Cryptonote
             Contract.RequiresNonNull(poolConfig, nameof(poolConfig));
             Contract.RequiresNonNull(blocks, nameof(blocks));
 
+            var coin = poolConfig.CoinTemplate.As<CryptonoteCoinTemplate>();
             var pageSize = 100;
             var pageCount = (int) Math.Ceiling(blocks.Length / (double) pageSize);
             var result = new List<Block>();
@@ -398,7 +405,7 @@ namespace MiningCore.Blockchain.Cryptonote
                 if (address != poolConfig.Address)
                 {
                     logger.Info(() => $"Adding {FormatAmount(amount)} to balance of {address}");
-                    balanceRepo.AddAmount(con, tx, poolConfig.Id, poolConfig.Coin, address, amount, $"Reward for block {block.BlockHeight}");
+                    balanceRepo.AddAmount(con, tx, poolConfig.Id, poolConfig.CoinTemplate.Symbol, address, amount, $"Reward for block {block.BlockHeight}");
                 }
             }
 
@@ -411,6 +418,8 @@ namespace MiningCore.Blockchain.Cryptonote
         public async Task PayoutAsync(Balance[] balances)
         {
             Contract.RequiresNonNull(balances, nameof(balances));
+
+            var coin = poolConfig.CoinTemplate.As<CryptonoteCoinTemplate>();
 
 #if !DEBUG // ensure we have peers
             var infoResponse = await daemon.ExecuteCmdAnyAsync<GetInfoResponse>(logger, MC.GetInfo);

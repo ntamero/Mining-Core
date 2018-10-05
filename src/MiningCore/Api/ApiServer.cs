@@ -377,14 +377,14 @@ namespace MiningCore.Api
                 .ToArray();
 
             // enrich blocks
-            CoinMetaData.BlockInfoLinks.TryGetValue(pool.Coin.Type, out var blockInfobaseDict);
+            var blockInfobaseDict = pool.CoinTemplate.ExplorerBlockLinks;
 
             foreach (var block in blocks)
             {
                 // compute infoLink
                 if (blockInfobaseDict != null)
                 {
-                    blockInfobaseDict.TryGetValue(!string.IsNullOrEmpty(block.Type) ? block.Type : string.Empty, out var blockInfobaseUrl);
+                    blockInfobaseDict.TryGetValue(!string.IsNullOrEmpty(block.Type) ? block.Type : "block", out var blockInfobaseUrl);
 
                     if (!string.IsNullOrEmpty(blockInfobaseUrl))
                     {
@@ -420,8 +420,8 @@ namespace MiningCore.Api
                 .ToArray();
 
             // enrich payments
-            CoinMetaData.TxInfoLinks.TryGetValue(pool.Coin.Type, out var txInfobaseUrl);
-            CoinMetaData.AddressInfoLinks.TryGetValue(pool.Coin.Type, out var addressInfobaseUrl);
+            var txInfobaseUrl = pool.CoinTemplate.ExplorerTxLink;
+            var addressInfobaseUrl = pool.CoinTemplate.ExplorerTxLink;
 
             foreach(var payment in payments)
             {
@@ -468,7 +468,8 @@ namespace MiningCore.Api
                     stats.LastPayment = statsResult.LastPayment.Created;
 
                     // Compute info link
-                    if (CoinMetaData.TxInfoLinks.TryGetValue(pool.Coin.Type, out var baseUrl))
+                    var baseUrl = pool.CoinTemplate.ExplorerTxLink;
+                    if (!string.IsNullOrEmpty(baseUrl))
                         stats.LastPaymentLink = string.Format(baseUrl, statsResult.LastPayment.TransactionConfirmationData);
                 }
 
@@ -506,8 +507,8 @@ namespace MiningCore.Api
                 .ToArray();
 
             // enrich payments
-            CoinMetaData.TxInfoLinks.TryGetValue(pool.Coin.Type, out var txInfobaseUrl);
-            CoinMetaData.AddressInfoLinks.TryGetValue(pool.Coin.Type, out var addressInfobaseUrl);
+            var txInfobaseUrl = pool.CoinTemplate.ExplorerTxLink;
+            var addressInfobaseUrl = pool.CoinTemplate.ExplorerTxLink;
 
             foreach(var payment in payments)
             {

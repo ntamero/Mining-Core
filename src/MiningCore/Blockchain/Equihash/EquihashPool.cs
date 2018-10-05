@@ -48,7 +48,7 @@ namespace MiningCore.Blockchain.Equihash
 
         private EquihashPoolConfigExtra extraConfig;
 
-        public override void Configure(PoolConfig poolConfig, ClusterConfig clusterConfig, CoinDefinition coin)
+        public override void Configure(PoolConfig poolConfig, ClusterConfig clusterConfig)
         {
             base.Configure(poolConfig, clusterConfig);
 

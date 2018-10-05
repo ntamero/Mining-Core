@@ -9,7 +9,17 @@ namespace MiningCore.Tests.Blockchain.Cryptonote
 {
     public class CryptonoteJobTests : TestBase
     {
-        readonly PoolConfig poolConfig = new PoolConfig { Coin = new CoinConfig {Type = CoinType.XMR}};
+        public CryptonoteJobTests()
+        {
+            poolConfig = new PoolConfig
+            {
+                Coin = "monero",
+                CoinTemplate = ModuleInitializer.CoinTemplates["monero"]
+            };
+        }
+
+        readonly PoolConfig poolConfig;
+
         readonly ClusterConfig clusterConfig = new ClusterConfig();
 
         [Fact]

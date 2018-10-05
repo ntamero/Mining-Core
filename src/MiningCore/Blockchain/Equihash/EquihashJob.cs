@@ -43,8 +43,7 @@ namespace MiningCore.Blockchain.Equihash
 {
     public class EquihashJob : BitcoinJob<ZCashBlockTemplate>
     {
-        private EquihashCoinDefinition coin;
-        private EquihashCoinDefinition.EquihashNetworkDefinition chainConfig;
+        private EquihashCoinTemplate.EquihashNetworkDefinition chainConfig;
         protected decimal blockReward;
         protected decimal rewardFees;
 
@@ -69,7 +68,8 @@ namespace MiningCore.Blockchain.Equihash
 
         protected override Transaction CreateOutputTransaction()
         {
-            var tx = chainConfig.CreateCoinbaseTx();
+            var txNetwork = Network.GetNetwork(chainConfig.CoinbaseTxNetwork);
+            var tx = Transaction.Create(txNetwork);
 
             // set versions
             tx.Version = txVersion;
@@ -143,11 +143,11 @@ namespace MiningCore.Blockchain.Equihash
             }
         }
 
-        public override void Init(CoinDefinition coin, ZCashBlockTemplate blockTemplate, string jobId,
+        public override void Init(ZCashBlockTemplate blockTemplate, string jobId,
             PoolConfig poolConfig, ClusterConfig clusterConfig, IMasterClock clock,
             IDestination poolAddressDestination, BitcoinNetworkType networkType,
             bool isPoS, double shareMultiplier, decimal? blockrewardMultiplier,
-            IHashAlgorithm coinbaseHasher, IHashAlgorithm headerHasher, IHashAlgorithm blockHasher)
+            IHashAlgorithm coinbaseHasher, IHashAlgorithm headerHasher, IHashAlgorithm blockHasher, object extra = null)
         {
             Contract.RequiresNonNull(blockTemplate, nameof(blockTemplate));
             Contract.RequiresNonNull(poolConfig, nameof(poolConfig));
@@ -161,16 +161,16 @@ namespace MiningCore.Blockchain.Equihash
 
             this.poolConfig = poolConfig;
             this.clusterConfig = clusterConfig;
-            this.coin = (EquihashCoinDefinition) coin;
             this.clock = clock;
             this.poolAddressDestination = poolAddressDestination;
             this.networkType = networkType;
 
-            this.coin.Networks.TryGetValue(networkType.ToString().ToLower(), out chainConfig);
+            var equihashTemplate = poolConfig.CoinTemplate.As<EquihashCoinTemplate>();
+            equihashTemplate.Networks.TryGetValue(networkType.ToString().ToLower(), out chainConfig);
 
             BlockTemplate = blockTemplate;
             JobId = jobId;
-            Difficulty = (double) new BigRational(chainConfig.Diff1b, BlockTemplate.Target.HexToByteArray().ReverseArray().AsSpan().ToBigInteger());
+            Difficulty = (double) new BigRational(chainConfig.Diff1BValue, BlockTemplate.Target.HexToByteArray().ReverseArray().AsSpan().ToBigInteger());
             txExpiryHeight = blockTemplate.Height + 100;
 
             // ZCash Sapling & Overwinter support
@@ -205,7 +205,7 @@ namespace MiningCore.Blockchain.Equihash
 
             this.headerHasher = headerHasher;
             this.blockHasher = blockHasher;
-            this.equihash = chainConfig.Solver();
+            this.equihash = (EquihashSolverBase) extra;
 
             if (!string.IsNullOrEmpty(BlockTemplate.Target))
                 blockTargetValue = new uint256(BlockTemplate.Target);
@@ -354,7 +354,7 @@ namespace MiningCore.Blockchain.Equihash
             var headerValue = new uint256(headerHash);
 
             // calc share-diff
-            var shareDiff = (double) new BigRational(chainConfig.Diff1b, headerHash.ToBigInteger()) * shareMultiplier;
+            var shareDiff = (double) new BigRational(chainConfig.Diff1BValue, headerHash.ToBigInteger()) * shareMultiplier;
             var stratumDifficulty = context.Difficulty;
             var ratio = shareDiff / stratumDifficulty;
 

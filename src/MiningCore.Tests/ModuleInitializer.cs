@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Text;
 using Autofac;
 using AutoMapper;
+using MiningCore.Configuration;
 
 namespace MiningCore.Tests
 {
@@ -13,8 +15,10 @@ namespace MiningCore.Tests
 
         private static bool isInitialized = false;
         private static IContainer container;
+        private static Dictionary<string, CoinTemplate> coinTemplates;
 
         public static IContainer Container => container;
+        public static Dictionary<string, CoinTemplate> CoinTemplates => coinTemplates;
 
         /// <summary>
         /// Initializes the module.
@@ -39,6 +43,17 @@ namespace MiningCore.Tests
                 container = builder.Build();
 
                 isInitialized = true;
+
+                // Load coin templates
+                var basePath = Path.GetDirectoryName(typeof(Program).Assembly.Location);
+                var defaultDefinitions = Path.Combine(basePath, "coins.json");
+
+                var coinDefs = new[]
+                {
+                    defaultDefinitions
+                };
+
+                coinTemplates = CoinTemplateLoader.Load(coinDefs);
             }
         }
     }

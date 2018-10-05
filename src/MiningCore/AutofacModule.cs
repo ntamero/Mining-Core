@@ -31,6 +31,7 @@ using MiningCore.Blockchain.Equihash;
 using MiningCore.Blockchain.Equihash.DaemonResponses;
 using MiningCore.Configuration;
 using MiningCore.Crypto;
+using MiningCore.Crypto.Hashing.Equihash;
 using MiningCore.Messaging;
 using MiningCore.Mining;
 using MiningCore.Notifications;
@@ -106,6 +107,12 @@ namespace MiningCore
 
             builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
                 .Where(t => t.IsAssignableFrom(typeof(IHashAlgorithm)))
+                .PropertiesAutowired()
+                .AsSelf();
+
+            builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+                .Where(t => t.IsAssignableFrom(typeof(EquihashSolverBase)))
+                .PropertiesAutowired()
                 .AsSelf();
 
             //////////////////////

@@ -70,7 +70,6 @@ namespace MiningCore.Blockchain.Bitcoin
 
         protected readonly IComponentContext ctx;
         protected DaemonClient daemon;
-        protected BitcoinDefinition coin;
         protected BitcoinDaemonEndpointConfigExtra extraPoolConfig;
         protected BitcoinPoolPaymentProcessingConfigExtra extraPoolPaymentProcessingConfig;
 
@@ -78,7 +77,7 @@ namespace MiningCore.Blockchain.Bitcoin
 
         #region IPayoutHandler
 
-        public virtual Task ConfigureAsync(ClusterConfig clusterConfig, PoolConfig poolConfig, CoinDefinition coin)
+        public virtual Task ConfigureAsync(ClusterConfig clusterConfig, PoolConfig poolConfig)
         {
             Contract.RequiresNonNull(poolConfig, nameof(poolConfig));
 
@@ -87,7 +86,6 @@ namespace MiningCore.Blockchain.Bitcoin
 
             extraPoolConfig = poolConfig.Extra.SafeExtensionDataAs<BitcoinDaemonEndpointConfigExtra>();
             extraPoolPaymentProcessingConfig = poolConfig.PaymentProcessing.Extra.SafeExtensionDataAs<BitcoinPoolPaymentProcessingConfigExtra>();
-            this.coin = (BitcoinDefinition) coin;
 
             logger = LogUtil.GetPoolScopedLogger(typeof(BitcoinPayoutHandler), poolConfig);
 
@@ -210,7 +208,7 @@ namespace MiningCore.Blockchain.Bitcoin
                 if (address != poolConfig.Address)
                 {
                     logger.Info(() => $"Adding {FormatAmount(amount)} to balance of {address}");
-                    balanceRepo.AddAmount(con, tx, poolConfig.Id, poolConfig.Coin, address, amount, $"Reward for block {block.BlockHeight}");
+                    balanceRepo.AddAmount(con, tx, poolConfig.Id, poolConfig.CoinTemplate.Symbol, address, amount, $"Reward for block {block.BlockHeight}");
                 }
             }
 

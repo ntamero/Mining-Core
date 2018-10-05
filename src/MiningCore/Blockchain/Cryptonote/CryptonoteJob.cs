@@ -43,14 +43,14 @@ namespace MiningCore.Blockchain.Cryptonote
             Contract.RequiresNonNull(instanceId, nameof(instanceId));
             Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(jobId), $"{nameof(jobId)} must not be empty");
 
-            coin = poolConfig.Coin;
+            coin = poolConfig.CoinTemplate.As<CryptonoteCoinTemplate>();
             BlockTemplate = blockTemplate;
             PrepareBlobTemplate(instanceId);
         }
 
         private byte[] blobTemplate;
         private int extraNonce;
-        private readonly string coin;
+        private readonly CryptonoteCoinTemplate coin;
 
         private void PrepareBlobTemplate(byte[] instanceId)
         {
@@ -154,25 +154,24 @@ namespace MiningCore.Blockchain.Cryptonote
 
             // hash it
             Span<byte> headerHash = stackalloc byte[32];
-            int variant;
+            var variant = coin.HashVariant;
 
-            switch (coin)
+            // auto-select?
+            if (variant == 0)
+                variant = blobConverted[0] >= 7 ? blobConverted[0] - 6 : 0;
+
+            switch (coin.Hash)
             {
-                case CoinType.AEON:
-                    LibCryptonight.CryptonightLight(blobConverted, headerHash, 0);
-                    break;
-
-                case CoinType.XMR:
-                    variant = blobConverted[0] >= 7 ? blobConverted[0] - 6 : 0;
+                case CryptonightHashType.Normal:
                     LibCryptonight.Cryptonight(blobConverted, headerHash, variant);
                     break;
 
-                case CoinType.TUBE:
-                    LibCryptonight.CryptonightHeavy(blobConverted, headerHash, 2);
+                case CryptonightHashType.Lite:
+                    LibCryptonight.CryptonightLight(blobConverted, headerHash, variant);
                     break;
 
-                default:
-                    LibCryptonight.Cryptonight(blobConverted, headerHash, 0);
+                case CryptonightHashType.Heavy:
+                    LibCryptonight.CryptonightHeavy(blobConverted, headerHash, variant);
                     break;
             }
 

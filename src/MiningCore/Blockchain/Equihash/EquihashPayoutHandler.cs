@@ -35,8 +35,10 @@ using MiningCore.Persistence;
 using MiningCore.Persistence.Model;
 using MiningCore.Persistence.Repositories;
 using MiningCore.Time;
+using NBitcoin;
 using Newtonsoft.Json.Linq;
 using Contract = MiningCore.Contracts.Contract;
+using IBlockRepository = MiningCore.Persistence.Repositories.IBlockRepository;
 
 namespace MiningCore.Blockchain.Equihash
 {
@@ -60,7 +62,7 @@ namespace MiningCore.Blockchain.Equihash
         protected EquihashPoolConfigExtra poolExtraConfig;
         protected bool supportsNativeShielding;
         protected BitcoinNetworkType networkType;
-        protected EquihashChainConfig chainConfig;
+        protected EquihashCoinTemplate.EquihashNetworkDefinition chainConfig;
         protected override string LogCategory => "ZCash Payout Handler";
         protected const decimal TransferFee = 0.0001m;
         protected const int ZMinConfirmations = 8;
@@ -83,9 +85,7 @@ namespace MiningCore.Blockchain.Equihash
             else
                 networkType = BitcoinNetworkType.Main;
 
-            // lookup config
-            if (EquihashConstants.Chains.TryGetValue(poolConfig.Coin.Type, out var coinbaseTx))
-                coinbaseTx.TryGetValue(networkType, out chainConfig);
+            chainConfig = poolConfig.CoinTemplate.As<EquihashCoinTemplate>().Networks[Network.GetNetwork(networkType.ToString().ToLower()).Name];
 
             // detect z_shieldcoinbase support
             var response = await daemon.ExecuteCmdSingleAsync<JObject>(logger, EquihashCommands.ZShieldCoinbase);

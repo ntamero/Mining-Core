@@ -300,7 +300,7 @@ namespace MiningCore.Blockchain.Bitcoin
         protected override async Task SetupJobManager(CancellationToken ct)
         {
             manager = CreateJobManager();
-            manager.Configure(poolConfig, clusterConfig, CoinAs<BitcoinDefinition>());
+            manager.Configure(poolConfig, clusterConfig);
 
             await manager.StartAsync(ct);
 
@@ -394,7 +394,7 @@ namespace MiningCore.Blockchain.Bitcoin
             var multiplier = BitcoinConstants.Pow2x32 / manager.ShareMultiplier;
             var result = shares * multiplier / interval;
 
-            result *= CoinAs<BitcoinDefinition>().HashrateMultiplier;
+            result *= poolConfig.CoinTemplate.As<BitcoinTemplate>().HashrateMultiplier;
 
             return result;
         }

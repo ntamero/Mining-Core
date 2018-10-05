@@ -378,9 +378,9 @@ namespace MiningCore.Blockchain.Ethereum
             }
         }
 
-        public override void Configure(PoolConfig poolConfig, ClusterConfig clusterConfig, CoinDefinition coin)
+        public override void Configure(PoolConfig poolConfig, ClusterConfig clusterConfig)
         {
-            base.Configure(poolConfig, clusterConfig, coin);
+            base.Configure(poolConfig, clusterConfig);
 
             // validate mandatory extra config
             var extraConfig = poolConfig.PaymentProcessing?.Extra?.SafeExtensionDataAs<EthereumPoolPaymentProcessingConfigExtra>();

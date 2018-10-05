@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using MiningCore.Configuration;
 using MiningCore.Extensions;
 using NBitcoin.BouncyCastle.Math;
 
@@ -7,11 +8,11 @@ namespace MiningCore.Blockchain.Equihash
 {
     public static class EquihashUtils
     {
-        public static string EncodeTarget(double difficulty, EquihashChainConfig chainConfig)
+        public static string EncodeTarget(double difficulty, EquihashCoinTemplate.EquihashNetworkDefinition chainConfig)
         {
             string result;
             var diff = BigInteger.ValueOf((long)(difficulty * 255d));
-            var quotient = chainConfig.Diff1.Divide(diff).Multiply(BigInteger.ValueOf(255));
+            var quotient = chainConfig.Diff1Value.Divide(diff).Multiply(BigInteger.ValueOf(255));
             var bytes = quotient.ToByteArray().AsSpan();
             Span<byte> padded = stackalloc byte[EquihashConstants.TargetPaddingLength];
 

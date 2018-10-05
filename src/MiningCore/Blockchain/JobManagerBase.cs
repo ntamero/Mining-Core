@@ -62,12 +62,6 @@ namespace MiningCore.Blockchain
         protected PoolConfig poolConfig;
         protected bool hasInitialBlockTemplate = false;
         protected Subject<Unit> blockSubmissionSubject = new Subject<Unit>();
-        private CoinDefinition coin;
-
-        protected T CoinAs<T>() where T : CoinDefinition
-        {
-            return (T) coin;
-        }
 
         protected abstract void ConfigureDaemons();
 
@@ -198,7 +192,7 @@ namespace MiningCore.Blockchain
 
         #region API-Surface
 
-        public virtual void Configure(PoolConfig poolConfig, ClusterConfig clusterConfig, CoinDefinition coin)
+        public virtual void Configure(PoolConfig poolConfig, ClusterConfig clusterConfig)
         {
             Contract.RequiresNonNull(poolConfig, nameof(poolConfig));
             Contract.RequiresNonNull(clusterConfig, nameof(clusterConfig));
@@ -206,7 +200,6 @@ namespace MiningCore.Blockchain
             logger = LogUtil.GetPoolScopedLogger(typeof(JobManagerBase<TJob>), poolConfig);
             this.poolConfig = poolConfig;
             this.clusterConfig = clusterConfig;
-            this.coin = coin;
 
             ConfigureDaemons();
         }

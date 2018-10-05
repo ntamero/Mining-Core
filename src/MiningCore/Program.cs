@@ -559,30 +559,9 @@ namespace MiningCore
                 .SingleInstance();
         }
 
-        private static IEnumerable<KeyValuePair<string, CoinDefinition>> LoadCoinDefinitions(string filename, JsonSerializer serializer)
+        private static async Task Start()
         {
-            using (var jreader = new JsonTextReader(File.OpenText(filename)))
-            {
-                var jo = serializer.Deserialize<JObject>(jreader);
-
-                foreach (var o in jo)
-                {
-                    if (o.Value.Type != JTokenType.Object)
-                        logger.ThrowLogPoolStartupException("Invalid coin definition file contents: dictionary of coin definitions expected");
-
-                    var value = o.Value[nameof(CoinDefinition.Family).ToLower()];
-                    if (value == null)
-                        logger.ThrowLogPoolStartupException("Invalid coin definition file contents: missing 'family' property");
-
-                    var family = value.ToObject<CoinFamily>();
-
-                    yield return KeyValuePair.Create(o.Key, (CoinDefinition)o.Value.ToObject(CoinDefinition.Families[family]));
-                }
-            }
-        }
-
-        private static Dictionary<string, CoinDefinition> LoadCoinDefinitions()
-        {
+            // Load coin templates
             if (clusterConfig.CoinDefs == null || clusterConfig.CoinDefs.Length == 0)
             {
                 var basePath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
@@ -594,37 +573,9 @@ namespace MiningCore
                 };
             }
 
-            var serializer = new JsonSerializer
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                Formatting = Formatting.Indented,
-                NullValueHandling = NullValueHandling.Ignore,
-            };
+            var coinTemplates = CoinTemplateLoader.Load(clusterConfig.CoinDefs);
 
-            var result = new Dictionary<string, CoinDefinition>();
-
-            foreach (var filename in clusterConfig.CoinDefs)
-            {
-                var definitions = LoadCoinDefinitions(filename, serializer).ToArray();
-
-                foreach (var definition in definitions)
-                {
-                    var coinId = definition.Key;
-
-                    if(result.ContainsKey(coinId))
-                        logger.ThrowLogPoolStartupException($"Duplicate definition of coin '{coinId}' in file {filename}");
-
-                    result[coinId] = definition.Value;
-                }
-            }
-
-            return result;
-        }
-
-        private static async Task Start()
-        {
-            var coins = LoadCoinDefinitions();
-
+            // Notifications
             notificationService = Container.Resolve<NotificationService>();
 
             if (clusterConfig.ShareRelay == null)
@@ -677,16 +628,18 @@ namespace MiningCore
             await Task.WhenAll(clusterConfig.Pools.Where(x => x.Enabled).Select(async poolConfig =>
             {
                 // Lookup coin definition
-                if(!coins.TryGetValue(poolConfig.Coin, out var coinDefinition))
+                if(!coinTemplates.TryGetValue(poolConfig.Coin, out var template))
                     logger.ThrowLogPoolStartupException($"Pool {poolConfig.Id} references undefined coin '{poolConfig.Coin}'");
+
+                poolConfig.CoinTemplate = template;
 
                 // resolve pool implementation
                 var poolImpl = Container.Resolve<IEnumerable<Meta<Lazy<IMiningPool, CoinFamilyAttribute>>>>()
-                    .First(x => x.Value.Metadata.SupportedFamilies.Contains(coinDefinition.Family)).Value;
+                    .First(x => x.Value.Metadata.SupportedFamilies.Contains(template.Family)).Value;
 
                 // create and configure
                 var pool = poolImpl.Value;
-                pool.Configure(poolConfig, clusterConfig, coinDefinition);
+                pool.Configure(poolConfig, clusterConfig);
                 pools[poolConfig.Id] = pool;
 
                 // pre-start attachments

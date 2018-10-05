@@ -42,10 +42,9 @@ namespace MiningCore.Mining
     public interface IMiningPool
     {
         PoolConfig Config { get; }
-        CoinDefinition Coin { get; }
         PoolStats PoolStats { get; }
         BlockchainStats NetworkStats { get; }
-        void Configure(PoolConfig poolConfig, ClusterConfig clusterConfig, CoinDefinition coin);
+        void Configure(PoolConfig poolConfig, ClusterConfig clusterConfig);
         double HashrateFromShares(double shares, double interval);
         Task StartAsync(CancellationToken ctsToken);
         void Stop();
