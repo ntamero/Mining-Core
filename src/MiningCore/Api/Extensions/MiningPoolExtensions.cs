@@ -1,4 +1,5 @@
 using System.Linq;
+using Autofac;
 using AutoMapper;
 using MiningCore.Api.Responses;
 using MiningCore.Blockchain;
@@ -11,12 +12,13 @@ namespace MiningCore.Api.Extensions
 {
     public static class MiningPoolExtensions
     {
-        public static PoolInfo ToPoolInfo(this PoolConfig poolConfig, IMapper mapper, Persistence.Model.PoolStats stats, IMiningPool pool)
+        public static PoolInfo ToPoolInfo(this PoolConfig poolConfig, 
+            IComponentContext ctx, IMapper mapper, Persistence.Model.PoolStats stats, IMiningPool pool)
         {
             var poolInfo = mapper.Map<PoolInfo>(poolConfig);
 
             // enrich with basic information
-            poolInfo.Coin.Algorithm = GetPoolAlgorithm(poolConfig);
+            poolInfo.Coin.Algorithm = GetPoolAlgorithm(ctx, poolConfig);
 
             poolInfo.PoolStats = mapper.Map<PoolStats>(stats);
             poolInfo.NetworkStats = pool?.NetworkStats ?? mapper.Map<BlockchainStats>(stats);
@@ -40,9 +42,9 @@ namespace MiningCore.Api.Extensions
             return poolInfo;
         }
 
-        private static string GetPoolAlgorithm(PoolConfig pool)
+        private static string GetPoolAlgorithm(IComponentContext ctx, PoolConfig pool)
         {
-            string result = pool.CoinTemplate.Algorithm;
+            string result = pool.CoinTemplate.GetAlgorithmName(ctx);
 
             // Capitalize
             if (!string.IsNullOrEmpty(result) && result.Length > 1)

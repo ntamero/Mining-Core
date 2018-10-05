@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Numerics;
-using System.Text;
+using Autofac;
 using MiningCore.Blockchain.Bitcoin;
 using MiningCore.Crypto;
 using MiningCore.Crypto.Hashing.Algorithms;
@@ -13,29 +12,21 @@ namespace MiningCore.Configuration
 {
     public abstract partial class CoinTemplate
     {
-        protected CoinTemplate()
-        {
-            algorithmValue = new Lazy<string>(GetAlgorithmName);
-        }
-
         public T As<T>() where T : CoinTemplate
         {
             return (T) this;
         }
 
-        private readonly Lazy<string> algorithmValue;
-        public string Algorithm => algorithmValue.Value;
-
-        protected abstract string GetAlgorithmName();
+        public abstract string GetAlgorithmName(IComponentContext ctx);
     }
 
     public partial class BitcoinTemplate
     {
         #region Overrides of CoinDefinition
 
-        protected override string GetAlgorithmName()
+        public override string GetAlgorithmName(IComponentContext ctx)
         {
-            var hash = HashAlgorithmFactory.GetHash(HeaderHasher);
+            var hash = HashAlgorithmFactory.GetHash(ctx, HeaderHasher);
 
             if (hash.GetType() == typeof(DigestReverser))
                 return ((DigestReverser)hash).Upstream.GetType().Name.ToLower();
@@ -92,7 +83,7 @@ namespace MiningCore.Configuration
 
         #region Overrides of CoinDefinition
 
-        protected override string GetAlgorithmName()
+        public override string GetAlgorithmName(IComponentContext ctx)
         {
             // TODO: return variant
             return "Equihash";
@@ -105,7 +96,7 @@ namespace MiningCore.Configuration
     {
         #region Overrides of CoinDefinition
 
-        protected override string GetAlgorithmName()
+        public override string GetAlgorithmName(IComponentContext ctx)
         {
             switch (Hash)
             {
@@ -127,7 +118,7 @@ namespace MiningCore.Configuration
     {
         #region Overrides of CoinDefinition
 
-        protected override string GetAlgorithmName()
+        public override string GetAlgorithmName(IComponentContext ctx)
         {
             return "Ethhash";
         }

@@ -29,6 +29,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Autofac;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -58,6 +59,7 @@ namespace MiningCore.Api
     public class ApiServer
     {
         public ApiServer(
+            IComponentContext ctx,
             IMapper mapper,
             IConnectionFactory cf,
             IBlockRepository blocksRepo,
@@ -66,6 +68,7 @@ namespace MiningCore.Api
             IMasterClock clock,
             IMessageBus messageBus)
         {
+            Contract.RequiresNonNull(ctx, nameof(ctx));
             Contract.RequiresNonNull(cf, nameof(cf));
             Contract.RequiresNonNull(statsRepo, nameof(statsRepo));
             Contract.RequiresNonNull(blocksRepo, nameof(blocksRepo));
@@ -74,6 +77,7 @@ namespace MiningCore.Api
             Contract.RequiresNonNull(clock, nameof(clock));
             Contract.RequiresNonNull(messageBus, nameof(messageBus));
 
+            this.ctx = ctx;
             this.cf = cf;
             this.statsRepo = statsRepo;
             this.blocksRepo = blocksRepo;
@@ -104,6 +108,7 @@ namespace MiningCore.Api
             };
         }
 
+        private readonly IComponentContext ctx;
         private readonly IConnectionFactory cf;
         private readonly IStatsRepository statsRepo;
         private readonly IBlockRepository blocksRepo;
@@ -254,7 +259,7 @@ namespace MiningCore.Api
                     pools.TryGetValue(config.Id, out var pool);
 
                     // map
-                    var result = config.ToPoolInfo(mapper, stats, pool);
+                    var result = config.ToPoolInfo(ctx, mapper, stats, pool);
 
                     // enrich
                     result.TotalPaid = cf.Run(con => statsRepo.GetTotalPoolPayments(con, config.Id));
@@ -289,7 +294,7 @@ namespace MiningCore.Api
 
             var response = new GetPoolResponse
             {
-                Pool = pool.ToPoolInfo(mapper, stats, poolInstance)
+                Pool = pool.ToPoolInfo(ctx, mapper, stats, poolInstance)
             };
 
             // enrich

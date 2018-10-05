@@ -66,6 +66,7 @@ namespace MiningCore
     public class Program
     {
         private static readonly CancellationTokenSource cts = new CancellationTokenSource();
+        private static IContainer container;
         private static ILogger logger;
         private static CommandOption dumpConfigOption;
         private static CommandOption shareRecoveryOption;
@@ -80,7 +81,6 @@ namespace MiningCore
         private static readonly Dictionary<string, IMiningPool> pools = new Dictionary<string, IMiningPool>();
 
         public static AdminGcStats gcStats = new AdminGcStats();
-        public static IContainer Container { get; private set; }
 
         private static readonly Regex regexJsonTypeConversionError =
             new Regex("\"([^\"]+)\"[^\']+\'([^\']+)\'.+\\s(\\d+),.+\\s(\\d+)", RegexOptions.Compiled);
@@ -254,7 +254,7 @@ namespace MiningCore
             builder.Register((ctx, parms) => amConf.CreateMapper());
 
             ConfigurePersistence(builder);
-            Container = builder.Build();
+            container = builder.Build();
             ConfigureLogging();
             ConfigureMisc();
             ValidateRuntimeEnvironment();
@@ -576,30 +576,30 @@ namespace MiningCore
             var coinTemplates = CoinTemplateLoader.Load(clusterConfig.CoinDefs);
 
             // Notifications
-            notificationService = Container.Resolve<NotificationService>();
+            notificationService = container.Resolve<NotificationService>();
 
             if (clusterConfig.ShareRelay == null)
             {
                 // start share recorder
-                shareRecorder = Container.Resolve<ShareRecorder>();
+                shareRecorder = container.Resolve<ShareRecorder>();
                 shareRecorder.Start(clusterConfig);
 
                 // start share receiver (for external shares)
-                shareReceiver = Container.Resolve<ShareReceiver>();
+                shareReceiver = container.Resolve<ShareReceiver>();
                 shareReceiver.Start(clusterConfig);
             }
 
             else
             {
                 // start share relay
-                shareRelay = Container.Resolve<ShareRelay>();
+                shareRelay = container.Resolve<ShareRelay>();
                 shareRelay.Start(clusterConfig);
             }
 
             // start API
             if (clusterConfig.Api == null || clusterConfig.Api.Enabled)
             {
-                apiServer = Container.Resolve<ApiServer>();
+                apiServer = container.Resolve<ApiServer>();
                 apiServer.Start(clusterConfig);
             }
 
@@ -607,7 +607,7 @@ namespace MiningCore
             if (clusterConfig.PaymentProcessing?.Enabled == true &&
                 clusterConfig.Pools.Any(x => x.PaymentProcessing?.Enabled == true))
             {
-                payoutManager = Container.Resolve<PayoutManager>();
+                payoutManager = container.Resolve<PayoutManager>();
                 payoutManager.Configure(clusterConfig);
 
                 payoutManager.Start();
@@ -619,7 +619,7 @@ namespace MiningCore
             if (clusterConfig.ShareRelay == null)
             {
                 // start pool stats updater
-                statsRecorder = Container.Resolve<StatsRecorder>();
+                statsRecorder = container.Resolve<StatsRecorder>();
                 statsRecorder.Configure(clusterConfig);
                 statsRecorder.Start();
             }
@@ -634,7 +634,7 @@ namespace MiningCore
                 poolConfig.CoinTemplate = template;
 
                 // resolve pool implementation
-                var poolImpl = Container.Resolve<IEnumerable<Meta<Lazy<IMiningPool, CoinFamilyAttribute>>>>()
+                var poolImpl = container.Resolve<IEnumerable<Meta<Lazy<IMiningPool, CoinFamilyAttribute>>>>()
                     .First(x => x.Value.Metadata.SupportedFamilies.Contains(template.Family)).Value;
 
                 // create and configure
@@ -656,7 +656,7 @@ namespace MiningCore
 
         private static void RecoverShares(string recoveryFilename)
         {
-            shareRecorder = Container.Resolve<ShareRecorder>();
+            shareRecorder = container.Resolve<ShareRecorder>();
             shareRecorder.RecoverShares(clusterConfig, recoveryFilename);
         }
 

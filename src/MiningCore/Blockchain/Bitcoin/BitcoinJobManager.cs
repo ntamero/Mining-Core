@@ -349,9 +349,13 @@ namespace MiningCore.Blockchain.Bitcoin
         {
             var coin = poolConfig.CoinTemplate.As<BitcoinTemplate>();
 
-            coinbaseHasher = HashAlgorithmFactory.GetHash(coin.CoinbaseHasher);
-            headerHasher = HashAlgorithmFactory.GetHash(coin.HeaderHasher);
-            blockHasher = !isPoS ? HashAlgorithmFactory.GetHash(coin.BlockHasher) : (HashAlgorithmFactory.GetHash(coin.CoinbaseHasher ?? coin.BlockHasher));
+            coinbaseHasher = HashAlgorithmFactory.GetHash(ctx, coin.CoinbaseHasher);
+            headerHasher = HashAlgorithmFactory.GetHash(ctx, coin.HeaderHasher);
+
+            blockHasher = !isPoS ? 
+                HashAlgorithmFactory.GetHash(ctx, coin.BlockHasher) : 
+                (HashAlgorithmFactory.GetHash(ctx, coin.CoinbaseHasher ?? coin.BlockHasher));
+
             ShareMultiplier = coin.ShareMultiplier;
         }
 
