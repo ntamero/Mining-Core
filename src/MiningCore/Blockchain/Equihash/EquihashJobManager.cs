@@ -50,7 +50,7 @@ namespace MiningCore.Blockchain.Equihash
             coin = poolConfig.Template.As<EquihashCoinTemplate>();
             ChainConfig = coin.GetNetwork(networkType);
 
-            solver = EquihashSolverFactory.GetSolver(ChainConfig.Solver);
+            solver = EquihashSolverFactory.GetSolver(ctx, ChainConfig.Solver);
 
             base.PostChainIdentifyConfigure();
         }
@@ -132,10 +132,10 @@ namespace MiningCore.Blockchain.Equihash
 
         private EquihashJob CreateJob()
         {
-            // normally, everything should be purely CoinTemplate driven
-            // due to the extremely exotic nature of Bitcoin gold, make an exception here
+            // The rule is, everything should be purely driven by definition in CoinTemplates
+            // Due to the extremely exotic nature of Bitcoin gold, we make a rare exception here
 
-            if(coin.Symbol == "BTG")
+            if (coin.Symbol == "BTG")
                 return new BitcoinGoldJob();
 
             return new EquihashJob();

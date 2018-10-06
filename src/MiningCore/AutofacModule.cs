@@ -110,6 +110,11 @@ namespace MiningCore
                 .PropertiesAutowired()
                 .AsSelf();
 
+            builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+                .Where(t => t.IsAssignableTo<EquihashSolver>())
+                .PropertiesAutowired()
+                .AsSelf();
+
             //////////////////////
             // Payment Schemes
 

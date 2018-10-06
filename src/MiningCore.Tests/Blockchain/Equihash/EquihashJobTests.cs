@@ -70,7 +70,7 @@ namespace MiningCore.Tests.Blockchain.Equihash
 
             var equihashCoin = poolConfig.Template.As<EquihashCoinTemplate>();
             var chainConfig = equihashCoin.GetNetwork(BitcoinNetworkType.Main);
-            var solver = EquihashSolverFactory.GetSolver(chainConfig.Solver);
+            var solver = EquihashSolverFactory.GetSolver(ModuleInitializer.Container, chainConfig.Solver);
 
             job.Init(bt, "1", poolConfig, clusterConfig, clock, poolAddressDestination, BitcoinNetworkType.Test, solver);
 
