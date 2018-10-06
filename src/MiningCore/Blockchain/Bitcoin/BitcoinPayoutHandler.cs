@@ -236,14 +236,32 @@ namespace MiningCore.Blockchain.Bitcoin
                 var comment = (poolConfig.PoolName ?? clusterConfig.ClusterName ?? "MiningCore").Trim() + " Payment";
                 var subtractFeesFrom = amounts.Keys.ToArray();
 
-                args = new object[]
+                if (!poolConfig.CoinTemplate.As<BitcoinTemplate>().HasMasterNodes)
                 {
-                    string.Empty, // default account
-                    amounts, // addresses and associated amounts
-                    1, // only spend funds covered by this many confirmations
-                    comment, // tx comment
-                    subtractFeesFrom // distribute transaction fee equally over all recipients
-                };
+                    args = new object[]
+                    {
+                        string.Empty, // default account
+                        amounts, // addresses and associated amounts
+                        1, // only spend funds covered by this many confirmations
+                        comment, // tx comment
+                        subtractFeesFrom // distribute transaction fee equally over all recipients
+                    };
+                }
+
+                else
+                {
+                    args = new object[]
+                    {
+                        string.Empty, // default account
+                        amounts, // addresses and associated amounts
+                        1, // only spend funds covered by this many confirmations
+                        false, // Whether to add confirmations to transactions locked via InstantSend
+                        comment, // tx comment
+                        subtractFeesFrom, // distribute transaction fee equally over all recipients
+                        false, // use_is: Send this transaction as InstantSend
+                        false, // Use anonymized funds only
+                    };
+                }
             }
 
             else

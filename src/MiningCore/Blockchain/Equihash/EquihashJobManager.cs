@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Reactive;
 using System.Threading;
@@ -7,7 +6,6 @@ using System.Threading.Tasks;
 using Autofac;
 using MiningCore.Blockchain.Bitcoin;
 using MiningCore.Blockchain.Bitcoin.DaemonResponses;
-using MiningCore.Blockchain.Equihash.Configuration;
 using MiningCore.Blockchain.Equihash.DaemonResponses;
 using MiningCore.Configuration;
 using MiningCore.Contracts;
@@ -16,17 +14,16 @@ using MiningCore.DaemonInterface;
 using MiningCore.Extensions;
 using MiningCore.JsonRpc;
 using MiningCore.Messaging;
-using MiningCore.Notifications;
 using MiningCore.Stratum;
 using MiningCore.Time;
 using NBitcoin;
 using NBitcoin.DataEncoders;
-using NBitcoin.OpenAsset;
+using Newtonsoft.Json;
+using NLog;
 
 namespace MiningCore.Blockchain.Equihash
 {
-    public class EquihashJobManager<TJob> : BitcoinJobManager<TJob, ZCashBlockTemplate>
-        where TJob : EquihashJob, new()
+    public class EquihashJobManager : BitcoinJobManagerBase<EquihashJob>
     {
         public EquihashJobManager(
             IComponentContext ctx,
@@ -43,23 +40,18 @@ namespace MiningCore.Blockchain.Equihash
             };
         }
 
-        private EquihashCoinTemplate.EquihashNetworkDefinition chainConfig;
-        public EquihashCoinTemplate.EquihashNetworkDefinition ChainConfig => chainConfig;
-
-        #region Overrides of BitcoinJobManager<TJob,ZCashBlockTemplate>
+        public EquihashCoinTemplate.EquihashNetworkDefinition ChainConfig { get; private set; }
+        private EquihashSolver solver;
 
         protected override void PostChainIdentifyConfigure()
         {
             var coin = poolConfig.CoinTemplate.As<EquihashCoinTemplate>();
-            chainConfig = coin.GetNetwork(networkType);
+            ChainConfig = coin.GetNetwork(networkType);
 
-            var solver = EquihashSolverFactory.GetSolver(chainConfig.Solver);
-            jobExtra = solver;  // This is ugly
+            solver = EquihashSolverFactory.GetSolver(ChainConfig.Solver);
 
             base.PostChainIdentifyConfigure();
         }
-
-        #endregion
 
         public override async Task<bool> ValidateAddressAsync(string address, CancellationToken ct)
         {
@@ -76,13 +68,13 @@ namespace MiningCore.Blockchain.Equihash
             return result.Response != null && result.Response.IsValid;
         }
 
-        protected override async Task<DaemonResponse<ZCashBlockTemplate>> GetBlockTemplateAsync()
+        private async Task<DaemonResponse<EquihashBlockTemplate>> GetBlockTemplateAsync()
         {
             logger.LogInvoke();
 
             var subsidyResponse = await daemon.ExecuteCmdAnyAsync<ZCashBlockSubsidy>(logger, BitcoinCommands.GetBlockSubsidy);
 
-            var result = await daemon.ExecuteCmdAnyAsync<ZCashBlockTemplate>(logger,
+            var result = await daemon.ExecuteCmdAnyAsync<EquihashBlockTemplate>(logger,
                 BitcoinCommands.GetBlockTemplate, getBlockTemplateParams);
 
             if (subsidyResponse.Error == null && result.Error == null && result.Response != null)
@@ -91,6 +83,18 @@ namespace MiningCore.Blockchain.Equihash
                 result.Error = new JsonRpcException(-1, $"{BitcoinCommands.GetBlockSubsidy} failed", null);
 
             return result;
+        }
+
+        private DaemonResponse<EquihashBlockTemplate> GetBlockTemplateFromJson(string json)
+        {
+            logger.LogInvoke();
+
+            var result = JsonConvert.DeserializeObject<JsonRpcResponse>(json);
+
+            return new DaemonResponse<EquihashBlockTemplate>
+            {
+                Response = result.ResultAs<EquihashBlockTemplate>(),
+            };
         }
 
         public override object[] GetSubscriberData(StratumClient worker)
@@ -122,6 +126,87 @@ namespace MiningCore.Blockchain.Equihash
             var hash = decoded.Skip(2).Take(20).ToArray();
             var result = new KeyId(hash);
             return result;
+        }
+
+        protected override async Task<(bool IsNew, bool Force)> UpdateJob(bool forceUpdate, string via = null, string json = null)
+        {
+            logger.LogInvoke();
+
+            try
+            {
+                if (forceUpdate)
+                    lastJobRebroadcast = clock.Now;
+
+                var response = string.IsNullOrEmpty(json) ? await GetBlockTemplateAsync() : GetBlockTemplateFromJson(json);
+
+                // may happen if daemon is currently not connected to peers
+                if (response.Error != null)
+                {
+                    logger.Warn(() => $"Unable to update job. Daemon responded with: {response.Error.Message} Code {response.Error.Code}");
+                    return (false, forceUpdate);
+                }
+
+                var blockTemplate = response.Response;
+
+                var job = currentJob;
+                var isNew = job == null ||
+                (blockTemplate != null &&
+                    job.BlockTemplate?.PreviousBlockhash != blockTemplate.PreviousBlockhash &&
+                    blockTemplate.Height > job.BlockTemplate?.Height);
+
+                if (isNew || forceUpdate)
+                {
+                    job = new EquihashJob();
+
+                    job.Init(blockTemplate, NextJobId(),
+                        poolConfig, clusterConfig, clock, poolAddressDestination, networkType,
+                        solver, headerHasher);
+
+                    lock (jobLock)
+                    {
+                        if (isNew)
+                        {
+                            if (via != null)
+                                logger.Info(() => $"Detected new block {blockTemplate.Height} via {via}");
+                            else
+                                logger.Info(() => $"Detected new block {blockTemplate.Height}");
+
+                            validJobs.Clear();
+
+                            // update stats
+                            BlockchainStats.LastNetworkBlockTime = clock.Now;
+                            BlockchainStats.BlockHeight = blockTemplate.Height;
+                            BlockchainStats.NetworkDifficulty = job.Difficulty;
+                        }
+
+                        else
+                        {
+                            // trim active jobs
+                            while (validJobs.Count > maxActiveJobs - 1)
+                                validJobs.RemoveAt(0);
+                        }
+
+                        validJobs.Add(job);
+                    }
+
+                    currentJob = job;
+                }
+
+                return (isNew, forceUpdate);
+            }
+
+            catch (Exception ex)
+            {
+                logger.Error(ex, () => $"Error during {nameof(UpdateJob)}");
+            }
+
+            return (false, forceUpdate);
+        }
+
+        protected override object GetJobParamsForStratum(bool isNew)
+        {
+            var job = currentJob;
+            return job?.GetJobParams(isNew);
         }
 
         public override async Task<Share> SubmitShareAsync(StratumClient worker, object submission,
@@ -204,7 +289,7 @@ namespace MiningCore.Blockchain.Equihash
             share.UserAgent = context.UserAgent;
             share.Source = clusterConfig.ClusterName;
             share.NetworkDifficulty = job.Difficulty;
-            share.Difficulty = share.Difficulty / ShareMultiplier;
+            share.Difficulty = share.Difficulty;
             share.Created = clock.Now;
 
             return share;

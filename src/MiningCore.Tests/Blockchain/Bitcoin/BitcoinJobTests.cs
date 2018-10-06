@@ -14,7 +14,17 @@ namespace MiningCore.Tests.Blockchain.Bitcoin
 {
     public class BitcoinJobTests : TestBase
     {
-        readonly PoolConfig poolConfig = new PoolConfig();
+        public BitcoinJobTests()
+        {
+            poolConfig = new PoolConfig
+            {
+                Coin = "bitcoin",
+                CoinTemplate = ModuleInitializer.CoinTemplates["bitcoin"]
+            };
+        }
+
+        readonly PoolConfig poolConfig;
+
         readonly ClusterConfig clusterConfig = new ClusterConfig();
         private readonly IDestination poolAddressDestination = BitcoinUtils.AddressToDestination("mjn3q42yxr9yLA3gyseHCZCHEptZC31PEh");
 
@@ -35,13 +45,13 @@ namespace MiningCore.Tests.Blockchain.Bitcoin
             var bt = JsonConvert.DeserializeObject<MiningCore.Blockchain.Bitcoin.DaemonResponses.BlockTemplate>(
                 "{\"Version\":536870912,\"PreviousBlockhash\":\"000000000909578519b5be7b37fdc53b2923817921c43108a907b72264da76bb\",\"CoinbaseValue\":5000000000,\"Target\":\"7fffff0000000000000000000000000000000000000000000000000000000000\",\"NonceRange\":\"00000000ffffffff\",\"CurTime\":1508869874,\"Bits\":\"207fffff\",\"Height\":14,\"Transactions\":[],\"CoinbaseAux\":{\"Flags\":\"0b2f454231362f414431322f\"},\"default_witness_commitment\":null}");
 
-            var job = new BitcoinJob<MiningCore.Blockchain.Bitcoin.DaemonResponses.BlockTemplate>();
+            var job = new BitcoinJob();
 
             // set clock to job creation time
             var clock = new MockMasterClock { CurrentTime = DateTimeOffset.FromUnixTimeSeconds(1508869874).UtcDateTime };
 
             job.Init(bt, "1", poolConfig, clusterConfig, clock, poolAddressDestination, BitcoinNetworkType.RegTest,
-                false, 1, 1, sha256d, sha256d, sha256dReverse, null);
+                false, 1, sha256d, sha256d, sha256dReverse);
 
             // set clock to submission time
             clock.CurrentTime = DateTimeOffset.FromUnixTimeSeconds(1508869907).UtcDateTime;
@@ -71,13 +81,13 @@ namespace MiningCore.Tests.Blockchain.Bitcoin
             var bt = JsonConvert.DeserializeObject<MiningCore.Blockchain.Bitcoin.DaemonResponses.BlockTemplate>(
                 "{\"Version\":536870912,\"PreviousBlockhash\":\"000000000909578519b5be7b37fdc53b2923817921c43108a907b72264da76bb\",\"CoinbaseValue\":5000000000,\"Target\":\"7fffff0000000000000000000000000000000000000000000000000000000000\",\"NonceRange\":\"00000000ffffffff\",\"CurTime\":1508869874,\"Bits\":\"207fffff\",\"Height\":14,\"Transactions\":[],\"CoinbaseAux\":{\"Flags\":\"0b2f454231362f414431322f\"},\"default_witness_commitment\":null}");
 
-            var job = new BitcoinJob<MiningCore.Blockchain.Bitcoin.DaemonResponses.BlockTemplate>();
+            var job = new BitcoinJob();
 
             // set clock to job creation time
             var clock = new MockMasterClock { CurrentTime = DateTimeOffset.FromUnixTimeSeconds(1508869874).UtcDateTime };
 
             job.Init(bt, "1", poolConfig, clusterConfig, clock, poolAddressDestination, BitcoinNetworkType.RegTest,
-                false, 1, 1, sha256d, sha256d, sha256dReverse, null);
+                false, 1, sha256d, sha256d, sha256dReverse);
 
             // set clock to submission time
             clock.CurrentTime = DateTimeOffset.FromUnixTimeSeconds(1508869907).UtcDateTime;

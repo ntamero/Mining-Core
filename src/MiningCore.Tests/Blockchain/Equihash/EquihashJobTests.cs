@@ -53,7 +53,7 @@ namespace MiningCore.Tests.Blockchain.Equihash
         {
             var job = new EquihashJob();
 
-            var bt = new ZCashBlockTemplate
+            var bt = new EquihashBlockTemplate
             {
                 Target = "0000407f43000000000000000000000000000000000000000000000000000000",
                 PreviousBlockhash = "000003be5873fc64b1b784318e3226a1ab2a1805bebba5a0d670be54ff7772e8",
@@ -73,7 +73,7 @@ namespace MiningCore.Tests.Blockchain.Equihash
             var solver = EquihashSolverFactory.GetSolver(chainConfig.Solver);
 
             job.Init(bt, "1", poolConfig, clusterConfig, clock, poolAddressDestination, BitcoinNetworkType.Test,
-                false, 1, 1, sha256d, sha256d, sha256dReverse, solver);
+                solver, sha256d);
 
             bt.Height = 1;
             Assert.Equal(job.GetFoundersRewardAddress(), "t2UNzUUx8mWBCRYPRezvA363EYXyEpHokyi");

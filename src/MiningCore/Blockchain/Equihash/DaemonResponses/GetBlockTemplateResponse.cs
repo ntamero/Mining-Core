@@ -22,7 +22,7 @@ using Newtonsoft.Json;
 
 namespace MiningCore.Blockchain.Equihash.DaemonResponses
 {
-    public class ZCashCoinbaseTransaction
+    public class EquihashCoinbaseTransaction
     {
         public string Data { get; set; }
         public string Hash { get; set; }
@@ -34,12 +34,12 @@ namespace MiningCore.Blockchain.Equihash.DaemonResponses
         // "depends":[ ],
     }
 
-    public class ZCashBlockTemplate : Bitcoin.DaemonResponses.BlockTemplate
+    public class EquihashBlockTemplate : Bitcoin.DaemonResponses.BlockTemplate
     {
         public string[] Capabilities { get; set; }
 
         [JsonProperty("coinbasetxn")]
-        public ZCashCoinbaseTransaction CoinbaseTx { get; set; }
+        public EquihashCoinbaseTransaction CoinbaseTx { get; set; }
 
         public string LongPollId { get; set; }
         public ulong MinTime { get; set; }

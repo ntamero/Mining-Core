@@ -31,10 +31,5 @@ namespace MiningCore.Blockchain.Bitcoin.Configuration
         /// if True, miners pay payment tx fees
         /// </summary>
         public bool MinersPayTxFees { get; set; }
-
-        /// <summary>
-        /// Multiply blockreward by this amount
-        /// </summary>
-        public decimal? BlockrewardMultiplier { get; set; }
     }
 }

@@ -32,7 +32,6 @@ using Autofac;
 using MiningCore.Configuration;
 using MiningCore.Extensions;
 using MiningCore.Messaging;
-using MiningCore.Notifications.Messages;
 using MiningCore.Util;
 using NLog;
 using ZeroMQ;

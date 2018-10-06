@@ -42,7 +42,7 @@ namespace MiningCore.Configuration
         Cryptonote,
 
         [EnumMember(Value = "ethereum")]
-        Ethereum
+        Ethereum,
     }
 
     public abstract partial class CoinTemplate
@@ -115,6 +115,13 @@ namespace MiningCore.Configuration
 
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public bool HasMasterNodes { get; set; }
+
+        /// <summary>
+        /// Multiply blockreward by this amount
+        /// </summary>
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+        [DefaultValue(1.0d)]
+        public decimal BlockrewardMultiplier { get; set; }
 
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         [DefaultValue(1.0d)]

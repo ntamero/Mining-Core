@@ -269,7 +269,7 @@ namespace MiningCore.Blockchain.Cryptonote
 
         private Task OnNewJobAsync()
         {
-            logger.Info(() => $"[Broadcasting job");
+            logger.Info(() => "Broadcasting job");
 
             var tasks = ForEachClient(async client =>
             {

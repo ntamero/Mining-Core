@@ -124,10 +124,7 @@ namespace MiningCore
             //////////////////////
             // Bitcoin and family
 
-            builder.RegisterType<BitcoinJobManager<BitcoinJob<BlockTemplate>, BlockTemplate>>()
-                .AsSelf();
-
-            builder.RegisterType<BitcoinJobManager<EquihashJob, ZCashBlockTemplate>>()
+            builder.RegisterType<BitcoinJobManager>()
                 .AsSelf();
 
             //////////////////////
@@ -147,7 +144,7 @@ namespace MiningCore
             //////////////////////
             // ZCash
 
-            builder.RegisterType<EquihashJobManager<EquihashJob>>()
+            builder.RegisterType<EquihashJobManager>()
                 .AsSelf();
 
             base.Load(builder);
