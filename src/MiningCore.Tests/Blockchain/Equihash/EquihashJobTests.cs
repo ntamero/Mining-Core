@@ -72,8 +72,7 @@ namespace MiningCore.Tests.Blockchain.Equihash
             var chainConfig = equihashCoin.GetNetwork(BitcoinNetworkType.Main);
             var solver = EquihashSolverFactory.GetSolver(chainConfig.Solver);
 
-            job.Init(bt, "1", poolConfig, clusterConfig, clock, poolAddressDestination, BitcoinNetworkType.Test,
-                solver, sha256d);
+            job.Init(bt, "1", poolConfig, clusterConfig, clock, poolAddressDestination, BitcoinNetworkType.Test, solver);
 
             bt.Height = 1;
             Assert.Equal(job.GetFoundersRewardAddress(), "t2UNzUUx8mWBCRYPRezvA363EYXyEpHokyi");
