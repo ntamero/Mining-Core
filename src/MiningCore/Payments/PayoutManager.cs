@@ -84,9 +84,15 @@ namespace MiningCore.Payments
 
                 try
                 {
+                    var family = pool.CoinTemplate.Family;
+
+                    // check for override
+                    if (family == CoinFamily.Equihash && pool.CoinTemplate.As<EquihashCoinTemplate>().UseBitcoinPayoutHandler)
+                        family = CoinFamily.Bitcoin;
+
                     // resolve payout handler
                     var handlerImpl = ctx.Resolve<IEnumerable<Meta<Lazy<IPayoutHandler, CoinFamilyAttribute>>>>()
-                        .First(x => x.Value.Metadata.SupportedFamilies.Contains(pool.CoinTemplate.Family)).Value;
+                        .First(x => x.Value.Metadata.SupportedFamilies.Contains(family)).Value;
 
                     var handler = handlerImpl.Value;
                     await handler.ConfigureAsync(clusterConfig, pool);

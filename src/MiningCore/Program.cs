@@ -574,6 +574,16 @@ namespace MiningCore
 
             var coinTemplates = CoinTemplateLoader.Load(clusterConfig.CoinDefs);
 
+            // Populate pool configs with corresponding template
+            foreach(var poolConfig in clusterConfig.Pools.Where(x => x.Enabled))
+            {
+                // Lookup coin definition
+                if (!coinTemplates.TryGetValue(poolConfig.Coin, out var template))
+                    logger.ThrowLogPoolStartupException($"Pool {poolConfig.Id} references undefined coin '{poolConfig.Coin}'");
+
+                poolConfig.CoinTemplate = template;
+            }
+
             // Notifications
             notificationService = container.Resolve<NotificationService>();
 
@@ -626,15 +636,9 @@ namespace MiningCore
             // start pools
             await Task.WhenAll(clusterConfig.Pools.Where(x => x.Enabled).Select(async poolConfig =>
             {
-                // Lookup coin definition
-                if(!coinTemplates.TryGetValue(poolConfig.Coin, out var template))
-                    logger.ThrowLogPoolStartupException($"Pool {poolConfig.Id} references undefined coin '{poolConfig.Coin}'");
-
-                poolConfig.CoinTemplate = template;
-
                 // resolve pool implementation
                 var poolImpl = container.Resolve<IEnumerable<Meta<Lazy<IMiningPool, CoinFamilyAttribute>>>>()
-                    .First(x => x.Value.Metadata.SupportedFamilies.Contains(template.Family)).Value;
+                    .First(x => x.Value.Metadata.SupportedFamilies.Contains(poolConfig.CoinTemplate.Family)).Value;
 
                 // create and configure
                 var pool = poolImpl.Value;

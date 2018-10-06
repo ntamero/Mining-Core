@@ -70,11 +70,9 @@ namespace MiningCore.Blockchain.Equihash
 
             extraConfig = poolConfig.Extra.SafeExtensionDataAs<EquihashPoolConfigExtra>();
 
-            if (string.IsNullOrEmpty(extraConfig?.ZAddress))
+            if (poolConfig.CoinTemplate.As<EquihashCoinTemplate>().UsesZCashAddressFormat && string.IsNullOrEmpty(extraConfig?.ZAddress))
                 logger.ThrowLogPoolStartupException($"Pool z-address is not configured");
         }
-
-        #region Overrides of BitcoinPoolBase<TJob,ZCashBlockTemplate>
 
         /// <param name="ct"></param>
         /// <inheritdoc />
@@ -110,7 +108,12 @@ namespace MiningCore.Blockchain.Equihash
             hashrateDivisor = (double) new BigRational(manager.ChainConfig.Diff1BValue, EquihashConstants.ZCashDiff1b);
         }
 
-        #endregion
+        protected override void InitStats()
+        {
+            base.InitStats();
+
+            blockchainStats = manager.BlockchainStats;
+        }
 
         protected async Task OnSubscribeAsync(StratumClient client, Timestamped<JsonRpcRequest> tsRequest)
         {

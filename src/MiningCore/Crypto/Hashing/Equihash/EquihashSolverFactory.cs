@@ -31,7 +31,26 @@ namespace MiningCore.Crypto.Hashing.Equihash
             var k = (int) Convert.ChangeType(args[1], typeof(int));
             var personalization = args[2].ToString();
 
-            return new EquihashSolver(n, k, personalization);
+            switch (n)
+            {
+                case 200:
+                    switch (k)
+                    {
+                        case 9:
+                            return new EquihashSolver_200_9(personalization);
+                    }
+                    break;
+
+                case 144:
+                    switch (k)
+                    {
+                        case 5:
+                            return new EquihashSolver_144_5(personalization);
+                    }
+                    break;
+            }
+
+            throw new NotSupportedException($"Equihash variant {n}_{k} is currently not implemented");
         }
     }
 }

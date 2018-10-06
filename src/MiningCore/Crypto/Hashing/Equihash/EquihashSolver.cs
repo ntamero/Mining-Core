@@ -27,15 +27,8 @@ using NLog;
 
 namespace MiningCore.Crypto.Hashing.Equihash
 {
-    public class EquihashSolver
+    public abstract class EquihashSolver
     {
-        public EquihashSolver(int n, int k, string personalization)
-        {
-            this.n = n;
-            this.k = k;
-            this.personalization = personalization;
-        }
-
         private static int maxThreads = 1;
 
         public static int MaxThreads
@@ -50,13 +43,12 @@ namespace MiningCore.Crypto.Hashing.Equihash
             }
         }
 
-        private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
-
         protected static readonly Lazy<Semaphore> sem = new Lazy<Semaphore>(() =>
             new Semaphore(maxThreads, maxThreads));
 
-        private int n, k;
         protected string personalization;
+
+        public string Personalization => personalization;
 
         /// <summary>
         /// Verify an Equihash solution
@@ -64,7 +56,19 @@ namespace MiningCore.Crypto.Hashing.Equihash
         /// <param name="header">header including nonce (140 bytes)</param>
         /// <param name="solution">equihash solution (excluding 3 bytes with size, so 1344 bytes length) - Do not include byte size preamble "fd4005"</param>
         /// <returns></returns>
-        public unsafe bool Verify(byte[] header, byte[] solution)
+        public abstract bool Verify(byte[] header, byte[] solution);
+    }
+
+    public unsafe class EquihashSolver_200_9 : EquihashSolver
+    {
+        public EquihashSolver_200_9(string personalization)
+        {
+            this.personalization = personalization;
+        }
+
+        private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
+
+        public override bool Verify(byte[] header, byte[] solution)
         {
             Contract.RequiresNonNull(header, nameof(header));
             Contract.Requires<ArgumentException>(header.Length == 140, $"{nameof(header)} must be exactly 140 bytes");
@@ -81,28 +85,47 @@ namespace MiningCore.Crypto.Hashing.Equihash
                 {
                     fixed (byte* s = solution)
                     {
-                        switch (n)
-                        {
-                            case 200:
-                                switch (k)
-                                {
-                                    case 9:
-                                        return LibMultihash.equihash_verify_200_9(h, header.Length, s, solution.Length, personalization);
-                                }
-                                break;
-
-                            case 144:
-                                switch (k)
-                                {
-                                    case 5:
-                                        return LibMultihash.equihash_verify_144_5(h, header.Length, s, solution.Length, personalization);
-                                }
-                                break;
-                        }
+                        return LibMultihash.equihash_verify_200_9(h, header.Length, s, solution.Length, personalization);
                     }
                 }
+            }
 
-                throw new NotSupportedException($"Equihash variant {n}_{k} is currently not implemented");
+            finally
+            {
+                sem.Value.Release();
+            }
+        }
+    }
+
+    public unsafe class EquihashSolver_144_5 : EquihashSolver
+    {
+        public EquihashSolver_144_5(string personalization)
+        {
+            this.personalization = personalization;
+        }
+
+        private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
+
+        public override bool Verify(byte[] header, byte[] solution)
+        {
+            Contract.RequiresNonNull(header, nameof(header));
+            Contract.Requires<ArgumentException>(header.Length == 140, $"{nameof(header)} must be exactly 140 bytes");
+            Contract.RequiresNonNull(solution, nameof(solution));
+            Contract.Requires<ArgumentException>(solution.Length == 100, $"{nameof(solution)} must be exactly 100 bytes");
+
+            logger.LogInvoke();
+
+            try
+            {
+                sem.Value.WaitOne();
+
+                fixed (byte* h = header)
+                {
+                    fixed (byte* s = solution)
+                    {
+                        return LibMultihash.equihash_verify_144_5(h, header.Length, s, solution.Length, personalization);
+                    }
+                }
             }
 
             finally

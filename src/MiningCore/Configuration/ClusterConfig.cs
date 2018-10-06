@@ -117,7 +117,7 @@ namespace MiningCore.Configuration
         public bool HasMasterNodes { get; set; }
 
         /// <summary>
-        /// Multiply blockreward by this amount
+        /// Fraction of block reward, the pool really gets to keep
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         [DefaultValue(1.0d)]
@@ -192,7 +192,11 @@ namespace MiningCore.Configuration
 
         public Dictionary<string, EquihashNetworkDefinition> Networks { get; set; }
         public bool UsesZCashAddressFormat { get; set; } = true;
-        public bool EnableBitcoinGoldQuirks { get; set; }
+
+        /// <summary>
+        /// Force use of BitcoinPayoutHandler instead of EquihashPayoutHandler
+        /// </summary>
+        public bool UseBitcoinPayoutHandler { get; set; }
     }
 
     public enum CryptonightHashType
@@ -252,12 +256,11 @@ namespace MiningCore.Configuration
         public ulong AddressPrefixIntegratedTestnet { get; set; }
 
         /// <summary>
-        /// Fraction of block reward, the pool really gets
-        /// Default: 1.0 (all)
+        /// Fraction of block reward, the pool really gets to keep
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         [DefaultValue(1.0d)]
-        public decimal BlockRewardShare { get; set; } = 1.0m;
+        public decimal BlockrewardMultiplier { get; set; }
     }
 
     public partial class EthereumCoinTemplate : CoinTemplate

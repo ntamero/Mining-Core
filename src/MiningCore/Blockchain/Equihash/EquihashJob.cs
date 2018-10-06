@@ -43,45 +43,46 @@ namespace MiningCore.Blockchain.Equihash
 {
     public class EquihashJob
     {
-        private IMasterClock clock;
-        private IHashAlgorithm headerHasher;
+        protected IMasterClock clock;
+        protected static IHashAlgorithm headerHasher = new Sha256D();
+        protected EquihashCoinTemplate coin;
 
-        private IDestination poolAddressDestination;
-        private readonly HashSet<string> submissions = new HashSet<string>();
-        private uint256 blockTargetValue;
-        private byte[] coinbaseInitial;
+        protected IDestination poolAddressDestination;
+        protected readonly HashSet<string> submissions = new HashSet<string>();
+        protected uint256 blockTargetValue;
+        protected byte[] coinbaseInitial;
 
-        private EquihashCoinTemplate.EquihashNetworkDefinition chainConfig;
-        private decimal blockReward;
-        private decimal rewardFees;
+        protected EquihashCoinTemplate.EquihashNetworkDefinition chainConfig;
+        protected decimal blockReward;
+        protected decimal rewardFees;
 
-        private uint txVersionGroupId;
-        private readonly IHashAlgorithm sha256D = new Sha256D();
-        private byte[] coinbaseInitialHash;
-        private byte[] merkleRoot;
-        private byte[] merkleRootReversed;
-        private string merkleRootReversedHex;
-        private EquihashSolver solver;
+        protected uint txVersionGroupId;
+        protected readonly IHashAlgorithm sha256D = new Sha256D();
+        protected byte[] coinbaseInitialHash;
+        protected byte[] merkleRoot;
+        protected byte[] merkleRootReversed;
+        protected string merkleRootReversedHex;
+        protected EquihashSolver solver;
 
         // ZCash Sapling & Overwinter support
-        private bool isOverwinterActive = false;
-        private bool isSaplingActive = false;
+        protected bool isOverwinterActive = false;
+        protected bool isSaplingActive = false;
 
         // temporary reflection hack to force overwinter
-        private static readonly FieldInfo overwinterField = typeof(ZcashTransaction).GetField("fOverwintered", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-        private static readonly FieldInfo versionGroupField = typeof(ZcashTransaction).GetField("nVersionGroupId", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+        protected static readonly FieldInfo overwinterField = typeof(ZcashTransaction).GetField("fOverwintered", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+        protected static readonly FieldInfo versionGroupField = typeof(ZcashTransaction).GetField("nVersionGroupId", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 
         // serialization constants
-        private static readonly byte[] sha256Empty = Enumerable.Repeat((byte)0, 32).ToArray();
-        private uint txVersion = 1u; // transaction version (currently 1) - see https://en.bitcoin.it/wiki/Transaction
+        protected byte[] sha256Empty = Enumerable.Repeat((byte)0, 32).ToArray();
+        protected uint txVersion = 1u; // transaction version (currently 1) - see https://en.bitcoin.it/wiki/Transaction
 
         ///////////////////////////////////////////
         // GetJobParams related properties
 
-        private object[] jobParams;
-        private string previousBlockHashReversedHex;
-        private Money rewardToPool;
-        private Transaction txOut;
+        protected object[] jobParams;
+        protected string previousBlockHashReversedHex;
+        protected Money rewardToPool;
+        protected Transaction txOut;
 
         private Transaction CreateOutputTransaction()
         {
@@ -149,7 +150,7 @@ namespace MiningCore.Blockchain.Equihash
             return address;
         }
 
-        private void BuildCoinbase()
+        protected virtual void BuildCoinbase()
         {
             // output transaction
             txOut = CreateOutputTransaction();
@@ -169,7 +170,7 @@ namespace MiningCore.Blockchain.Equihash
         }
 
 
-        private byte[] SerializeHeader(uint nTime, string nonce)
+        protected virtual byte[] SerializeHeader(uint nTime, string nonce)
         {
             var blockHeader = new EquihashBlockHeader
             {
@@ -305,26 +306,23 @@ namespace MiningCore.Blockchain.Equihash
 
         #region API-Surface
 
-        public void Init(EquihashBlockTemplate blockTemplate, string jobId,
+        public virtual void Init(EquihashBlockTemplate blockTemplate, string jobId,
             PoolConfig poolConfig, ClusterConfig clusterConfig, IMasterClock clock,
             IDestination poolAddressDestination, BitcoinNetworkType networkType,
-            EquihashSolver solver, IHashAlgorithm headerHasher)
+            EquihashSolver solver)
         {
             Contract.RequiresNonNull(blockTemplate, nameof(blockTemplate));
             Contract.RequiresNonNull(poolConfig, nameof(poolConfig));
             Contract.RequiresNonNull(clusterConfig, nameof(clusterConfig));
             Contract.RequiresNonNull(clock, nameof(clock));
             Contract.RequiresNonNull(poolAddressDestination, nameof(poolAddressDestination));
-            Contract.RequiresNonNull(headerHasher, nameof(headerHasher));
             Contract.RequiresNonNull(solver, nameof(solver));
             Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(jobId), $"{nameof(jobId)} must not be empty");
 
             this.clock = clock;
             this.poolAddressDestination = poolAddressDestination;
-
-            var equihashTemplate = poolConfig.CoinTemplate.As<EquihashCoinTemplate>();
-            equihashTemplate.Networks.TryGetValue(networkType.ToString().ToLower(), out chainConfig);
-
+            coin = poolConfig.CoinTemplate.As<EquihashCoinTemplate>();
+            coin.Networks.TryGetValue(networkType.ToString().ToLower(), out chainConfig);
             BlockTemplate = blockTemplate;
             JobId = jobId;
             Difficulty = (double) new BigRational(chainConfig.Diff1BValue, BlockTemplate.Target.HexToByteArray().ReverseArray().AsSpan().ToBigInteger());
@@ -356,7 +354,6 @@ namespace MiningCore.Blockchain.Equihash
             }
 
             // Misc
-            this.headerHasher = headerHasher;
             this.solver = solver;
 
             if (!string.IsNullOrEmpty(BlockTemplate.Target))
@@ -413,10 +410,10 @@ namespace MiningCore.Blockchain.Equihash
             };
         }
 
-        public EquihashBlockTemplate BlockTemplate { get; private set; }
-        public double Difficulty { get; private set; }
+        public EquihashBlockTemplate BlockTemplate { get; protected set; }
+        public double Difficulty { get; protected set; }
 
-        public string JobId { get; private set; }
+        public string JobId { get; protected set; }
 
         public (Share Share, string BlockHex) ProcessShare(StratumClient worker, string extraNonce2, string nTime, string solution)
         {

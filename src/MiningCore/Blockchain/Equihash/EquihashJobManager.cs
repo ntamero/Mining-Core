@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Autofac;
 using MiningCore.Blockchain.Bitcoin;
 using MiningCore.Blockchain.Bitcoin.DaemonResponses;
+using MiningCore.Blockchain.Equihash.BitcoinGold;
 using MiningCore.Blockchain.Equihash.DaemonResponses;
 using MiningCore.Configuration;
 using MiningCore.Contracts;
@@ -40,12 +41,13 @@ namespace MiningCore.Blockchain.Equihash
             };
         }
 
+        private EquihashCoinTemplate coin;
         public EquihashCoinTemplate.EquihashNetworkDefinition ChainConfig { get; private set; }
         private EquihashSolver solver;
 
         protected override void PostChainIdentifyConfigure()
         {
-            var coin = poolConfig.CoinTemplate.As<EquihashCoinTemplate>();
+            coin = poolConfig.CoinTemplate.As<EquihashCoinTemplate>();
             ChainConfig = coin.GetNetwork(networkType);
 
             solver = EquihashSolverFactory.GetSolver(ChainConfig.Solver);
@@ -128,6 +130,17 @@ namespace MiningCore.Blockchain.Equihash
             return result;
         }
 
+        private EquihashJob CreateJob()
+        {
+            // normally, everything should be purely CoinTemplate driven
+            // due to the extremely exotic nature of Bitcoin gold, make an exception here
+
+            if(coin.Symbol == "BTG")
+                return new BitcoinGoldJob();
+
+            return new EquihashJob();
+        }
+
         protected override async Task<(bool IsNew, bool Force)> UpdateJob(bool forceUpdate, string via = null, string json = null)
         {
             logger.LogInvoke();
@@ -156,11 +169,11 @@ namespace MiningCore.Blockchain.Equihash
 
                 if (isNew || forceUpdate)
                 {
-                    job = new EquihashJob();
+                    job = CreateJob();
 
                     job.Init(blockTemplate, NextJobId(),
                         poolConfig, clusterConfig, clock, poolAddressDestination, networkType,
-                        solver, headerHasher);
+                        solver);
 
                     lock (jobLock)
                     {
