@@ -23,7 +23,7 @@ namespace MiningCore.Tests.Blockchain.Equihash
             poolConfig = new PoolConfig
             {
                 Coin = "zcash",
-                CoinTemplate = ModuleInitializer.CoinTemplates["zcash"]
+                Template = ModuleInitializer.CoinTemplates["zcash"]
             };
         }
 
@@ -38,7 +38,7 @@ namespace MiningCore.Tests.Blockchain.Equihash
         [Fact]
         public void ZCashUtils_EncodeTarget()
         {
-            var equihashCoin = poolConfig.CoinTemplate.As<EquihashCoinTemplate>();
+            var equihashCoin = poolConfig.Template.As<EquihashCoinTemplate>();
             var chainConfig = equihashCoin.GetNetwork(BitcoinNetworkType.Main);
 
             var result = EquihashUtils.EncodeTarget(0.5, chainConfig);
@@ -68,7 +68,7 @@ namespace MiningCore.Tests.Blockchain.Equihash
 
             var clock = new MockMasterClock { CurrentTime = DateTimeOffset.FromUnixTimeSeconds(1508869874).UtcDateTime };
 
-            var equihashCoin = poolConfig.CoinTemplate.As<EquihashCoinTemplate>();
+            var equihashCoin = poolConfig.Template.As<EquihashCoinTemplate>();
             var chainConfig = equihashCoin.GetNetwork(BitcoinNetworkType.Main);
             var solver = EquihashSolverFactory.GetSolver(chainConfig.Solver);
 

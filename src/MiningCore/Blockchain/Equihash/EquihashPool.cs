@@ -70,7 +70,8 @@ namespace MiningCore.Blockchain.Equihash
 
             extraConfig = poolConfig.Extra.SafeExtensionDataAs<EquihashPoolConfigExtra>();
 
-            if (poolConfig.CoinTemplate.As<EquihashCoinTemplate>().UsesZCashAddressFormat && string.IsNullOrEmpty(extraConfig?.ZAddress))
+            if (poolConfig.Template.As<EquihashCoinTemplate>().UsesZCashAddressFormat &&
+				string.IsNullOrEmpty(extraConfig?.ZAddress))
                 logger.ThrowLogPoolStartupException($"Pool z-address is not configured");
         }
 

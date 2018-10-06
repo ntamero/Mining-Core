@@ -105,7 +105,7 @@ namespace MiningCore.Payments
 
         protected virtual void PersistPayments(Balance[] balances, string transactionConfirmation)
         {
-            var coin = poolConfig.CoinTemplate.As<CoinTemplate>();
+            var coin = poolConfig.Template.As<CoinTemplate>();
 
             try
             {
@@ -150,13 +150,13 @@ namespace MiningCore.Payments
 
         public string FormatAmount(decimal amount)
         {
-            var coin = poolConfig.CoinTemplate.As<CoinTemplate>();
+            var coin = poolConfig.Template.As<CoinTemplate>();
             return $"{amount:0.#####} {coin.Symbol}";
         }
 
         protected virtual void NotifyPayoutSuccess(string poolId, Balance[] balances, string[] txHashes, decimal? txFee)
         {
-            var coin = poolConfig.CoinTemplate.As<CoinTemplate>();
+            var coin = poolConfig.Template.As<CoinTemplate>();
 
             // admin notifications
             if (clusterConfig.Notifications?.Admin?.Enabled == true &&

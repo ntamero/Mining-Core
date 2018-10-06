@@ -630,7 +630,7 @@ namespace MiningCore.Blockchain.Ethereum
             // Donation to MiningCore development
             if (networkType == EthereumNetworkType.Main &&
                 chainType == ParityChainType.Mainnet &&
-                DevDonation.Addresses.TryGetValue(poolConfig.CoinTemplate.As<CoinTemplate>().Symbol, out var address))
+                DevDonation.Addresses.TryGetValue(poolConfig.Template.As<CoinTemplate>().Symbol, out var address))
             {
                 poolConfig.RewardRecipients = poolConfig.RewardRecipients.Concat(new[]
                 {

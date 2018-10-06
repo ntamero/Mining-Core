@@ -572,10 +572,22 @@ namespace MiningCore.Configuration
 
     public partial class PoolConfig
     {
+        /// <summary>
+        /// unique id
+        /// </summary>
         public string Id { get; set; }
-        public string PoolName { get; set; }
-        public bool Enabled { get; set; }
+
+        /// <summary>
+        /// Coin template reference
+        /// </summary>
         public string Coin { get; set; }
+
+        /// <summary>
+        /// Display name
+        /// </summary>
+        public string PoolName { get; set; }
+
+        public bool Enabled { get; set; }
         public Dictionary<int, PoolEndpoint> Ports { get; set; }
         public DaemonEndpointConfig[] Daemons { get; set; }
         public PoolPaymentProcessingConfig PaymentProcessing { get; set; }
@@ -592,6 +604,9 @@ namespace MiningCore.Configuration
         /// </summary>
         public bool? EnableInternalStratum { get; set; }
 
+        /// <summary>
+        /// Extension data
+        /// </summary>
         [JsonExtensionData]
         public IDictionary<string, object> Extra { get; set; }
     }

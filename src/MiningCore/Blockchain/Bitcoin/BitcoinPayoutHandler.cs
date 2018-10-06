@@ -208,7 +208,7 @@ namespace MiningCore.Blockchain.Bitcoin
                 if (address != poolConfig.Address)
                 {
                     logger.Info(() => $"Adding {FormatAmount(amount)} to balance of {address}");
-                    balanceRepo.AddAmount(con, tx, poolConfig.Id, poolConfig.CoinTemplate.Symbol, address, amount, $"Reward for block {block.BlockHeight}");
+                    balanceRepo.AddAmount(con, tx, poolConfig.Id, poolConfig.Template.Symbol, address, amount, $"Reward for block {block.BlockHeight}");
                 }
             }
 
@@ -236,7 +236,7 @@ namespace MiningCore.Blockchain.Bitcoin
                 var comment = (poolConfig.PoolName ?? clusterConfig.ClusterName ?? "MiningCore").Trim() + " Payment";
                 var subtractFeesFrom = amounts.Keys.ToArray();
 
-                if (!poolConfig.CoinTemplate.As<BitcoinTemplate>().HasMasterNodes)
+                if (!poolConfig.Template.As<BitcoinTemplate>().HasMasterNodes)
                 {
                     args = new object[]
                     {

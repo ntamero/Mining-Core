@@ -581,7 +581,7 @@ namespace MiningCore
                 if (!coinTemplates.TryGetValue(poolConfig.Coin, out var template))
                     logger.ThrowLogPoolStartupException($"Pool {poolConfig.Id} references undefined coin '{poolConfig.Coin}'");
 
-                poolConfig.CoinTemplate = template;
+                poolConfig.Template = template;
             }
 
             // Notifications
@@ -638,7 +638,7 @@ namespace MiningCore
             {
                 // resolve pool implementation
                 var poolImpl = container.Resolve<IEnumerable<Meta<Lazy<IMiningPool, CoinFamilyAttribute>>>>()
-                    .First(x => x.Value.Metadata.SupportedFamilies.Contains(poolConfig.CoinTemplate.Family)).Value;
+                    .First(x => x.Value.Metadata.SupportedFamilies.Contains(poolConfig.Template.Family)).Value;
 
                 // create and configure
                 var pool = poolImpl.Value;

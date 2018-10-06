@@ -63,7 +63,7 @@ namespace MiningCore.Blockchain.Bitcoin
             var multiplier = BitcoinConstants.Pow2x32 / manager.ShareMultiplier;
             var result = shares * multiplier / interval;
 
-            result *= poolConfig.CoinTemplate.As<BitcoinTemplate>().HashrateMultiplier;
+            result *= poolConfig.Template.As<BitcoinTemplate>().HashrateMultiplier;
 
             return result;
         }

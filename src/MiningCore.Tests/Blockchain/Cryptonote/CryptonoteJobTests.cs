@@ -14,7 +14,7 @@ namespace MiningCore.Tests.Blockchain.Cryptonote
             poolConfig = new PoolConfig
             {
                 Coin = "monero",
-                CoinTemplate = ModuleInitializer.CoinTemplates["monero"]
+                Template = ModuleInitializer.CoinTemplates["monero"]
             };
         }
 

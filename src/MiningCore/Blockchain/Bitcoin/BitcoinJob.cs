@@ -520,7 +520,7 @@ namespace MiningCore.Blockchain.Bitcoin
             Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(jobId), $"{nameof(jobId)} must not be empty");
 
             this.poolConfig = poolConfig;
-            coin = poolConfig.CoinTemplate.As<BitcoinTemplate>();
+            coin = poolConfig.Template.As<BitcoinTemplate>();
             this.clock = clock;
             this.poolAddressDestination = poolAddressDestination;
             this.networkType = networkType;

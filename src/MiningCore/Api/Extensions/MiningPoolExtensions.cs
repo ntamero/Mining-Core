@@ -24,7 +24,7 @@ namespace MiningCore.Api.Extensions
             poolInfo.NetworkStats = pool?.NetworkStats ?? mapper.Map<BlockchainStats>(stats);
 
             // pool wallet link
-            var addressInfobaseUrl = poolConfig.CoinTemplate.ExplorerAccountLink;
+            var addressInfobaseUrl = poolConfig.Template.ExplorerAccountLink;
             if (!string.IsNullOrEmpty(addressInfobaseUrl))
                 poolInfo.AddressInfoLink = string.Format(addressInfobaseUrl, poolInfo.Address);
 
@@ -44,7 +44,7 @@ namespace MiningCore.Api.Extensions
 
         private static string GetPoolAlgorithm(IComponentContext ctx, PoolConfig pool)
         {
-            string result = pool.CoinTemplate.GetAlgorithmName(ctx);
+            string result = pool.Template.GetAlgorithmName(ctx);
 
             // Capitalize
             if (!string.IsNullOrEmpty(result) && result.Length > 1)

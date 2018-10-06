@@ -94,7 +94,7 @@ namespace MiningCore.Notifications
                                 Category = NotificationCategory.PaymentFailure,
                                 PoolId = x.PoolId,
                                 Subject = "Payout Failure Notification",
-                                Msg = $"Failed to pay out {x.Amount} {poolConfigs[x.PoolId].CoinTemplate.Symbol} from pool {x.PoolId}: {x.Error}"
+                                Msg = $"Failed to pay out {x.Amount} {poolConfigs[x.PoolId].Template.Symbol} from pool {x.PoolId}: {x.Error}"
                             });
                         }
                     });
@@ -137,7 +137,7 @@ namespace MiningCore.Notifications
 
         public string FormatAmount(decimal amount, string poolId)
         {
-            return $"{amount:0.#####} {poolConfigs[poolId].CoinTemplate.Symbol}";
+            return $"{amount:0.#####} {poolConfigs[poolId].Template.Symbol}";
         }
 
         private async Task SendNotificationAsync(QueuedNotification notification)

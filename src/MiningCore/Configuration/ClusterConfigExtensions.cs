@@ -140,7 +140,10 @@ namespace MiningCore.Configuration
 
     public partial class PoolConfig
     {
+        /// <summary>
+        /// Back-reference to coin template for this pool
+        /// </summary>
         [JsonIgnore]
-        public CoinTemplate CoinTemplate { get; set; }
+        public CoinTemplate Template { get; set; }
     }
 }

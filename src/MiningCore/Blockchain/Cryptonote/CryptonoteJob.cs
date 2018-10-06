@@ -43,7 +43,7 @@ namespace MiningCore.Blockchain.Cryptonote
             Contract.RequiresNonNull(instanceId, nameof(instanceId));
             Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(jobId), $"{nameof(jobId)} must not be empty");
 
-            coin = poolConfig.CoinTemplate.As<CryptonoteCoinTemplate>();
+            coin = poolConfig.Template.As<CryptonoteCoinTemplate>();
             BlockTemplate = blockTemplate;
             PrepareBlobTemplate(instanceId);
         }

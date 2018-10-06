@@ -329,7 +329,7 @@ namespace MiningCore.Mining
             var msg = $@"
 
 Mining Pool:            {poolConfig.Id}
-Coin Type:              {poolConfig.CoinTemplate.Symbol} [{poolConfig.CoinTemplate.Symbol}]
+Coin Type:              {poolConfig.Template.Symbol} [{poolConfig.Template.Symbol}]
 Network Connected:      {blockchainStats.NetworkType}
 Detected Reward Type:   {blockchainStats.RewardType}
 Current Block Height:   {blockchainStats.BlockHeight}

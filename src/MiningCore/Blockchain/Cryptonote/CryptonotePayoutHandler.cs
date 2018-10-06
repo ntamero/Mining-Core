@@ -78,7 +78,7 @@ namespace MiningCore.Blockchain.Cryptonote
 
         private bool HandleTransferResponse(DaemonResponse<TransferResponse> response, params Balance[] balances)
         {
-            var coin = poolConfig.CoinTemplate.As<CryptonoteCoinTemplate>();
+            var coin = poolConfig.Template.As<CryptonoteCoinTemplate>();
 
             if (response.Error == null)
             {
@@ -103,7 +103,7 @@ namespace MiningCore.Blockchain.Cryptonote
 
         private bool HandleTransferResponse(DaemonResponse<TransferSplitResponse> response, params Balance[] balances)
         {
-            var coin = poolConfig.CoinTemplate.As<CryptonoteCoinTemplate>();
+            var coin = poolConfig.Template.As<CryptonoteCoinTemplate>();
 
             if (response.Error == null)
             {
@@ -141,7 +141,7 @@ namespace MiningCore.Blockchain.Cryptonote
 
         private async Task<bool> PayoutBatch(Balance[] balances)
         {
-            var coin = poolConfig.CoinTemplate.As<CryptonoteCoinTemplate>();
+            var coin = poolConfig.Template.As<CryptonoteCoinTemplate>();
 
             // build request
             var request = new TransferRequest
@@ -212,7 +212,7 @@ namespace MiningCore.Blockchain.Cryptonote
 
         private async Task PayoutToPaymentId(Balance balance)
         {
-            var coin = poolConfig.CoinTemplate.As<CryptonoteCoinTemplate>();
+            var coin = poolConfig.Template.As<CryptonoteCoinTemplate>();
 
             ExtractAddressAndPaymentId(balance.Address, out var address, out var paymentId);
 
@@ -315,7 +315,7 @@ namespace MiningCore.Blockchain.Cryptonote
             Contract.RequiresNonNull(poolConfig, nameof(poolConfig));
             Contract.RequiresNonNull(blocks, nameof(blocks));
 
-            var coin = poolConfig.CoinTemplate.As<CryptonoteCoinTemplate>();
+            var coin = poolConfig.Template.As<CryptonoteCoinTemplate>();
             var pageSize = 100;
             var pageCount = (int) Math.Ceiling(blocks.Length / (double) pageSize);
             var result = new List<Block>();
@@ -404,7 +404,7 @@ namespace MiningCore.Blockchain.Cryptonote
                 if (address != poolConfig.Address)
                 {
                     logger.Info(() => $"Adding {FormatAmount(amount)} to balance of {address}");
-                    balanceRepo.AddAmount(con, tx, poolConfig.Id, poolConfig.CoinTemplate.Symbol, address, amount, $"Reward for block {block.BlockHeight}");
+                    balanceRepo.AddAmount(con, tx, poolConfig.Id, poolConfig.Template.Symbol, address, amount, $"Reward for block {block.BlockHeight}");
                 }
             }
 
@@ -418,7 +418,7 @@ namespace MiningCore.Blockchain.Cryptonote
         {
             Contract.RequiresNonNull(balances, nameof(balances));
 
-            var coin = poolConfig.CoinTemplate.As<CryptonoteCoinTemplate>();
+            var coin = poolConfig.Template.As<CryptonoteCoinTemplate>();
 
 #if !DEBUG // ensure we have peers
             var infoResponse = await daemon.ExecuteCmdAnyAsync<GetInfoResponse>(logger, MC.GetInfo);

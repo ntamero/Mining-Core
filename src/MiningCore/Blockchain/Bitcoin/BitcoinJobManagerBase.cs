@@ -583,7 +583,7 @@ namespace MiningCore.Blockchain.Bitcoin
         {
             // Donation to MiningCore development
             if (networkType == BitcoinNetworkType.Main &&
-                DevDonation.Addresses.TryGetValue(poolConfig.CoinTemplate.Symbol, out var address))
+                DevDonation.Addresses.TryGetValue(poolConfig.Template.Symbol, out var address))
             {
                 poolConfig.RewardRecipients = poolConfig.RewardRecipients.Concat(new[]
                 {

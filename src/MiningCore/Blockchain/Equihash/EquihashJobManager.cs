@@ -47,7 +47,7 @@ namespace MiningCore.Blockchain.Equihash
 
         protected override void PostChainIdentifyConfigure()
         {
-            coin = poolConfig.CoinTemplate.As<EquihashCoinTemplate>();
+            coin = poolConfig.Template.As<EquihashCoinTemplate>();
             ChainConfig = coin.GetNetwork(networkType);
 
             solver = EquihashSolverFactory.GetSolver(ChainConfig.Solver);
@@ -119,7 +119,7 @@ namespace MiningCore.Blockchain.Equihash
 
         protected override IDestination AddressToDestination(string address)
         {
-            var coin = poolConfig.CoinTemplate.As<EquihashCoinTemplate>();
+            var coin = poolConfig.Template.As<EquihashCoinTemplate>();
 
             if (!coin.UsesZCashAddressFormat)
                 return base.AddressToDestination(address);

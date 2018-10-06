@@ -262,7 +262,7 @@ namespace MiningCore.Blockchain.Cryptonote
 
             var addressPrefix = LibCryptonote.DecodeAddress(address);
             var addressIntegratedPrefix = LibCryptonote.DecodeIntegratedAddress(address);
-            var coin = poolConfig.CoinTemplate.As<CryptonoteCoinTemplate>();
+            var coin = poolConfig.Template.As<CryptonoteCoinTemplate>();
 
             switch(networkType)
             {
@@ -446,7 +446,7 @@ namespace MiningCore.Blockchain.Cryptonote
 
         protected override async Task PostStartInitAsync(CancellationToken ct)
         {
-            var coin = poolConfig.CoinTemplate.As<CryptonoteCoinTemplate>();
+            var coin = poolConfig.Template.As<CryptonoteCoinTemplate>();
             var infoResponse = await daemon.ExecuteCmdAnyAsync(logger, CryptonoteCommands.GetInfo);
 
             if (infoResponse.Error != null)
@@ -517,7 +517,7 @@ namespace MiningCore.Blockchain.Cryptonote
         {
             // Donation to MiningCore development
             if (networkType == CryptonoteNetworkType.Main &&
-                DevDonation.Addresses.TryGetValue(poolConfig.CoinTemplate.Symbol, out var address))
+                DevDonation.Addresses.TryGetValue(poolConfig.Template.Symbol, out var address))
             {
                 poolConfig.RewardRecipients = poolConfig.RewardRecipients.Concat(new[]
                 {

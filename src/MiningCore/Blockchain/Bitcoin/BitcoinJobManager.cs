@@ -75,7 +75,7 @@ namespace MiningCore.Blockchain.Bitcoin
 
         protected override void SetupCrypto()
         {
-            var coin = poolConfig.CoinTemplate.As<BitcoinTemplate>();
+            var coin = poolConfig.Template.As<BitcoinTemplate>();
 
             coinbaseHasher = HashAlgorithmFactory.GetHash(ctx, coin.CoinbaseHasher);
             headerHasher = HashAlgorithmFactory.GetHash(ctx, coin.HeaderHasher);

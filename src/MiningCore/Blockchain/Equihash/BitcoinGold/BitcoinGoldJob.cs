@@ -198,7 +198,7 @@ namespace MiningCore.Blockchain.Equihash.BitcoinGold
             this.clock = clock;
             this.poolAddressDestination = poolAddressDestination;
             this.networkType = networkType;
-            var equihashTemplate = poolConfig.CoinTemplate.As<EquihashCoinTemplate>();
+            var equihashTemplate = poolConfig.Template.As<EquihashCoinTemplate>();
             equihashTemplate.Networks.TryGetValue(networkType.ToString().ToLower(), out chainConfig);
             BlockTemplate = blockTemplate;
             JobId = jobId;

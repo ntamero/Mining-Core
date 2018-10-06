@@ -84,10 +84,10 @@ namespace MiningCore.Payments
 
                 try
                 {
-                    var family = pool.CoinTemplate.Family;
+                    var family = pool.Template.Family;
 
                     // check for override
-                    if (family == CoinFamily.Equihash && pool.CoinTemplate.As<EquihashCoinTemplate>().UseBitcoinPayoutHandler)
+                    if (family == CoinFamily.Equihash && pool.Template.As<EquihashCoinTemplate>().UseBitcoinPayoutHandler)
                         family = CoinFamily.Bitcoin;
 
                     // resolve payout handler

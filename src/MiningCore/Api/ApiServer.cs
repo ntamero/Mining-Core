@@ -382,7 +382,7 @@ namespace MiningCore.Api
                 .ToArray();
 
             // enrich blocks
-            var blockInfobaseDict = pool.CoinTemplate.ExplorerBlockLinks;
+            var blockInfobaseDict = pool.Template.ExplorerBlockLinks;
 
             foreach (var block in blocks)
             {
@@ -425,8 +425,8 @@ namespace MiningCore.Api
                 .ToArray();
 
             // enrich payments
-            var txInfobaseUrl = pool.CoinTemplate.ExplorerTxLink;
-            var addressInfobaseUrl = pool.CoinTemplate.ExplorerTxLink;
+            var txInfobaseUrl = pool.Template.ExplorerTxLink;
+            var addressInfobaseUrl = pool.Template.ExplorerTxLink;
 
             foreach(var payment in payments)
             {
@@ -473,7 +473,7 @@ namespace MiningCore.Api
                     stats.LastPayment = statsResult.LastPayment.Created;
 
                     // Compute info link
-                    var baseUrl = pool.CoinTemplate.ExplorerTxLink;
+                    var baseUrl = pool.Template.ExplorerTxLink;
                     if (!string.IsNullOrEmpty(baseUrl))
                         stats.LastPaymentLink = string.Format(baseUrl, statsResult.LastPayment.TransactionConfirmationData);
                 }
@@ -512,8 +512,8 @@ namespace MiningCore.Api
                 .ToArray();
 
             // enrich payments
-            var txInfobaseUrl = pool.CoinTemplate.ExplorerTxLink;
-            var addressInfobaseUrl = pool.CoinTemplate.ExplorerTxLink;
+            var txInfobaseUrl = pool.Template.ExplorerTxLink;
+            var addressInfobaseUrl = pool.Template.ExplorerTxLink;
 
             foreach(var payment in payments)
             {

@@ -19,7 +19,7 @@ namespace MiningCore.Tests.Blockchain.Bitcoin
             poolConfig = new PoolConfig
             {
                 Coin = "bitcoin",
-                CoinTemplate = ModuleInitializer.CoinTemplates["bitcoin"]
+                Template = ModuleInitializer.CoinTemplates["bitcoin"]
             };
         }
 
