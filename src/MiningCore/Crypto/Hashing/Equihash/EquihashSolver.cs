@@ -25,6 +25,8 @@ using MiningCore.Extensions;
 using MiningCore.Native;
 using NLog;
 
+// ReSharper disable InconsistentNaming
+
 namespace MiningCore.Crypto.Hashing.Equihash
 {
     public abstract class EquihashSolver

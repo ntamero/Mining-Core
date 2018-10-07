@@ -392,7 +392,6 @@
     "name": "Florincoin",
     "symbol": "FLO",
     "family": "bitcoin",
-    "subfamily": "florincoin",
     "coinbaseHasher": {
       "hash": "sha256d"
     },
@@ -413,6 +412,8 @@
         }
       ]
     },
+    "coinbaseTxVersion": 2,
+    "coinbaseTxAppendData": "Flo MiningCore",
     "shareMultiplier": 65536,
     "hashrateMultiplier": 1.5,
     "explorerBlockLink": "https://florincoin.info/block/0",
