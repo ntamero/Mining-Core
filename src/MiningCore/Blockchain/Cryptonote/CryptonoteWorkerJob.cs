@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System.Collections.Generic;
 
-namespace MiningCore.Blockchain.Cryptonote
+namespace Miningcore.Blockchain.Cryptonote
 {
     public class CryptonoteWorkerJob
     {

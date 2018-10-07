@@ -2,7 +2,7 @@ using System;
 using System.Numerics;
 using System.Text.RegularExpressions;
 
-namespace MiningCore.Blockchain.Ethereum
+namespace Miningcore.Blockchain.Ethereum
 {
     public class EthereumConstants
     {

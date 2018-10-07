@@ -1,12 +1,12 @@
 using System.IO;
 using System.Threading.Tasks;
-using MiningCore.Blockchain.Ethereum;
-using MiningCore.Crypto.Hashing.Ethash;
-using MiningCore.Stratum;
+using Miningcore.Blockchain.Ethereum;
+using Miningcore.Crypto.Hashing.Ethash;
+using Miningcore.Stratum;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace MiningCore.Tests.Blockchain.Ethereum
+namespace Miningcore.Tests.Blockchain.Ethereum
 {
 	/// <summary>
 	/// These tests take ages to complete (> 10 min. on modern hardware)

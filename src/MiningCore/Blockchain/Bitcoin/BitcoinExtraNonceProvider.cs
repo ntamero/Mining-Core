@@ -22,7 +22,7 @@ using System;
 using System.Security.Cryptography;
 using System.Threading;
 
-namespace MiningCore.Blockchain.Bitcoin
+namespace Miningcore.Blockchain.Bitcoin
 {
     public class BitcoinExtraNonceProvider : ExtraNonceProviderBase
     {

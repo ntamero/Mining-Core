@@ -5,7 +5,7 @@ using Autofac;
 using Autofac.Core.Registration;
 using Newtonsoft.Json.Linq;
 
-namespace MiningCore.Crypto.Hashing.Equihash
+namespace Miningcore.Crypto.Hashing.Equihash
 {
     public static class EquihashSolverFactory
     {

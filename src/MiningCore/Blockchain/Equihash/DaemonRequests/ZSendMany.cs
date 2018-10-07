@@ -1,4 +1,4 @@
-namespace MiningCore.Blockchain.Equihash.DaemonRequests
+namespace Miningcore.Blockchain.Equihash.DaemonRequests
 {
     public class ZSendManyRecipient
     {

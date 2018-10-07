@@ -19,10 +19,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 using System;
-using MiningCore.Configuration;
-using MiningCore.Util;
+using Miningcore.Configuration;
+using Miningcore.Util;
 
-namespace MiningCore.VarDiff
+namespace Miningcore.VarDiff
 {
     public class VarDiffContext
     {

@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using NLog;
 
-namespace MiningCore.Extensions
+namespace Miningcore.Extensions
 {
     public static class LoggingExtensions
     {

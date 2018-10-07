@@ -23,24 +23,24 @@ using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
 using AutoMapper;
-using MiningCore.Blockchain.Bitcoin;
-using MiningCore.Blockchain.Bitcoin.DaemonResponses;
-using MiningCore.Blockchain.Equihash.Configuration;
-using MiningCore.Blockchain.Equihash.DaemonRequests;
-using MiningCore.Blockchain.Equihash.DaemonResponses;
-using MiningCore.Configuration;
-using MiningCore.Extensions;
-using MiningCore.Messaging;
-using MiningCore.Persistence;
-using MiningCore.Persistence.Model;
-using MiningCore.Persistence.Repositories;
-using MiningCore.Time;
+using Miningcore.Blockchain.Bitcoin;
+using Miningcore.Blockchain.Bitcoin.DaemonResponses;
+using Miningcore.Blockchain.Equihash.Configuration;
+using Miningcore.Blockchain.Equihash.DaemonRequests;
+using Miningcore.Blockchain.Equihash.DaemonResponses;
+using Miningcore.Configuration;
+using Miningcore.Extensions;
+using Miningcore.Messaging;
+using Miningcore.Persistence;
+using Miningcore.Persistence.Model;
+using Miningcore.Persistence.Repositories;
+using Miningcore.Time;
 using NBitcoin;
 using Newtonsoft.Json.Linq;
-using Contract = MiningCore.Contracts.Contract;
-using IBlockRepository = MiningCore.Persistence.Repositories.IBlockRepository;
+using Contract = Miningcore.Contracts.Contract;
+using IBlockRepository = Miningcore.Persistence.Repositories.IBlockRepository;
 
-namespace MiningCore.Blockchain.Equihash
+namespace Miningcore.Blockchain.Equihash
 {
     [CoinFamily(CoinFamily.Equihash)]
     public class EquihashPayoutHandler : BitcoinPayoutHandler

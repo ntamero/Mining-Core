@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Newtonsoft.Json;
 
-namespace MiningCore.Blockchain.Equihash.DaemonResponses
+namespace Miningcore.Blockchain.Equihash.DaemonResponses
 {
     public class ZCashBlockSubsidy
     {

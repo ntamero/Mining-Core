@@ -31,23 +31,23 @@ using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using AutoMapper;
-using MiningCore.Banning;
-using MiningCore.Blockchain;
-using MiningCore.Configuration;
-using MiningCore.Extensions;
-using MiningCore.Messaging;
-using MiningCore.Notifications.Messages;
-using MiningCore.Persistence;
-using MiningCore.Persistence.Repositories;
-using MiningCore.Stratum;
-using MiningCore.Time;
-using MiningCore.Util;
-using MiningCore.VarDiff;
+using Miningcore.Banning;
+using Miningcore.Blockchain;
+using Miningcore.Configuration;
+using Miningcore.Extensions;
+using Miningcore.Messaging;
+using Miningcore.Notifications.Messages;
+using Miningcore.Persistence;
+using Miningcore.Persistence.Repositories;
+using Miningcore.Stratum;
+using Miningcore.Time;
+using Miningcore.Util;
+using Miningcore.VarDiff;
 using Newtonsoft.Json;
 using NLog;
-using Contract = MiningCore.Contracts.Contract;
+using Contract = Miningcore.Contracts.Contract;
 
-namespace MiningCore.Mining
+namespace Miningcore.Mining
 {
     public abstract class PoolBase : StratumServer,
         IMiningPool

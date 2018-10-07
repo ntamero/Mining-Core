@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace MiningCore.Blockchain.Bitcoin.DaemonResponses
+namespace Miningcore.Blockchain.Bitcoin.DaemonResponses
 {
     public class Masternode
     {

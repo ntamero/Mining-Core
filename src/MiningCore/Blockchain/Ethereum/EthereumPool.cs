@@ -27,21 +27,21 @@ using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using AutoMapper;
-using MiningCore.Blockchain.Ethereum.Configuration;
-using MiningCore.Configuration;
-using MiningCore.Extensions;
-using MiningCore.JsonRpc;
-using MiningCore.Messaging;
-using MiningCore.Mining;
-using MiningCore.Notifications.Messages;
-using MiningCore.Persistence;
-using MiningCore.Persistence.Repositories;
-using MiningCore.Stratum;
-using MiningCore.Time;
-using MiningCore.Util;
+using Miningcore.Blockchain.Ethereum.Configuration;
+using Miningcore.Configuration;
+using Miningcore.Extensions;
+using Miningcore.JsonRpc;
+using Miningcore.Messaging;
+using Miningcore.Mining;
+using Miningcore.Notifications.Messages;
+using Miningcore.Persistence;
+using Miningcore.Persistence.Repositories;
+using Miningcore.Stratum;
+using Miningcore.Time;
+using Miningcore.Util;
 using Newtonsoft.Json;
 
-namespace MiningCore.Blockchain.Ethereum
+namespace Miningcore.Blockchain.Ethereum
 {
     [CoinFamily(CoinFamily.Ethereum)]
     public class EthereumPool : PoolBase

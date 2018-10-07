@@ -21,7 +21,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using System;
 using System.Runtime.InteropServices;
 
-namespace MiningCore.Native
+namespace Miningcore.Native
 {
     public static unsafe class LibMultihash
     {

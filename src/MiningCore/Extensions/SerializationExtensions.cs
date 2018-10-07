@@ -22,7 +22,7 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 
-namespace MiningCore.Extensions
+namespace Miningcore.Extensions
 {
     public static class SerializationExtensions
     {

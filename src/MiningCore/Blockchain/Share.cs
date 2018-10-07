@@ -21,7 +21,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using System;
 using ProtoBuf;
 
-namespace MiningCore.Blockchain
+namespace Miningcore.Blockchain
 {
     [ProtoContract]
     public class Share

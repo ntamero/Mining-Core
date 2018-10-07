@@ -5,9 +5,9 @@ using System.Reflection;
 using System.Text;
 using Autofac;
 using AutoMapper;
-using MiningCore.Configuration;
+using Miningcore.Configuration;
 
-namespace MiningCore.Tests
+namespace Miningcore.Tests
 {
     public static class ModuleInitializer
     {

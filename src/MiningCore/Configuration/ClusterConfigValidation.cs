@@ -24,7 +24,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using FluentValidation.Attributes;
 
-namespace MiningCore.Configuration
+namespace Miningcore.Configuration
 {
     #region Validators
 

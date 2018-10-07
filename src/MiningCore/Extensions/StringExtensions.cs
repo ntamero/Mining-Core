@@ -25,7 +25,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace MiningCore.Extensions
+namespace Miningcore.Extensions
 {
     public static class StringExtensions
     {

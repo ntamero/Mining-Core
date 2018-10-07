@@ -21,7 +21,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using System;
 using System.Collections.Generic;
 
-namespace MiningCore.Api.Responses
+namespace Miningcore.Api.Responses
 {
     public class MinerPerformanceStats
     {

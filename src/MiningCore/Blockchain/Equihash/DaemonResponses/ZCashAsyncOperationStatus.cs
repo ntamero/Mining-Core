@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using MiningCore.JsonRpc;
+using Miningcore.JsonRpc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace MiningCore.Blockchain.Equihash.DaemonResponses
+namespace Miningcore.Blockchain.Equihash.DaemonResponses
 {
     public class ZCashAsyncOperationStatus
     {

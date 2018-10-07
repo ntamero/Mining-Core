@@ -2,13 +2,13 @@
 using System.Globalization;
 using System.Numerics;
 using Autofac;
-using MiningCore.Blockchain.Bitcoin;
-using MiningCore.Crypto;
-using MiningCore.Crypto.Hashing.Algorithms;
+using Miningcore.Blockchain.Bitcoin;
+using Miningcore.Crypto;
+using Miningcore.Crypto.Hashing.Algorithms;
 using NBitcoin;
 using Newtonsoft.Json;
 
-namespace MiningCore.Configuration
+namespace Miningcore.Configuration
 {
     public abstract partial class CoinTemplate
     {

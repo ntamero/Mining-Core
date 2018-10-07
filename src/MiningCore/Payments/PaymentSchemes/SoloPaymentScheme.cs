@@ -23,14 +23,14 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using MiningCore.Configuration;
-using MiningCore.Persistence;
-using MiningCore.Persistence.Model;
-using MiningCore.Persistence.Repositories;
+using Miningcore.Configuration;
+using Miningcore.Persistence;
+using Miningcore.Persistence.Model;
+using Miningcore.Persistence.Repositories;
 using NLog;
-using Contract = MiningCore.Contracts.Contract;
+using Contract = Miningcore.Contracts.Contract;
 
-namespace MiningCore.Payments.PaymentSchemes
+namespace Miningcore.Payments.PaymentSchemes
 {
     /// <summary>
     /// PPLNS payout scheme implementation

@@ -4,25 +4,25 @@ using System.Reactive;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
-using MiningCore.Blockchain.Bitcoin;
-using MiningCore.Blockchain.Bitcoin.DaemonResponses;
-using MiningCore.Blockchain.Equihash.DaemonResponses;
-using MiningCore.Blockchain.Equihash.Subfamily.BitcoinGold;
-using MiningCore.Configuration;
-using MiningCore.Contracts;
-using MiningCore.Crypto.Hashing.Equihash;
-using MiningCore.DaemonInterface;
-using MiningCore.Extensions;
-using MiningCore.JsonRpc;
-using MiningCore.Messaging;
-using MiningCore.Stratum;
-using MiningCore.Time;
+using Miningcore.Blockchain.Bitcoin;
+using Miningcore.Blockchain.Bitcoin.DaemonResponses;
+using Miningcore.Blockchain.Equihash.DaemonResponses;
+using Miningcore.Blockchain.Equihash.Subfamily.BitcoinGold;
+using Miningcore.Configuration;
+using Miningcore.Contracts;
+using Miningcore.Crypto.Hashing.Equihash;
+using Miningcore.DaemonInterface;
+using Miningcore.Extensions;
+using Miningcore.JsonRpc;
+using Miningcore.Messaging;
+using Miningcore.Stratum;
+using Miningcore.Time;
 using NBitcoin;
 using NBitcoin.DataEncoders;
 using Newtonsoft.Json;
 using NLog;
 
-namespace MiningCore.Blockchain.Equihash
+namespace Miningcore.Blockchain.Equihash
 {
     public class EquihashJobManager : BitcoinJobManagerBase<EquihashJob>
     {

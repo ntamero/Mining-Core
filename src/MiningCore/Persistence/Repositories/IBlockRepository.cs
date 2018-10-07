@@ -20,9 +20,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Data;
-using MiningCore.Persistence.Model;
+using Miningcore.Persistence.Model;
 
-namespace MiningCore.Persistence.Repositories
+namespace Miningcore.Persistence.Repositories
 {
     public interface IBlockRepository
     {

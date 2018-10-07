@@ -35,17 +35,17 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using MiningCore.Configuration;
-using MiningCore.Extensions;
-using MiningCore.JsonRpc;
-using MiningCore.Mining;
-using MiningCore.Time;
+using Miningcore.Configuration;
+using Miningcore.Extensions;
+using Miningcore.JsonRpc;
+using Miningcore.Mining;
+using Miningcore.Time;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using NLog;
-using Contract = MiningCore.Contracts.Contract;
+using Contract = Miningcore.Contracts.Contract;
 
-namespace MiningCore.Stratum
+namespace Miningcore.Stratum
 {
     public class StratumClient
     {

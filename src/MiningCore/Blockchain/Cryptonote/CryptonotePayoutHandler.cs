@@ -25,24 +25,24 @@ using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
 using AutoMapper;
-using MiningCore.Blockchain.Cryptonote.Configuration;
-using MiningCore.Blockchain.Cryptonote.DaemonRequests;
-using MiningCore.Blockchain.Cryptonote.DaemonResponses;
-using MiningCore.Configuration;
-using MiningCore.DaemonInterface;
-using MiningCore.Extensions;
-using MiningCore.Messaging;
-using MiningCore.Native;
-using MiningCore.Payments;
-using MiningCore.Persistence;
-using MiningCore.Persistence.Model;
-using MiningCore.Persistence.Repositories;
-using MiningCore.Time;
-using MiningCore.Util;
+using Miningcore.Blockchain.Cryptonote.Configuration;
+using Miningcore.Blockchain.Cryptonote.DaemonRequests;
+using Miningcore.Blockchain.Cryptonote.DaemonResponses;
+using Miningcore.Configuration;
+using Miningcore.DaemonInterface;
+using Miningcore.Extensions;
+using Miningcore.Messaging;
+using Miningcore.Native;
+using Miningcore.Payments;
+using Miningcore.Persistence;
+using Miningcore.Persistence.Model;
+using Miningcore.Persistence.Repositories;
+using Miningcore.Time;
+using Miningcore.Util;
 using Newtonsoft.Json;
-using Contract = MiningCore.Contracts.Contract;
+using Contract = Miningcore.Contracts.Contract;
 
-namespace MiningCore.Blockchain.Cryptonote
+namespace Miningcore.Blockchain.Cryptonote
 {
     [CoinFamily(CoinFamily.Cryptonote)]
     public class CryptonotePayoutHandler : PayoutHandlerBase,

@@ -24,19 +24,19 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using MiningCore.Blockchain.Bitcoin.DaemonResponses;
-using MiningCore.Configuration;
-using MiningCore.Crypto;
-using MiningCore.Extensions;
-using MiningCore.Stratum;
-using MiningCore.Time;
-using MiningCore.Util;
+using Miningcore.Blockchain.Bitcoin.DaemonResponses;
+using Miningcore.Configuration;
+using Miningcore.Crypto;
+using Miningcore.Extensions;
+using Miningcore.Stratum;
+using Miningcore.Time;
+using Miningcore.Util;
 using NBitcoin;
 using NBitcoin.DataEncoders;
-using Contract = MiningCore.Contracts.Contract;
+using Contract = Miningcore.Contracts.Contract;
 using Transaction = NBitcoin.Transaction;
 
-namespace MiningCore.Blockchain.Bitcoin
+namespace Miningcore.Blockchain.Bitcoin
 {
     public class BitcoinJob
     {

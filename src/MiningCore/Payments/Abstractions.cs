@@ -20,10 +20,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System.Data;
 using System.Threading.Tasks;
-using MiningCore.Configuration;
-using MiningCore.Persistence.Model;
+using Miningcore.Configuration;
+using Miningcore.Persistence.Model;
 
-namespace MiningCore.Payments
+namespace Miningcore.Payments
 {
     public interface IPayoutHandler
     {

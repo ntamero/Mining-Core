@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
 
-namespace MiningCore.Persistence.Postgres.Entities
+namespace Miningcore.Persistence.Postgres.Entities
 {
     public class Share
     {

@@ -21,11 +21,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using MiningCore.Blockchain;
-using MiningCore.Configuration;
-using MiningCore.Stratum;
+using Miningcore.Blockchain;
+using Miningcore.Configuration;
+using Miningcore.Stratum;
 
-namespace MiningCore.Mining
+namespace Miningcore.Mining
 {
     public struct ClientShare
     {

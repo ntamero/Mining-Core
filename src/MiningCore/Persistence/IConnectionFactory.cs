@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System.Data;
 
-namespace MiningCore.Persistence
+namespace Miningcore.Persistence
 {
     public interface IConnectionFactory
     {

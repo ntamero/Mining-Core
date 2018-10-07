@@ -20,9 +20,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Security.Cryptography;
-using MiningCore.Contracts;
+using Miningcore.Contracts;
 
-namespace MiningCore.Crypto.Hashing.Algorithms
+namespace Miningcore.Crypto.Hashing.Algorithms
 {
     /// <summary>
     /// Sha-256 double round

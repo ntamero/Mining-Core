@@ -21,7 +21,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using System;
 using System.Net;
 
-namespace MiningCore.Extensions
+namespace Miningcore.Extensions
 {
     public static class NumberExtensions
     {

@@ -1,14 +1,14 @@
 using System.Linq;
 using Autofac;
 using AutoMapper;
-using MiningCore.Api.Responses;
-using MiningCore.Blockchain;
-using MiningCore.Blockchain.Ethereum.Configuration;
-using MiningCore.Configuration;
-using MiningCore.Extensions;
-using MiningCore.Mining;
+using Miningcore.Api.Responses;
+using Miningcore.Blockchain;
+using Miningcore.Blockchain.Ethereum.Configuration;
+using Miningcore.Configuration;
+using Miningcore.Extensions;
+using Miningcore.Mining;
 
-namespace MiningCore.Api.Extensions
+namespace Miningcore.Api.Extensions
 {
     public static class MiningPoolExtensions
     {

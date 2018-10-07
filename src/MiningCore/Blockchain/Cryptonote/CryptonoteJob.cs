@@ -21,16 +21,16 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using System;
 using System.Linq;
 using System.Threading;
-using MiningCore.Blockchain.Cryptonote.DaemonResponses;
-using MiningCore.Configuration;
-using MiningCore.Extensions;
-using MiningCore.Native;
-using MiningCore.Stratum;
-using MiningCore.Util;
+using Miningcore.Blockchain.Cryptonote.DaemonResponses;
+using Miningcore.Configuration;
+using Miningcore.Extensions;
+using Miningcore.Native;
+using Miningcore.Stratum;
+using Miningcore.Util;
 using NBitcoin.BouncyCastle.Math;
-using Contract = MiningCore.Contracts.Contract;
+using Contract = Miningcore.Contracts.Contract;
 
-namespace MiningCore.Blockchain.Cryptonote
+namespace Miningcore.Blockchain.Cryptonote
 {
     public class CryptonoteJob
     {

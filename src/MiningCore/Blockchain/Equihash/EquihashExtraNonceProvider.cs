@@ -1,9 +1,9 @@
 using System;
 using System.Linq;
 using System.Threading;
-using MiningCore.Extensions;
+using Miningcore.Extensions;
 
-namespace MiningCore.Blockchain.Equihash
+namespace Miningcore.Blockchain.Equihash
 {
     public class EquihashExtraNonceProvider : ExtraNonceProviderBase
     {

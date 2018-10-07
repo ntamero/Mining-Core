@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MiningCore.Blockchain.Ethereum;
-using MiningCore.Contracts;
+using Miningcore.Blockchain.Ethereum;
+using Miningcore.Contracts;
 using NLog;
 
-namespace MiningCore.Crypto.Hashing.Ethash
+namespace Miningcore.Crypto.Hashing.Ethash
 {
     public class EthashFull : IDisposable
     {

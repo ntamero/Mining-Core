@@ -1,16 +1,16 @@
 using System;
-using MiningCore.Blockchain.Bitcoin;
-using MiningCore.Configuration;
-using MiningCore.Crypto;
-using MiningCore.Crypto.Hashing.Algorithms;
-using MiningCore.Extensions;
-using MiningCore.Stratum;
-using MiningCore.Tests.Util;
+using Miningcore.Blockchain.Bitcoin;
+using Miningcore.Configuration;
+using Miningcore.Crypto;
+using Miningcore.Crypto.Hashing.Algorithms;
+using Miningcore.Extensions;
+using Miningcore.Stratum;
+using Miningcore.Tests.Util;
 using NBitcoin;
 using Newtonsoft.Json;
 using Xunit;
 
-namespace MiningCore.Tests.Blockchain.Bitcoin
+namespace Miningcore.Tests.Blockchain.Bitcoin
 {
     public class BitcoinJobTests : TestBase
     {
@@ -42,7 +42,7 @@ namespace MiningCore.Tests.Blockchain.Bitcoin
 		        ExtraNonce1 = "01000058",
 	        });
 
-            var bt = JsonConvert.DeserializeObject<MiningCore.Blockchain.Bitcoin.DaemonResponses.BlockTemplate>(
+            var bt = JsonConvert.DeserializeObject<Miningcore.Blockchain.Bitcoin.DaemonResponses.BlockTemplate>(
                 "{\"Version\":536870912,\"PreviousBlockhash\":\"000000000909578519b5be7b37fdc53b2923817921c43108a907b72264da76bb\",\"CoinbaseValue\":5000000000,\"Target\":\"7fffff0000000000000000000000000000000000000000000000000000000000\",\"NonceRange\":\"00000000ffffffff\",\"CurTime\":1508869874,\"Bits\":\"207fffff\",\"Height\":14,\"Transactions\":[],\"CoinbaseAux\":{\"Flags\":\"0b2f454231362f414431322f\"},\"default_witness_commitment\":null}");
 
             var job = new BitcoinJob();
@@ -78,7 +78,7 @@ namespace MiningCore.Tests.Blockchain.Bitcoin
 				ExtraNonce1 = "01000058",
 	        });
 
-            var bt = JsonConvert.DeserializeObject<MiningCore.Blockchain.Bitcoin.DaemonResponses.BlockTemplate>(
+            var bt = JsonConvert.DeserializeObject<Miningcore.Blockchain.Bitcoin.DaemonResponses.BlockTemplate>(
                 "{\"Version\":536870912,\"PreviousBlockhash\":\"000000000909578519b5be7b37fdc53b2923817921c43108a907b72264da76bb\",\"CoinbaseValue\":5000000000,\"Target\":\"7fffff0000000000000000000000000000000000000000000000000000000000\",\"NonceRange\":\"00000000ffffffff\",\"CurTime\":1508869874,\"Bits\":\"207fffff\",\"Height\":14,\"Transactions\":[],\"CoinbaseAux\":{\"Flags\":\"0b2f454231362f414431322f\"},\"default_witness_commitment\":null}");
 
             var job = new BitcoinJob();

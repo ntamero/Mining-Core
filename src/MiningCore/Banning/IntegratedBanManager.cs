@@ -22,9 +22,9 @@ using System;
 using System.Net;
 using Microsoft.Extensions.Caching.Memory;
 using NBitcoin;
-using Contract = MiningCore.Contracts.Contract;
+using Contract = Miningcore.Contracts.Contract;
 
-namespace MiningCore.Banning
+namespace Miningcore.Banning
 {
     public class IntegratedBanManager : IBanManager
     {

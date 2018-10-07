@@ -19,10 +19,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 using System.Numerics;
-using MiningCore.Serialization;
+using Miningcore.Serialization;
 using Newtonsoft.Json;
 
-namespace MiningCore.Blockchain.Ethereum.DaemonResponses
+namespace Miningcore.Blockchain.Ethereum.DaemonResponses
 {
     public class Web3Version
     {

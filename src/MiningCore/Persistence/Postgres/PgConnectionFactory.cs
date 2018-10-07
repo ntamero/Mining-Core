@@ -21,7 +21,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using System.Data;
 using Npgsql;
 
-namespace MiningCore.Persistence.Postgres
+namespace Miningcore.Persistence.Postgres
 {
     public class PgConnectionFactory : IConnectionFactory
     {

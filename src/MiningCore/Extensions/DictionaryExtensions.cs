@@ -25,7 +25,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 
-namespace MiningCore.Extensions
+namespace Miningcore.Extensions
 {
     public static class DictionaryExtensions
     {

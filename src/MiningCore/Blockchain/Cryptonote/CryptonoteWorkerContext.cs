@@ -20,10 +20,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System.Collections.Generic;
 using System.Linq;
-using MiningCore.Mining;
-using MiningCore.Time;
+using Miningcore.Mining;
+using Miningcore.Time;
 
-namespace MiningCore.Blockchain.Cryptonote
+namespace Miningcore.Blockchain.Cryptonote
 {
     public class CryptonoteWorkerContext : WorkerContextBase
     {

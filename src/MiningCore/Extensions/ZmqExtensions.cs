@@ -6,12 +6,12 @@ using System.Reactive.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
-using MiningCore.Util;
+using Miningcore.Util;
 using NLog;
 using ZeroMQ;
 using ZeroMQ.Monitoring;
 
-namespace MiningCore.Extensions
+namespace Miningcore.Extensions
 {
     public static class ZmqExtensions
     {

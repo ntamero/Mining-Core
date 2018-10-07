@@ -3,19 +3,19 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using MiningCore.Blockchain;
-using MiningCore.Configuration;
-using MiningCore.Contracts;
-using MiningCore.Crypto;
-using MiningCore.Extensions;
-using MiningCore.Messaging;
-using MiningCore.Util;
+using Miningcore.Blockchain;
+using Miningcore.Configuration;
+using Miningcore.Contracts;
+using Miningcore.Crypto;
+using Miningcore.Extensions;
+using Miningcore.Messaging;
+using Miningcore.Util;
 using Newtonsoft.Json;
 using NLog;
 using ProtoBuf;
 using ZeroMQ;
 
-namespace MiningCore.Mining
+namespace Miningcore.Mining
 {
     public class ShareRelay
     {

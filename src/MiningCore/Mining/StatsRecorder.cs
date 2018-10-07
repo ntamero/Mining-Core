@@ -7,17 +7,17 @@ using System.Net.Sockets;
 using System.Threading;
 using Autofac;
 using AutoMapper;
-using MiningCore.Configuration;
-using MiningCore.Contracts;
-using MiningCore.Extensions;
-using MiningCore.Persistence;
-using MiningCore.Persistence.Model;
-using MiningCore.Persistence.Repositories;
-using MiningCore.Time;
+using Miningcore.Configuration;
+using Miningcore.Contracts;
+using Miningcore.Extensions;
+using Miningcore.Persistence;
+using Miningcore.Persistence.Model;
+using Miningcore.Persistence.Repositories;
+using Miningcore.Time;
 using NLog;
 using Polly;
 
-namespace MiningCore.Mining
+namespace Miningcore.Mining
 {
     public class StatsRecorder
     {

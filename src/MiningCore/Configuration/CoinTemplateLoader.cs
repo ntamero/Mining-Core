@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using MiningCore.Util;
+using Miningcore.Util;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using NLog;
 
-namespace MiningCore.Configuration
+namespace Miningcore.Configuration
 {
     public static class CoinTemplateLoader
     {

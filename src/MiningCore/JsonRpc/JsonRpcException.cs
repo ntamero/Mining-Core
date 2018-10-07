@@ -21,7 +21,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using System;
 using Newtonsoft.Json;
 
-namespace MiningCore.JsonRpc
+namespace Miningcore.JsonRpc
 {
     /// <summary>
     /// 5.1 Error object

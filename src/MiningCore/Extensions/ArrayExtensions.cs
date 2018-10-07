@@ -25,7 +25,7 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 
-namespace MiningCore.Extensions
+namespace Miningcore.Extensions
 {
     public static class ArrayExtensions
     {

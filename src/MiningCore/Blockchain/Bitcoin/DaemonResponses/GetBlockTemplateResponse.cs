@@ -21,7 +21,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace MiningCore.Blockchain.Bitcoin.DaemonResponses
+namespace Miningcore.Blockchain.Bitcoin.DaemonResponses
 {
     public class BitcoinBlockTransaction
     {

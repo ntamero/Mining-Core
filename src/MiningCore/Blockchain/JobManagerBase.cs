@@ -29,15 +29,15 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
-using MiningCore.Configuration;
-using MiningCore.Extensions;
-using MiningCore.Messaging;
-using MiningCore.Util;
+using Miningcore.Configuration;
+using Miningcore.Extensions;
+using Miningcore.Messaging;
+using Miningcore.Util;
 using NLog;
 using ZeroMQ;
-using Contract = MiningCore.Contracts.Contract;
+using Contract = Miningcore.Contracts.Contract;
 
-namespace MiningCore.Blockchain
+namespace Miningcore.Blockchain
 {
     public abstract class JobManagerBase<TJob>
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 
-namespace MiningCore.Util
+namespace Miningcore.Util
 {
     public static class StaticRandom
     {

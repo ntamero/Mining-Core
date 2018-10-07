@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
 
-namespace MiningCore.Persistence.Model
+namespace Miningcore.Persistence.Model
 {
     public class Block
     {

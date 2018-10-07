@@ -1,7 +1,7 @@
 using System;
 using System.Net;
 
-namespace MiningCore.DaemonInterface
+namespace Miningcore.DaemonInterface
 {
     public class DaemonClientException : Exception
     {

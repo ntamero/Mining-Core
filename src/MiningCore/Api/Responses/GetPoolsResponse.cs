@@ -19,13 +19,13 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 using System.Collections.Generic;
-using MiningCore.Blockchain;
-using MiningCore.Configuration;
-using MiningCore.Mining;
+using Miningcore.Blockchain;
+using Miningcore.Configuration;
+using Miningcore.Mining;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace MiningCore.Api.Responses
+namespace Miningcore.Api.Responses
 {
     public class ApiCoinConfig
     {

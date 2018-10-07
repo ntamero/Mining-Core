@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using MiningCore.Configuration;
+using Miningcore.Configuration;
 
-namespace MiningCore.Tests
+namespace Miningcore.Tests
 {
     public abstract class TestBase
     {

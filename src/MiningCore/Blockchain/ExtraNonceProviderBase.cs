@@ -21,7 +21,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using System;
 using System.Security.Cryptography;
 
-namespace MiningCore.Blockchain
+namespace Miningcore.Blockchain
 {
     public class ExtraNonceProviderBase : IExtraNonceProvider
     {

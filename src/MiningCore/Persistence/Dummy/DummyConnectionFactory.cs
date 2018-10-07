@@ -21,7 +21,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using System;
 using System.Data;
 
-namespace MiningCore.Persistence.Dummy
+namespace Miningcore.Persistence.Dummy
 {
     public class DummyConnectionFactory : IConnectionFactory
     {

@@ -26,26 +26,26 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Autofac;
 using AutoMapper;
-using MiningCore.Blockchain.Ethereum.Configuration;
-using MiningCore.Blockchain.Ethereum.DaemonRequests;
-using MiningCore.Blockchain.Ethereum.DaemonResponses;
-using MiningCore.Configuration;
-using MiningCore.DaemonInterface;
-using MiningCore.Extensions;
-using MiningCore.Messaging;
-using MiningCore.Notifications;
-using MiningCore.Payments;
-using MiningCore.Persistence;
-using MiningCore.Persistence.Model;
-using MiningCore.Persistence.Repositories;
-using MiningCore.Time;
-using MiningCore.Util;
+using Miningcore.Blockchain.Ethereum.Configuration;
+using Miningcore.Blockchain.Ethereum.DaemonRequests;
+using Miningcore.Blockchain.Ethereum.DaemonResponses;
+using Miningcore.Configuration;
+using Miningcore.DaemonInterface;
+using Miningcore.Extensions;
+using Miningcore.Messaging;
+using Miningcore.Notifications;
+using Miningcore.Payments;
+using Miningcore.Persistence;
+using Miningcore.Persistence.Model;
+using Miningcore.Persistence.Repositories;
+using Miningcore.Time;
+using Miningcore.Util;
 using Newtonsoft.Json;
-using Block = MiningCore.Persistence.Model.Block;
-using Contract = MiningCore.Contracts.Contract;
-using EC = MiningCore.Blockchain.Ethereum.EthCommands;
+using Block = Miningcore.Persistence.Model.Block;
+using Contract = Miningcore.Contracts.Contract;
+using EC = Miningcore.Blockchain.Ethereum.EthCommands;
 
-namespace MiningCore.Blockchain.Ethereum
+namespace Miningcore.Blockchain.Ethereum
 {
     [CoinFamily(CoinFamily.Ethereum)]
     public class EthereumPayoutHandler : PayoutHandlerBase,

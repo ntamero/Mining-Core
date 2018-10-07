@@ -20,11 +20,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Runtime.CompilerServices;
-using MiningCore.Configuration;
-using MiningCore.Mining;
+using Miningcore.Configuration;
+using Miningcore.Mining;
 using NLog;
 
-namespace MiningCore.Util
+namespace Miningcore.Util
 {
     public static class LogUtil
     {

@@ -27,20 +27,20 @@ using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
 using AutoMapper;
-using MiningCore.Blockchain.Cryptonote.StratumRequests;
-using MiningCore.Blockchain.Cryptonote.StratumResponses;
-using MiningCore.Configuration;
-using MiningCore.JsonRpc;
-using MiningCore.Messaging;
-using MiningCore.Mining;
-using MiningCore.Notifications.Messages;
-using MiningCore.Persistence;
-using MiningCore.Persistence.Repositories;
-using MiningCore.Stratum;
-using MiningCore.Time;
+using Miningcore.Blockchain.Cryptonote.StratumRequests;
+using Miningcore.Blockchain.Cryptonote.StratumResponses;
+using Miningcore.Configuration;
+using Miningcore.JsonRpc;
+using Miningcore.Messaging;
+using Miningcore.Mining;
+using Miningcore.Notifications.Messages;
+using Miningcore.Persistence;
+using Miningcore.Persistence.Repositories;
+using Miningcore.Stratum;
+using Miningcore.Time;
 using Newtonsoft.Json;
 
-namespace MiningCore.Blockchain.Cryptonote
+namespace Miningcore.Blockchain.Cryptonote
 {
     [CoinFamily(CoinFamily.Cryptonote)]
     public class CryptonotePool : PoolBase

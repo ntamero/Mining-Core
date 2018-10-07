@@ -1,12 +1,12 @@
 using System;
 using System.Threading.Tasks;
-using MiningCore.Blockchain.Ethereum;
-using MiningCore.Contracts;
-using MiningCore.Extensions;
-using MiningCore.Native;
+using Miningcore.Blockchain.Ethereum;
+using Miningcore.Contracts;
+using Miningcore.Extensions;
+using Miningcore.Native;
 using NLog;
 
-namespace MiningCore.Crypto.Hashing.Ethash
+namespace Miningcore.Crypto.Hashing.Ethash
 {
     public class Cache : IDisposable
     {

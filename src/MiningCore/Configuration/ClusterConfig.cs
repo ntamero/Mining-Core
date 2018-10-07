@@ -26,7 +26,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 
-namespace MiningCore.Configuration
+namespace Miningcore.Configuration
 {
     #region Coin Definitions
 

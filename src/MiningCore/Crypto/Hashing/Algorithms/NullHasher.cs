@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
 
-namespace MiningCore.Crypto.Hashing.Algorithms
+namespace Miningcore.Crypto.Hashing.Algorithms
 {
     public class Null : IHashAlgorithm
     {

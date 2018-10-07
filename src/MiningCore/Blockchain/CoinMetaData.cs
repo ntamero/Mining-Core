@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace MiningCore.Blockchain
+namespace Miningcore.Blockchain
 {
     public class DevDonation
     {

@@ -22,19 +22,19 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using MiningCore.Blockchain.Bitcoin;
-using MiningCore.Blockchain.Equihash.DaemonResponses;
-using MiningCore.Configuration;
-using MiningCore.Contracts;
-using MiningCore.Crypto.Hashing.Equihash;
-using MiningCore.Extensions;
-using MiningCore.Time;
-using MiningCore.Util;
+using Miningcore.Blockchain.Bitcoin;
+using Miningcore.Blockchain.Equihash.DaemonResponses;
+using Miningcore.Configuration;
+using Miningcore.Contracts;
+using Miningcore.Crypto.Hashing.Equihash;
+using Miningcore.Extensions;
+using Miningcore.Time;
+using Miningcore.Util;
 using NBitcoin;
 using NBitcoin.DataEncoders;
 using Transaction = NBitcoin.Transaction;
 
-namespace MiningCore.Blockchain.Equihash.Subfamily.BitcoinGold
+namespace Miningcore.Blockchain.Equihash.Subfamily.BitcoinGold
 {
     public class BitcoinGoldJob : EquihashJob
     {

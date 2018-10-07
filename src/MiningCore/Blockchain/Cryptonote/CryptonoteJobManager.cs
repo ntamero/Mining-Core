@@ -28,26 +28,26 @@ using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
-using MiningCore.Blockchain.Bitcoin;
-using MiningCore.Blockchain.Cryptonote.Configuration;
-using MiningCore.Blockchain.Cryptonote.DaemonRequests;
-using MiningCore.Blockchain.Cryptonote.DaemonResponses;
-using MiningCore.Blockchain.Cryptonote.StratumRequests;
-using MiningCore.Configuration;
-using MiningCore.DaemonInterface;
-using MiningCore.Extensions;
-using MiningCore.JsonRpc;
-using MiningCore.Messaging;
-using MiningCore.Native;
-using MiningCore.Notifications.Messages;
-using MiningCore.Stratum;
-using MiningCore.Time;
-using MiningCore.Util;
+using Miningcore.Blockchain.Bitcoin;
+using Miningcore.Blockchain.Cryptonote.Configuration;
+using Miningcore.Blockchain.Cryptonote.DaemonRequests;
+using Miningcore.Blockchain.Cryptonote.DaemonResponses;
+using Miningcore.Blockchain.Cryptonote.StratumRequests;
+using Miningcore.Configuration;
+using Miningcore.DaemonInterface;
+using Miningcore.Extensions;
+using Miningcore.JsonRpc;
+using Miningcore.Messaging;
+using Miningcore.Native;
+using Miningcore.Notifications.Messages;
+using Miningcore.Stratum;
+using Miningcore.Time;
+using Miningcore.Util;
 using Newtonsoft.Json;
 using NLog;
-using Contract = MiningCore.Contracts.Contract;
+using Contract = Miningcore.Contracts.Contract;
 
-namespace MiningCore.Blockchain.Cryptonote
+namespace Miningcore.Blockchain.Cryptonote
 {
     public class CryptonoteJobManager : JobManagerBase<CryptonoteJob>
     {

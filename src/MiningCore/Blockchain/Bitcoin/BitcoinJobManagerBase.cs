@@ -29,27 +29,27 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
-using MiningCore.Blockchain.Bitcoin.Configuration;
-using MiningCore.Blockchain.Bitcoin.DaemonResponses;
-using MiningCore.Configuration;
-using MiningCore.Contracts;
-using MiningCore.Crypto;
-using MiningCore.Crypto.Hashing.Algorithms;
-using MiningCore.DaemonInterface;
-using MiningCore.Extensions;
-using MiningCore.JsonRpc;
-using MiningCore.Messaging;
-using MiningCore.Notifications;
-using MiningCore.Notifications.Messages;
-using MiningCore.Stratum;
-using MiningCore.Time;
-using MiningCore.Util;
+using Miningcore.Blockchain.Bitcoin.Configuration;
+using Miningcore.Blockchain.Bitcoin.DaemonResponses;
+using Miningcore.Configuration;
+using Miningcore.Contracts;
+using Miningcore.Crypto;
+using Miningcore.Crypto.Hashing.Algorithms;
+using Miningcore.DaemonInterface;
+using Miningcore.Extensions;
+using Miningcore.JsonRpc;
+using Miningcore.Messaging;
+using Miningcore.Notifications;
+using Miningcore.Notifications.Messages;
+using Miningcore.Stratum;
+using Miningcore.Time;
+using Miningcore.Util;
 using NBitcoin;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
 
-namespace MiningCore.Blockchain.Bitcoin
+namespace Miningcore.Blockchain.Bitcoin
 {
     public abstract class BitcoinJobManagerBase<TJob> : JobManagerBase<TJob>
     {

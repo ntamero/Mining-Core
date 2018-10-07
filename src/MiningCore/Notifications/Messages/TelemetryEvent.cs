@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MiningCore.Notifications.Messages
+namespace Miningcore.Notifications.Messages
 {
     public enum TelemetryCategory
     {

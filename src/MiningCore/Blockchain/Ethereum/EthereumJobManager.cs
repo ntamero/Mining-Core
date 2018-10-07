@@ -30,28 +30,28 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
-using MiningCore.Blockchain.Bitcoin;
-using MiningCore.Blockchain.Ethereum.Configuration;
-using MiningCore.Blockchain.Ethereum.DaemonResponses;
-using MiningCore.Configuration;
-using MiningCore.Crypto.Hashing.Algorithms;
-using MiningCore.Crypto.Hashing.Ethash;
-using MiningCore.DaemonInterface;
-using MiningCore.Extensions;
-using MiningCore.JsonRpc;
-using MiningCore.Messaging;
-using MiningCore.Notifications.Messages;
-using MiningCore.Stratum;
-using MiningCore.Time;
-using MiningCore.Util;
+using Miningcore.Blockchain.Bitcoin;
+using Miningcore.Blockchain.Ethereum.Configuration;
+using Miningcore.Blockchain.Ethereum.DaemonResponses;
+using Miningcore.Configuration;
+using Miningcore.Crypto.Hashing.Algorithms;
+using Miningcore.Crypto.Hashing.Ethash;
+using Miningcore.DaemonInterface;
+using Miningcore.Extensions;
+using Miningcore.JsonRpc;
+using Miningcore.Messaging;
+using Miningcore.Notifications.Messages;
+using Miningcore.Stratum;
+using Miningcore.Time;
+using Miningcore.Util;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
-using Block = MiningCore.Blockchain.Ethereum.DaemonResponses.Block;
-using Contract = MiningCore.Contracts.Contract;
-using EC = MiningCore.Blockchain.Ethereum.EthCommands;
+using Block = Miningcore.Blockchain.Ethereum.DaemonResponses.Block;
+using Contract = Miningcore.Contracts.Contract;
+using EC = Miningcore.Blockchain.Ethereum.EthCommands;
 
-namespace MiningCore.Blockchain.Ethereum
+namespace Miningcore.Blockchain.Ethereum
 {
     public class EthereumJobManager : JobManagerBase<EthereumJob>
     {

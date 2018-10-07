@@ -1,6 +1,6 @@
 using System;
 
-namespace MiningCore.Blockchain.Ethereum
+namespace Miningcore.Blockchain.Ethereum
 {
     public class EthereumUtils
     {

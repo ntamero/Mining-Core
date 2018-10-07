@@ -36,25 +36,25 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Primitives;
-using MiningCore.Api.Extensions;
-using MiningCore.Api.Responses;
-using MiningCore.Blockchain;
-using MiningCore.Configuration;
-using MiningCore.Extensions;
-using MiningCore.Messaging;
-using MiningCore.Mining;
-using MiningCore.Notifications.Messages;
-using MiningCore.Persistence;
-using MiningCore.Persistence.Model;
-using MiningCore.Persistence.Repositories;
-using MiningCore.Time;
-using MiningCore.Util;
+using Miningcore.Api.Extensions;
+using Miningcore.Api.Responses;
+using Miningcore.Blockchain;
+using Miningcore.Configuration;
+using Miningcore.Extensions;
+using Miningcore.Messaging;
+using Miningcore.Mining;
+using Miningcore.Notifications.Messages;
+using Miningcore.Persistence;
+using Miningcore.Persistence.Model;
+using Miningcore.Persistence.Repositories;
+using Miningcore.Time;
+using Miningcore.Util;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using NLog;
-using Contract = MiningCore.Contracts.Contract;
+using Contract = Miningcore.Contracts.Contract;
 
-namespace MiningCore.Api
+namespace Miningcore.Api
 {
     public class ApiServer
     {

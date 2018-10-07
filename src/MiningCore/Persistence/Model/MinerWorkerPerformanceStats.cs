@@ -1,6 +1,6 @@
 using System;
 
-namespace MiningCore.Persistence.Model
+namespace Miningcore.Persistence.Model
 {
     public class MinerWorkerPerformanceStats
     {

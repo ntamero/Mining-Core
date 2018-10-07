@@ -1,14 +1,14 @@
 using System.Collections.Generic;
-using MiningCore.Configuration;
-using MiningCore.Crypto.Hashing.Algorithms;
-using MiningCore.Extensions;
-using MiningCore.Mining;
-using MiningCore.Tests.Util;
-using MiningCore.VarDiff;
+using Miningcore.Configuration;
+using Miningcore.Crypto.Hashing.Algorithms;
+using Miningcore.Extensions;
+using Miningcore.Mining;
+using Miningcore.Tests.Util;
+using Miningcore.VarDiff;
 using NLog;
 using Xunit;
 
-namespace MiningCore.Tests.VarDiff
+namespace Miningcore.Tests.VarDiff
 {
     public class VarDiffManagerTests : TestBase
     {

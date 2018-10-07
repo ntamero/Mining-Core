@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Buffers;
-using MiningCore.Configuration;
-using MiningCore.Extensions;
+using Miningcore.Configuration;
+using Miningcore.Extensions;
 using NBitcoin.BouncyCastle.Math;
 
-namespace MiningCore.Blockchain.Equihash
+namespace Miningcore.Blockchain.Equihash
 {
     public static class EquihashUtils
     {

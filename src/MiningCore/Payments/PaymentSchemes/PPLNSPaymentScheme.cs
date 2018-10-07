@@ -25,17 +25,17 @@ using System.Data.Common;
 using System.Linq;
 using System.Net.Sockets;
 using System.Threading.Tasks;
-using MiningCore.Configuration;
-using MiningCore.Extensions;
-using MiningCore.Persistence;
-using MiningCore.Persistence.Model;
-using MiningCore.Persistence.Repositories;
-using MiningCore.Util;
+using Miningcore.Configuration;
+using Miningcore.Extensions;
+using Miningcore.Persistence;
+using Miningcore.Persistence.Model;
+using Miningcore.Persistence.Repositories;
+using Miningcore.Util;
 using NLog;
 using Polly;
-using Contract = MiningCore.Contracts.Contract;
+using Contract = Miningcore.Contracts.Contract;
 
-namespace MiningCore.Payments.PaymentSchemes
+namespace Miningcore.Payments.PaymentSchemes
 {
     /// <summary>
     /// PPLNS payout scheme implementation

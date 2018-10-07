@@ -5,7 +5,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 
-namespace MiningCore.Util
+namespace Miningcore.Util
 {
     public class ScheduledSubject<T> : ISubject<T>
     {

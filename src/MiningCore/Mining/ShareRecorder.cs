@@ -29,24 +29,24 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Text;
 using AutoMapper;
-using MiningCore.Configuration;
-using MiningCore.Extensions;
-using MiningCore.Messaging;
-using MiningCore.Notifications;
-using MiningCore.Notifications.Messages;
-using MiningCore.Persistence;
-using MiningCore.Persistence.Model;
-using MiningCore.Persistence.Repositories;
-using MiningCore.Time;
-using MiningCore.Util;
+using Miningcore.Configuration;
+using Miningcore.Extensions;
+using Miningcore.Messaging;
+using Miningcore.Notifications;
+using Miningcore.Notifications.Messages;
+using Miningcore.Persistence;
+using Miningcore.Persistence.Model;
+using Miningcore.Persistence.Repositories;
+using Miningcore.Time;
+using Miningcore.Util;
 using Newtonsoft.Json;
 using NLog;
 using Polly;
 using Polly.CircuitBreaker;
-using Contract = MiningCore.Contracts.Contract;
-using Share = MiningCore.Blockchain.Share;
+using Contract = Miningcore.Contracts.Contract;
+using Share = Miningcore.Blockchain.Share;
 
-namespace MiningCore.Mining
+namespace Miningcore.Mining
 {
     /// <summary>
     /// Asynchronously persist shares produced by all pools for processing by coin-specific payment processor(s)

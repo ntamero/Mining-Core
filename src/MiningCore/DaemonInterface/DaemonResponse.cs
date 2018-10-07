@@ -18,10 +18,10 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-using MiningCore.Configuration;
-using MiningCore.JsonRpc;
+using Miningcore.Configuration;
+using Miningcore.JsonRpc;
 
-namespace MiningCore.DaemonInterface
+namespace Miningcore.DaemonInterface
 {
     public class DaemonResponse<T>
     {

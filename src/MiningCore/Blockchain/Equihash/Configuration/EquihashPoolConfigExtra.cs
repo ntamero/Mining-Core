@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Newtonsoft.Json;
 
-namespace MiningCore.Blockchain.Equihash.Configuration
+namespace Miningcore.Blockchain.Equihash.Configuration
 {
     public class EquihashPoolConfigExtra
     {

@@ -4,7 +4,7 @@ using System.Numerics;
 using System.Text;
 using NBitcoin;
 
-namespace MiningCore.Blockchain.Ethereum
+namespace Miningcore.Blockchain.Ethereum
 {
     public class EthereumBlockTemplate
     {

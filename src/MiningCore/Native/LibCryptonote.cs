@@ -22,9 +22,9 @@ using System;
 using System.Buffers;
 using System.Runtime.InteropServices;
 using System.Text;
-using MiningCore.Contracts;
+using Miningcore.Contracts;
 
-namespace MiningCore.Native
+namespace Miningcore.Native
 {
     public static unsafe class LibCryptonote
     {

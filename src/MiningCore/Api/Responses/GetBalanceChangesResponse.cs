@@ -19,9 +19,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 using System;
-using MiningCore.Configuration;
+using Miningcore.Configuration;
 
-namespace MiningCore.Api.Responses
+namespace Miningcore.Api.Responses
 {
     public class BalanceChange
     {

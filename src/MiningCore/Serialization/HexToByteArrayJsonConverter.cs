@@ -1,9 +1,9 @@
 using System;
 using System.Globalization;
-using MiningCore.Extensions;
+using Miningcore.Extensions;
 using Newtonsoft.Json;
 
-namespace MiningCore.Serialization
+namespace Miningcore.Serialization
 {
     public class HexToByteArrayJsonConverter : JsonConverter
     {

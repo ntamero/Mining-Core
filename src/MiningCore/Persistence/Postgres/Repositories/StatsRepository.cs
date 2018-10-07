@@ -24,16 +24,16 @@ using System.Data;
 using System.Linq;
 using AutoMapper;
 using Dapper;
-using MiningCore.Extensions;
-using MiningCore.Persistence.Model;
-using MiningCore.Persistence.Model.Projections;
-using MiningCore.Persistence.Repositories;
-using MiningCore.Time;
+using Miningcore.Extensions;
+using Miningcore.Persistence.Model;
+using Miningcore.Persistence.Model.Projections;
+using Miningcore.Persistence.Repositories;
+using Miningcore.Time;
 using NBitcoin;
 using NLog;
-using MinerStats = MiningCore.Persistence.Model.Projections.MinerStats;
+using MinerStats = Miningcore.Persistence.Model.Projections.MinerStats;
 
-namespace MiningCore.Persistence.Postgres.Repositories
+namespace Miningcore.Persistence.Postgres.Repositories
 {
     public class StatsRepository : IStatsRepository
     {

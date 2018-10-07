@@ -22,21 +22,21 @@ using System;
 using System.Data.Common;
 using System.Linq;
 using AutoMapper;
-using MiningCore.Blockchain;
-using MiningCore.Configuration;
-using MiningCore.Extensions;
-using MiningCore.Messaging;
-using MiningCore.Notifications.Messages;
-using MiningCore.Persistence;
-using MiningCore.Persistence.Model;
-using MiningCore.Persistence.Repositories;
-using MiningCore.Time;
+using Miningcore.Blockchain;
+using Miningcore.Configuration;
+using Miningcore.Extensions;
+using Miningcore.Messaging;
+using Miningcore.Notifications.Messages;
+using Miningcore.Persistence;
+using Miningcore.Persistence.Model;
+using Miningcore.Persistence.Repositories;
+using Miningcore.Time;
 using Newtonsoft.Json;
 using NLog;
 using Polly;
-using Contract = MiningCore.Contracts.Contract;
+using Contract = Miningcore.Contracts.Contract;
 
-namespace MiningCore.Payments
+namespace Miningcore.Payments
 {
     public abstract class PayoutHandlerBase
     {

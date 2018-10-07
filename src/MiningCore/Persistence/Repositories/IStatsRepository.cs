@@ -20,11 +20,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Data;
-using MiningCore.Persistence.Model;
-using MiningCore.Persistence.Model.Projections;
-using MinerStats = MiningCore.Persistence.Model.Projections.MinerStats;
+using Miningcore.Persistence.Model;
+using Miningcore.Persistence.Model.Projections;
+using MinerStats = Miningcore.Persistence.Model.Projections.MinerStats;
 
-namespace MiningCore.Persistence.Repositories
+namespace Miningcore.Persistence.Repositories
 {
     public interface IStatsRepository
     {

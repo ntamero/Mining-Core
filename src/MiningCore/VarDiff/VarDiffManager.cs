@@ -19,12 +19,12 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 using System;
-using MiningCore.Configuration;
-using MiningCore.Time;
-using MiningCore.Util;
-using Contract = MiningCore.Contracts.Contract;
+using Miningcore.Configuration;
+using Miningcore.Time;
+using Miningcore.Util;
+using Contract = Miningcore.Contracts.Contract;
 
-namespace MiningCore.VarDiff
+namespace Miningcore.VarDiff
 {
     public class VarDiffManager
     {

@@ -19,13 +19,13 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 using AutoMapper;
-using MiningCore.Blockchain;
-using MiningCore.Configuration;
-using MiningCore.Persistence.Model;
-using MiningCore.Persistence.Model.Projections;
-using MinerStats = MiningCore.Persistence.Model.Projections.MinerStats;
+using Miningcore.Blockchain;
+using Miningcore.Configuration;
+using Miningcore.Persistence.Model;
+using Miningcore.Persistence.Model.Projections;
+using MinerStats = Miningcore.Persistence.Model.Projections.MinerStats;
 
-namespace MiningCore
+namespace Miningcore
 {
     public class AutoMapperProfile : Profile
     {

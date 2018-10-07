@@ -1,9 +1,9 @@
 using System;
-using MiningCore.Extensions;
-using MiningCore.Native;
+using Miningcore.Extensions;
+using Miningcore.Native;
 using Xunit;
 
-namespace MiningCore.Tests.Crypto
+namespace Miningcore.Tests.Crypto
 {
     public class CrytonoteTests : TestBase
     {

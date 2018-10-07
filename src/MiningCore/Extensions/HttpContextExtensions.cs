@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 
-namespace MiningCore.Extensions
+namespace Miningcore.Extensions
 {
     public static class HttpContextExtensions
     {

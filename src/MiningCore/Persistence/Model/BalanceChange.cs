@@ -19,9 +19,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 using System;
-using MiningCore.Configuration;
+using Miningcore.Configuration;
 
-namespace MiningCore.Persistence.Model
+namespace Miningcore.Persistence.Model
 {
     public class BalanceChange
     {

@@ -37,17 +37,17 @@ using Autofac.Features.Metadata;
 using AutoMapper;
 using FluentValidation;
 using Microsoft.Extensions.CommandLineUtils;
-using MiningCore.Api;
-using MiningCore.Api.Responses;
-using MiningCore.Configuration;
-using MiningCore.Crypto.Hashing.Equihash;
-using MiningCore.Mining;
-using MiningCore.Notifications;
-using MiningCore.Payments;
-using MiningCore.Persistence.Dummy;
-using MiningCore.Persistence.Postgres;
-using MiningCore.Persistence.Postgres.Repositories;
-using MiningCore.Util;
+using Miningcore.Api;
+using Miningcore.Api.Responses;
+using Miningcore.Configuration;
+using Miningcore.Crypto.Hashing.Equihash;
+using Miningcore.Mining;
+using Miningcore.Notifications;
+using Miningcore.Payments;
+using Miningcore.Persistence.Dummy;
+using Miningcore.Persistence.Postgres;
+using Miningcore.Persistence.Postgres.Repositories;
+using Miningcore.Util;
 using NBitcoin.Zcash;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -58,7 +58,7 @@ using NLog.Layouts;
 using NLog.Targets;
 using JsonSerializer = Newtonsoft.Json.JsonSerializer;
 
-namespace MiningCore
+namespace Miningcore
 {
     public class Program
     {

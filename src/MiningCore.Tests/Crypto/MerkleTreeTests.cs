@@ -1,5 +1,5 @@
-using MiningCore.Crypto;
-using MiningCore.Extensions;
+using Miningcore.Crypto;
+using Miningcore.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Text;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace MiningCore.Tests.Crypto
+namespace Miningcore.Tests.Crypto
 {
     public class MerkleTreeTests : TestBase
     {

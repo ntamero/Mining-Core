@@ -19,10 +19,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 using System;
-using MiningCore.Contracts;
-using MiningCore.Native;
+using Miningcore.Contracts;
+using Miningcore.Native;
 
-namespace MiningCore.Crypto.Hashing.Algorithms
+namespace Miningcore.Crypto.Hashing.Algorithms
 {
     public unsafe class Scrypt : IHashAlgorithm
     {

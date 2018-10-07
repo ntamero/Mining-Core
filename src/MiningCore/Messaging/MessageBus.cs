@@ -7,10 +7,10 @@ using System.Collections.Generic;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using MiningCore.Util;
+using Miningcore.Util;
 using NLog;
 
-namespace MiningCore.Messaging
+namespace Miningcore.Messaging
 {
     /// <summary>
     ///     MessageBus represents an object that can act as a "Message Bus", a

@@ -1,7 +1,7 @@
 using System;
-using MiningCore.Time;
+using Miningcore.Time;
 
-namespace MiningCore.Tests.Util
+namespace Miningcore.Tests.Util
 {
     public class MockMasterClock : IMasterClock
     {

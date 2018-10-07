@@ -20,14 +20,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Threading;
-using MiningCore.Contracts;
-using MiningCore.Extensions;
-using MiningCore.Native;
+using Miningcore.Contracts;
+using Miningcore.Extensions;
+using Miningcore.Native;
 using NLog;
 
 // ReSharper disable InconsistentNaming
 
-namespace MiningCore.Crypto.Hashing.Equihash
+namespace Miningcore.Crypto.Hashing.Equihash
 {
     public abstract class EquihashSolver
     {

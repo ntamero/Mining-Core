@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using MiningCore.Extensions;
+using Miningcore.Extensions;
 
-namespace MiningCore.Blockchain.Ethereum
+namespace Miningcore.Blockchain.Ethereum
 {
     public class EthereumExtraNonceProvider : ExtraNonceProviderBase
     {

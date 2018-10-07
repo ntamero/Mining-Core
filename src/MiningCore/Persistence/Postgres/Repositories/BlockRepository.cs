@@ -23,13 +23,13 @@ using System.Data;
 using System.Linq;
 using AutoMapper;
 using Dapper;
-using MiningCore.Extensions;
-using MiningCore.Persistence.Model;
-using MiningCore.Persistence.Repositories;
-using MiningCore.Util;
+using Miningcore.Extensions;
+using Miningcore.Persistence.Model;
+using Miningcore.Persistence.Repositories;
+using Miningcore.Util;
 using NLog;
 
-namespace MiningCore.Persistence.Postgres.Repositories
+namespace Miningcore.Persistence.Postgres.Repositories
 {
     public class BlockRepository : IBlockRepository
     {

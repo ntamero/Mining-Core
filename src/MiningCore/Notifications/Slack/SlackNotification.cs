@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace MiningCore.Notifications.Slack
+namespace Miningcore.Notifications.Slack
 {
     public class SlackNotification
     {

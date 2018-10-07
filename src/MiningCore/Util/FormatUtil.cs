@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MiningCore.Util
+namespace Miningcore.Util
 {
     public static class FormatUtil
     {

@@ -21,7 +21,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using System;
 using System.Net;
 
-namespace MiningCore.Banning
+namespace Miningcore.Banning
 {
     public interface IBanManager
     {

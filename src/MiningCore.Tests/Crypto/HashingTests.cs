@@ -1,13 +1,13 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
-using MiningCore.Crypto.Hashing.Algorithms;
-using MiningCore.Crypto.Hashing.Equihash;
-using MiningCore.Extensions;
-using MiningCore.Tests.Util;
+using Miningcore.Crypto.Hashing.Algorithms;
+using Miningcore.Crypto.Hashing.Equihash;
+using Miningcore.Extensions;
+using Miningcore.Tests.Util;
 using Xunit;
 
-namespace MiningCore.Tests.Crypto
+namespace Miningcore.Tests.Crypto
 {
     public class HashingTests : TestBase
     {

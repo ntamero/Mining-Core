@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
 
-namespace MiningCore.Mining
+namespace Miningcore.Mining
 {
     public class PoolStartupAbortException : Exception
     {

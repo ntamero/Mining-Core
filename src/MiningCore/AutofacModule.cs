@@ -21,28 +21,28 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using System.Linq;
 using System.Reflection;
 using Autofac;
-using MiningCore.Api;
-using MiningCore.Banning;
-using MiningCore.Blockchain.Bitcoin;
-using MiningCore.Blockchain.Bitcoin.DaemonResponses;
-using MiningCore.Blockchain.Ethereum;
-using MiningCore.Blockchain.Cryptonote;
-using MiningCore.Blockchain.Equihash;
-using MiningCore.Blockchain.Equihash.DaemonResponses;
-using MiningCore.Configuration;
-using MiningCore.Crypto;
-using MiningCore.Crypto.Hashing.Equihash;
-using MiningCore.Messaging;
-using MiningCore.Mining;
-using MiningCore.Notifications;
-using MiningCore.Payments;
-using MiningCore.Payments.PaymentSchemes;
-using MiningCore.Time;
+using Miningcore.Api;
+using Miningcore.Banning;
+using Miningcore.Blockchain.Bitcoin;
+using Miningcore.Blockchain.Bitcoin.DaemonResponses;
+using Miningcore.Blockchain.Ethereum;
+using Miningcore.Blockchain.Cryptonote;
+using Miningcore.Blockchain.Equihash;
+using Miningcore.Blockchain.Equihash.DaemonResponses;
+using Miningcore.Configuration;
+using Miningcore.Crypto;
+using Miningcore.Crypto.Hashing.Equihash;
+using Miningcore.Messaging;
+using Miningcore.Mining;
+using Miningcore.Notifications;
+using Miningcore.Payments;
+using Miningcore.Payments.PaymentSchemes;
+using Miningcore.Time;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Module = Autofac.Module;
 
-namespace MiningCore
+namespace Miningcore
 {
     public class AutofacModule : Module
     {

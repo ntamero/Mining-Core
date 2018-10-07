@@ -18,7 +18,7 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-namespace MiningCore.Blockchain.Bitcoin.Configuration
+namespace Miningcore.Blockchain.Bitcoin.Configuration
 {
     public class BitcoinPoolPaymentProcessingConfigExtra
     {

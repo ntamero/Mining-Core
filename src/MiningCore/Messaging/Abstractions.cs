@@ -1,7 +1,7 @@
 using System;
 using System.Reactive.Concurrency;
 
-namespace MiningCore.Messaging
+namespace Miningcore.Messaging
 {
     /// <summary>
     /// IMessageBus represents an object that can act as a "Message Bus", a

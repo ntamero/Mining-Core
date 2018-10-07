@@ -1,9 +1,9 @@
 using System;
-using MiningCore.Extensions;
+using Miningcore.Extensions;
 using NBitcoin;
 using NBitcoin.DataEncoders;
 
-namespace MiningCore.Blockchain.Equihash
+namespace Miningcore.Blockchain.Equihash
 {
     public class EquihashBlockHeader : IBitcoinSerializable
     {

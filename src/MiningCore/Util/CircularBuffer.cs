@@ -30,7 +30,7 @@ using System.Collections.Generic;
 // Joao Portela
 //----------------------------------------------------------------------------
 
-namespace MiningCore.Util
+namespace Miningcore.Util
 {
     /// <summary>
     /// Circular buffer.

@@ -34,19 +34,19 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using MiningCore.Configuration;
-using MiningCore.Extensions;
-using MiningCore.JsonRpc;
-using MiningCore.Messaging;
-using MiningCore.Notifications.Messages;
-using MiningCore.Util;
+using Miningcore.Configuration;
+using Miningcore.Extensions;
+using Miningcore.JsonRpc;
+using Miningcore.Messaging;
+using Miningcore.Notifications.Messages;
+using Miningcore.Util;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NLog;
 using ZeroMQ;
-using Contract = MiningCore.Contracts.Contract;
+using Contract = Miningcore.Contracts.Contract;
 
-namespace MiningCore.DaemonInterface
+namespace Miningcore.DaemonInterface
 {
     /// <summary>
     /// Provides JsonRpc based interface to a cluster of blockchain daemons for improved fault tolerance

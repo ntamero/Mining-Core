@@ -22,7 +22,7 @@ using System;
 using System.Globalization;
 using System.Numerics;
 
-namespace MiningCore.Blockchain.Bitcoin
+namespace Miningcore.Blockchain.Bitcoin
 {
     public enum BitcoinNetworkType
     {

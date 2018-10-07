@@ -1,18 +1,18 @@
 using System;
-using MiningCore.Blockchain.Bitcoin;
-using MiningCore.Blockchain.Bitcoin.DaemonResponses;
-using MiningCore.Blockchain.Equihash;
-using MiningCore.Blockchain.Equihash.DaemonResponses;
-using MiningCore.Configuration;
-using MiningCore.Crypto;
-using MiningCore.Crypto.Hashing.Algorithms;
-using MiningCore.Crypto.Hashing.Equihash;
-using MiningCore.Tests.Util;
+using Miningcore.Blockchain.Bitcoin;
+using Miningcore.Blockchain.Bitcoin.DaemonResponses;
+using Miningcore.Blockchain.Equihash;
+using Miningcore.Blockchain.Equihash.DaemonResponses;
+using Miningcore.Configuration;
+using Miningcore.Crypto;
+using Miningcore.Crypto.Hashing.Algorithms;
+using Miningcore.Crypto.Hashing.Equihash;
+using Miningcore.Tests.Util;
 using NBitcoin;
 using NBitcoin.Zcash;
 using Xunit;
 
-namespace MiningCore.Tests.Blockchain.Equihash
+namespace Miningcore.Tests.Blockchain.Equihash
 {
     public class EquihashJobTests : TestBase
     {

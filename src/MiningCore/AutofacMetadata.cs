@@ -20,9 +20,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Collections.Generic;
-using MiningCore.Configuration;
+using Miningcore.Configuration;
 
-namespace MiningCore
+namespace Miningcore
 {
     public class CoinFamilyAttribute : Attribute
     {

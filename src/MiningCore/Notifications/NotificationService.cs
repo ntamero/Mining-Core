@@ -12,15 +12,15 @@ using System.Threading.Tasks;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using MimeKit;
-using MiningCore.Configuration;
-using MiningCore.Contracts;
-using MiningCore.Messaging;
-using MiningCore.Notifications.Messages;
-using MiningCore.Notifications.Slack;
+using Miningcore.Configuration;
+using Miningcore.Contracts;
+using Miningcore.Messaging;
+using Miningcore.Notifications.Messages;
+using Miningcore.Notifications.Slack;
 using Newtonsoft.Json;
 using NLog;
 
-namespace MiningCore.Notifications
+namespace Miningcore.Notifications
 {
     public class NotificationService
     {

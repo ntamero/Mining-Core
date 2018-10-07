@@ -22,11 +22,11 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using MiningCore.Configuration;
-using MiningCore.Extensions;
+using Miningcore.Configuration;
+using Miningcore.Extensions;
 using NBitcoin.BouncyCastle.Math;
 
-namespace MiningCore.Blockchain.Cryptonote
+namespace Miningcore.Blockchain.Cryptonote
 {
     public enum CryptonoteNetworkType
     {

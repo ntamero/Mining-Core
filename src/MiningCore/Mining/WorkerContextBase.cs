@@ -19,11 +19,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 using System;
-using MiningCore.Configuration;
-using MiningCore.Time;
-using MiningCore.VarDiff;
+using Miningcore.Configuration;
+using Miningcore.Time;
+using Miningcore.VarDiff;
 
-namespace MiningCore.Mining
+namespace Miningcore.Mining
 {
     public class ShareStats
     {

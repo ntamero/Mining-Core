@@ -20,11 +20,11 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
 using System.Linq;
-using MiningCore.Contracts;
-using MiningCore.Native;
-using MiningCore.Time;
+using Miningcore.Contracts;
+using Miningcore.Native;
+using Miningcore.Time;
 
-namespace MiningCore.Crypto.Hashing.Algorithms
+namespace Miningcore.Crypto.Hashing.Algorithms
 {
     public unsafe class ScryptN : IHashAlgorithm
     {

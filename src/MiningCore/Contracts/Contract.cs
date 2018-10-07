@@ -25,7 +25,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using JetBrains.Annotations;
 
-namespace MiningCore.Contracts
+namespace Miningcore.Contracts
 {
     public class Contract
     {

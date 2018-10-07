@@ -3,10 +3,10 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using Autofac;
-using MiningCore.Crypto.Hashing.Algorithms;
+using Miningcore.Crypto.Hashing.Algorithms;
 using Newtonsoft.Json.Linq;
 
-namespace MiningCore.Crypto
+namespace Miningcore.Crypto
 {
     public static class HashAlgorithmFactory
     {

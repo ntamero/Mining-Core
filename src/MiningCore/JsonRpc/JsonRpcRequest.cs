@@ -21,7 +21,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace MiningCore.JsonRpc
+namespace Miningcore.JsonRpc
 {
     [JsonObject(MemberSerialization.OptIn)]
     public class JsonRpcRequest : JsonRpcRequest<object>

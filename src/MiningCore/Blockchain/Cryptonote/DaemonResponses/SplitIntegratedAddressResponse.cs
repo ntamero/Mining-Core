@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using Newtonsoft.Json;
 
-namespace MiningCore.Blockchain.Cryptonote.DaemonResponses
+namespace Miningcore.Blockchain.Cryptonote.DaemonResponses
 {
     public class SplitIntegratedAddressResponse
     {

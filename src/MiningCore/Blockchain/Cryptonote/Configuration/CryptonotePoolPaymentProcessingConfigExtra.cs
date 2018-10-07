@@ -22,7 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MiningCore.Blockchain.Cryptonote.Configuration
+namespace Miningcore.Blockchain.Cryptonote.Configuration
 {
     public class CryptonotePoolPaymentProcessingConfigExtra
     {

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MiningCore.Time
+namespace Miningcore.Time
 {
     public class StandardClock : IMasterClock
     {

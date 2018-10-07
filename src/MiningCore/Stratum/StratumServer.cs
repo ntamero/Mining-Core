@@ -35,16 +35,16 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
-using MiningCore.Banning;
-using MiningCore.Configuration;
-using MiningCore.JsonRpc;
-using MiningCore.Time;
-using MiningCore.Util;
+using Miningcore.Banning;
+using Miningcore.Configuration;
+using Miningcore.JsonRpc;
+using Miningcore.Time;
+using Miningcore.Util;
 using Newtonsoft.Json;
 using NLog;
-using Contract = MiningCore.Contracts.Contract;
+using Contract = Miningcore.Contracts.Contract;
 
-namespace MiningCore.Stratum
+namespace Miningcore.Stratum
 {
     public abstract class StratumServer
     {

@@ -21,10 +21,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
-using MiningCore.Extensions;
-using Contract = MiningCore.Contracts.Contract;
+using Miningcore.Extensions;
+using Contract = Miningcore.Contracts.Contract;
 
-namespace MiningCore.Crypto
+namespace Miningcore.Crypto
 {
     /// <summary>
     /// Merkle tree builder.

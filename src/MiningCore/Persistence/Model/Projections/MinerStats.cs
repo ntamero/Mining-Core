@@ -21,7 +21,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 using System;
 using System.Collections.Generic;
 
-namespace MiningCore.Persistence.Model.Projections
+namespace Miningcore.Persistence.Model.Projections
 {
     public class WorkerPerformanceStats
     {

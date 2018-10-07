@@ -19,10 +19,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 using System.Numerics;
-using MiningCore.Serialization;
+using Miningcore.Serialization;
 using Newtonsoft.Json;
 
-namespace MiningCore.Blockchain.Ethereum.DaemonRequests
+namespace Miningcore.Blockchain.Ethereum.DaemonRequests
 {
     public class SendTransactionRequest
     {

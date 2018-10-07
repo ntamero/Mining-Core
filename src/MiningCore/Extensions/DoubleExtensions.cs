@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MiningCore.Extensions
+namespace Miningcore.Extensions
 {
     public static class DoubleExtensions
     {

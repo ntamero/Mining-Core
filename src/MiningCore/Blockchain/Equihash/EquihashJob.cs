@@ -24,22 +24,22 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using MiningCore.Blockchain.Bitcoin;
-using MiningCore.Blockchain.Equihash.DaemonResponses;
-using MiningCore.Configuration;
-using MiningCore.Contracts;
-using MiningCore.Crypto;
-using MiningCore.Crypto.Hashing.Algorithms;
-using MiningCore.Crypto.Hashing.Equihash;
-using MiningCore.Extensions;
-using MiningCore.Stratum;
-using MiningCore.Time;
-using MiningCore.Util;
+using Miningcore.Blockchain.Bitcoin;
+using Miningcore.Blockchain.Equihash.DaemonResponses;
+using Miningcore.Configuration;
+using Miningcore.Contracts;
+using Miningcore.Crypto;
+using Miningcore.Crypto.Hashing.Algorithms;
+using Miningcore.Crypto.Hashing.Equihash;
+using Miningcore.Extensions;
+using Miningcore.Stratum;
+using Miningcore.Time;
+using Miningcore.Util;
 using NBitcoin;
 using NBitcoin.DataEncoders;
 using NBitcoin.Zcash;
 
-namespace MiningCore.Blockchain.Equihash
+namespace Miningcore.Blockchain.Equihash
 {
     public class EquihashJob
     {

@@ -18,10 +18,10 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-using MiningCore.Serialization;
+using Miningcore.Serialization;
 using Newtonsoft.Json;
 
-namespace MiningCore.Blockchain.Ethereum.DaemonResponses
+namespace Miningcore.Blockchain.Ethereum.DaemonResponses
 {
     public class SyncState
     {

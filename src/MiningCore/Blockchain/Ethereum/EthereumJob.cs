@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Numerics;
 using System.Threading.Tasks;
-using MiningCore.Crypto.Hashing.Ethash;
-using MiningCore.Extensions;
-using MiningCore.Stratum;
+using Miningcore.Crypto.Hashing.Ethash;
+using Miningcore.Extensions;
+using Miningcore.Stratum;
 using NBitcoin;
 using NLog;
 
-namespace MiningCore.Blockchain.Ethereum
+namespace Miningcore.Blockchain.Ethereum
 {
     public class EthereumJob
     {

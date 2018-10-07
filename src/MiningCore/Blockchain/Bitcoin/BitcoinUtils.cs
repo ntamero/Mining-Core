@@ -23,7 +23,7 @@ using System.Linq;
 using NBitcoin;
 using NBitcoin.DataEncoders;
 
-namespace MiningCore.Blockchain.Bitcoin
+namespace Miningcore.Blockchain.Bitcoin
 {
     public static class BitcoinUtils
     {

@@ -20,7 +20,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 using System;
 
-namespace MiningCore.Api.Responses
+namespace Miningcore.Api.Responses
 {
     public class AdminGcStats
     {

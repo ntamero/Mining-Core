@@ -22,7 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MiningCore.Payments
+namespace Miningcore.Payments
 {
     public static class PayoutConstants
     {

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace MiningCore.Blockchain.Ethereum.Configuration
+namespace Miningcore.Blockchain.Ethereum.Configuration
 {
     public class EthereumDaemonEndpointConfigExtra
     {

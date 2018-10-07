@@ -22,10 +22,10 @@ using System;
 using System.Data;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using MiningCore.Persistence;
+using Miningcore.Persistence;
 using NLog;
 
-namespace MiningCore.Extensions
+namespace Miningcore.Extensions
 {
     public static class ConnectionFactoryExtensions
     {

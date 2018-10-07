@@ -1,11 +1,11 @@
 using System;
 using System.Globalization;
 using System.Numerics;
-using MiningCore.Extensions;
+using Miningcore.Extensions;
 using NBitcoin;
 using Newtonsoft.Json;
 
-namespace MiningCore.Serialization
+namespace Miningcore.Serialization
 {
     public class HexToIntegralTypeJsonConverter<T> : JsonConverter
     {

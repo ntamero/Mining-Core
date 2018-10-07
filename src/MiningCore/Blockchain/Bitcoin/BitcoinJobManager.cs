@@ -24,21 +24,21 @@ using System.Reactive;
 using System.Threading;
 using System.Threading.Tasks;
 using Autofac;
-using MiningCore.Blockchain.Bitcoin.Configuration;
-using MiningCore.Blockchain.Bitcoin.DaemonResponses;
-using MiningCore.Configuration;
-using MiningCore.Contracts;
-using MiningCore.Crypto;
-using MiningCore.DaemonInterface;
-using MiningCore.Extensions;
-using MiningCore.JsonRpc;
-using MiningCore.Messaging;
-using MiningCore.Stratum;
-using MiningCore.Time;
+using Miningcore.Blockchain.Bitcoin.Configuration;
+using Miningcore.Blockchain.Bitcoin.DaemonResponses;
+using Miningcore.Configuration;
+using Miningcore.Contracts;
+using Miningcore.Crypto;
+using Miningcore.DaemonInterface;
+using Miningcore.Extensions;
+using Miningcore.JsonRpc;
+using Miningcore.Messaging;
+using Miningcore.Stratum;
+using Miningcore.Time;
 using Newtonsoft.Json;
 using NLog;
 
-namespace MiningCore.Blockchain.Bitcoin
+namespace Miningcore.Blockchain.Bitcoin
 {
     public class BitcoinJobManager : BitcoinJobManagerBase<BitcoinJob>
     {
