@@ -51,6 +51,8 @@ namespace MiningCore.Blockchain.Bitcoin
         {
         }
 
+        private BitcoinTemplate coin;
+
         protected async Task<DaemonResponse<BlockTemplate>> GetBlockTemplateAsync()
         {
             logger.LogInvoke();
@@ -75,8 +77,6 @@ namespace MiningCore.Blockchain.Bitcoin
 
         protected override void SetupCrypto()
         {
-            var coin = poolConfig.Template.As<BitcoinTemplate>();
-
             coinbaseHasher = HashAlgorithmFactory.GetHash(ctx, coin.CoinbaseHasher);
             headerHasher = HashAlgorithmFactory.GetHash(ctx, coin.HeaderHasher);
 
@@ -85,6 +85,15 @@ namespace MiningCore.Blockchain.Bitcoin
                 (HashAlgorithmFactory.GetHash(ctx, coin.CoinbaseHasher ?? coin.BlockHasher));
 
             ShareMultiplier = coin.ShareMultiplier;
+        }
+
+        private BitcoinJob CreateJob()
+        {
+            //switch (coin.Subfamily)
+            //{
+            //}
+
+            return new BitcoinJob();
         }
 
         protected override async Task<(bool IsNew, bool Force)> UpdateJob(bool forceUpdate, string via = null, string json = null)
@@ -115,7 +124,7 @@ namespace MiningCore.Blockchain.Bitcoin
 
                 if (isNew || forceUpdate)
                 {
-                    job = new BitcoinJob();
+                    job = CreateJob();
 
                     job.Init(blockTemplate, NextJobId(),
                         poolConfig, clusterConfig, clock, poolAddressDestination, networkType, isPoS,
@@ -169,6 +178,20 @@ namespace MiningCore.Blockchain.Bitcoin
         }
 
         #region API-Surface
+
+        public override void Configure(PoolConfig poolConfig, ClusterConfig clusterConfig)
+        {
+            coin = poolConfig.Template.As<BitcoinTemplate>();
+            extraPoolConfig = poolConfig.Extra.SafeExtensionDataAs<BitcoinPoolConfigExtra>();
+            extraPoolPaymentProcessingConfig = poolConfig.PaymentProcessing?.Extra?.SafeExtensionDataAs<BitcoinPoolPaymentProcessingConfigExtra>();
+
+            if (extraPoolConfig?.MaxActiveJobs.HasValue == true)
+                maxActiveJobs = extraPoolConfig.MaxActiveJobs.Value;
+
+            hasLegacyDaemon = extraPoolConfig?.HasLegacyDaemon == true;
+
+            base.Configure(poolConfig, clusterConfig);
+        }
 
         public override object[] GetSubscriberData(StratumClient worker)
         {
@@ -271,19 +294,6 @@ namespace MiningCore.Blockchain.Bitcoin
         }
 
         public double ShareMultiplier { get; private set; }
-
-        public override void Configure(PoolConfig poolConfig, ClusterConfig clusterConfig)
-        {
-            extraPoolConfig = poolConfig.Extra.SafeExtensionDataAs<BitcoinPoolConfigExtra>();
-            extraPoolPaymentProcessingConfig = poolConfig.PaymentProcessing?.Extra?.SafeExtensionDataAs<BitcoinPoolPaymentProcessingConfigExtra>();
-
-            if (extraPoolConfig?.MaxActiveJobs.HasValue == true)
-                maxActiveJobs = extraPoolConfig.MaxActiveJobs.Value;
-
-            hasLegacyDaemon = extraPoolConfig?.HasLegacyDaemon == true;
-
-            base.Configure(poolConfig, clusterConfig);
-        }
 
         #endregion // API-Surface
     }

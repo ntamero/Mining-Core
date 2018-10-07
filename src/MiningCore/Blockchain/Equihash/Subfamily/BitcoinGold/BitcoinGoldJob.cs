@@ -26,7 +26,6 @@ using MiningCore.Blockchain.Bitcoin;
 using MiningCore.Blockchain.Equihash.DaemonResponses;
 using MiningCore.Configuration;
 using MiningCore.Contracts;
-using MiningCore.Crypto;
 using MiningCore.Crypto.Hashing.Equihash;
 using MiningCore.Extensions;
 using MiningCore.Time;
@@ -35,7 +34,7 @@ using NBitcoin;
 using NBitcoin.DataEncoders;
 using Transaction = NBitcoin.Transaction;
 
-namespace MiningCore.Blockchain.Equihash.BitcoinGold
+namespace MiningCore.Blockchain.Equihash.Subfamily.BitcoinGold
 {
     public class BitcoinGoldJob : EquihashJob
     {

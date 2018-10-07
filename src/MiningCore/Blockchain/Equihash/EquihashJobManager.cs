@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using Autofac;
 using MiningCore.Blockchain.Bitcoin;
 using MiningCore.Blockchain.Bitcoin.DaemonResponses;
-using MiningCore.Blockchain.Equihash.BitcoinGold;
 using MiningCore.Blockchain.Equihash.DaemonResponses;
+using MiningCore.Blockchain.Equihash.Subfamily.BitcoinGold;
 using MiningCore.Configuration;
 using MiningCore.Contracts;
 using MiningCore.Crypto.Hashing.Equihash;
@@ -47,27 +47,10 @@ namespace MiningCore.Blockchain.Equihash
 
         protected override void PostChainIdentifyConfigure()
         {
-            coin = poolConfig.Template.As<EquihashCoinTemplate>();
             ChainConfig = coin.GetNetwork(networkType);
-
             solver = EquihashSolverFactory.GetSolver(ctx, ChainConfig.Solver);
 
             base.PostChainIdentifyConfigure();
-        }
-
-        public override async Task<bool> ValidateAddressAsync(string address, CancellationToken ct)
-        {
-            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(address), $"{nameof(address)} must not be empty");
-
-            // handle t-addr
-            if (await base.ValidateAddressAsync(address, ct))
-                return true;
-
-            // handle z-addr
-            var result = await daemon.ExecuteCmdAnyAsync<ValidateAddressResponse>(logger, ct,
-                EquihashCommands.ZValidateAddress, new[] { address });
-
-            return result.Response != null && result.Response.IsValid;
         }
 
         private async Task<DaemonResponse<EquihashBlockTemplate>> GetBlockTemplateAsync()
@@ -99,28 +82,8 @@ namespace MiningCore.Blockchain.Equihash
             };
         }
 
-        public override object[] GetSubscriberData(StratumClient worker)
-        {
-            Contract.RequiresNonNull(worker, nameof(worker));
-
-            var context = worker.ContextAs<BitcoinWorkerContext>();
-
-            // assign unique ExtraNonce1 to worker (miner)
-            context.ExtraNonce1 = extraNonceProvider.Next();
-
-            // setup response data
-            var responseData = new object[]
-            {
-                context.ExtraNonce1
-            };
-
-            return responseData;
-        }
-
         protected override IDestination AddressToDestination(string address)
         {
-            var coin = poolConfig.Template.As<EquihashCoinTemplate>();
-
             if (!coin.UsesZCashAddressFormat)
                 return base.AddressToDestination(address);
 
@@ -132,11 +95,11 @@ namespace MiningCore.Blockchain.Equihash
 
         private EquihashJob CreateJob()
         {
-            // The rule is, everything should be purely driven by definition in CoinTemplates
-            // Due to the extremely exotic nature of Bitcoin gold, we make a rare exception here
-
-            if (coin.Symbol == "BTG")
-                return new BitcoinGoldJob();
+            switch(coin.Subfamily)
+            {
+                case EquihashSubfamily.BitcoinGold:
+                    return new BitcoinGoldJob();
+            }
 
             return new EquihashJob();
         }
@@ -220,6 +183,48 @@ namespace MiningCore.Blockchain.Equihash
         {
             var job = currentJob;
             return job?.GetJobParams(isNew);
+        }
+
+        #region API-Surface
+
+        public override void Configure(PoolConfig poolConfig, ClusterConfig clusterConfig)
+        {
+            coin = poolConfig.Template.As<EquihashCoinTemplate>();
+
+            base.Configure(poolConfig, clusterConfig);
+        }
+
+        public override async Task<bool> ValidateAddressAsync(string address, CancellationToken ct)
+        {
+            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(address), $"{nameof(address)} must not be empty");
+
+            // handle t-addr
+            if (await base.ValidateAddressAsync(address, ct))
+                return true;
+
+            // handle z-addr
+            var result = await daemon.ExecuteCmdAnyAsync<ValidateAddressResponse>(logger, ct,
+                EquihashCommands.ZValidateAddress, new[] { address });
+
+            return result.Response != null && result.Response.IsValid;
+        }
+
+        public override object[] GetSubscriberData(StratumClient worker)
+        {
+            Contract.RequiresNonNull(worker, nameof(worker));
+
+            var context = worker.ContextAs<BitcoinWorkerContext>();
+
+            // assign unique ExtraNonce1 to worker (miner)
+            context.ExtraNonce1 = extraNonceProvider.Next();
+
+            // setup response data
+            var responseData = new object[]
+            {
+                context.ExtraNonce1
+            };
+
+            return responseData;
         }
 
         public override async Task<Share> SubmitShareAsync(StratumClient worker, object submission,
@@ -307,5 +312,8 @@ namespace MiningCore.Blockchain.Equihash
 
             return share;
         }
+
+
+        #endregion // API-Surface
     }
 }

@@ -104,14 +104,34 @@ namespace MiningCore.Configuration
         };
     }
 
+    public enum BitcoinSubfamily
+    {
+        [EnumMember(Value = "none")]
+        None,
+
+        //[EnumMember(Value = "florincoin")]
+        //Florincoin,
+    }
+
     public partial class BitcoinTemplate : CoinTemplate
     {
+        [JsonProperty(Order = -7, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+        [DefaultValue(BitcoinSubfamily.None)]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public BitcoinSubfamily Subfamily { get; set; }
+
         public JObject CoinbaseHasher { get; set; }
         public JObject HeaderHasher { get; set; }
         public JObject BlockHasher { get; set; }
 
         [JsonProperty("posBlockHasher")]
         public JObject PoSBlockHasher { get; set; }
+
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+        [DefaultValue(1u)]
+        public uint CoinbaseTxVersion { get; set; }
+
+        public string CoinbaseTxAppendData { get; set; }
 
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public bool HasMasterNodes { get; set; }
@@ -130,6 +150,15 @@ namespace MiningCore.Configuration
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         [DefaultValue(1.0d)]
         public double HashrateMultiplier { get; set; } = 1.0d;
+    }
+
+    public enum EquihashSubfamily
+    {
+        [EnumMember(Value = "none")]
+        None,
+
+        [EnumMember(Value = "bitcoin-gold")]
+        BitcoinGold,
     }
 
     public partial class EquihashCoinTemplate : CoinTemplate
@@ -190,6 +219,11 @@ namespace MiningCore.Configuration
             public uint? SaplingTxVersionGroupId { get; set; }
         }
 
+        [JsonProperty(Order = -7, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+        [DefaultValue(EquihashSubfamily.None)]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public EquihashSubfamily Subfamily { get; set; }
+
         public Dictionary<string, EquihashNetworkDefinition> Networks { get; set; }
         public bool UsesZCashAddressFormat { get; set; } = true;
 
@@ -197,6 +231,12 @@ namespace MiningCore.Configuration
         /// Force use of BitcoinPayoutHandler instead of EquihashPayoutHandler
         /// </summary>
         public bool UseBitcoinPayoutHandler { get; set; }
+    }
+
+    public enum CryptonoteSubfamily
+    {
+        [EnumMember(Value = "none")]
+        None,
     }
 
     public enum CryptonightHashType
@@ -213,6 +253,11 @@ namespace MiningCore.Configuration
 
     public partial class CryptonoteCoinTemplate : CoinTemplate
     {
+        [JsonProperty(Order = -7, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+        [DefaultValue(CryptonoteSubfamily.None)]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public CryptonoteSubfamily Subfamily { get; set; }
+
         /// <summary>
         /// Broader Cryptonight hash family
         /// </summary>
@@ -263,8 +308,18 @@ namespace MiningCore.Configuration
         public decimal BlockrewardMultiplier { get; set; }
     }
 
+    public enum EthereumSubfamily
+    {
+        [EnumMember(Value = "none")]
+        None,
+    }
+
     public partial class EthereumCoinTemplate : CoinTemplate
     {
+        [JsonProperty(Order = -7, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
+        [DefaultValue(EthereumSubfamily.None)]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public EthereumSubfamily Subfamily { get; set; }
     }
 
     #endregion // Coin Definitions

@@ -84,11 +84,7 @@ namespace MiningCore.Payments
 
                 try
                 {
-                    var family = pool.Template.Family;
-
-                    // check for override
-                    if (family == CoinFamily.Equihash && pool.Template.As<EquihashCoinTemplate>().UseBitcoinPayoutHandler)
-                        family = CoinFamily.Bitcoin;
+                    var family = HandleFamilyOverride(pool.Template.Family, pool);
 
                     // resolve payout handler
                     var handlerImpl = ctx.Resolve<IEnumerable<Meta<Lazy<IPayoutHandler, CoinFamilyAttribute>>>>()
@@ -114,6 +110,23 @@ namespace MiningCore.Payments
                     logger.Error(ex, () => $"[{pool.Id}] Payment processing failed");
                 }
             }
+        }
+
+        private static CoinFamily HandleFamilyOverride(CoinFamily family, PoolConfig pool)
+        {
+            switch(family)
+            {
+                case CoinFamily.Equihash:
+                    var equihashTemplate = pool.Template.As<EquihashCoinTemplate>();
+
+                    if (equihashTemplate.UseBitcoinPayoutHandler ||
+                        equihashTemplate.Subfamily == EquihashSubfamily.BitcoinGold)
+                        return CoinFamily.Bitcoin;
+
+                    break;
+            }
+
+            return family;
         }
 
         private async Task UpdatePoolBalancesAsync(PoolConfig pool, IPayoutHandler handler, IPayoutScheme scheme)
