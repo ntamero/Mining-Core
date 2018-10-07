@@ -41,6 +41,7 @@ using Miningcore.Time;
 using Miningcore.Util;
 using Newtonsoft.Json;
 using Contract = Miningcore.Contracts.Contract;
+using CNC = Miningcore.Blockchain.Cryptonote.CryptonoteCommands;
 
 namespace Miningcore.Blockchain.Cryptonote
 {
@@ -421,7 +422,7 @@ namespace Miningcore.Blockchain.Cryptonote
             var coin = poolConfig.Template.As<CryptonoteCoinTemplate>();
 
 #if !DEBUG // ensure we have peers
-            var infoResponse = await daemon.ExecuteCmdAnyAsync<GetInfoResponse>(logger, MC.GetInfo);
+            var infoResponse = await daemon.ExecuteCmdAnyAsync<GetInfoResponse>(logger, CNC.GetInfo);
             if (infoResponse.Error != null || infoResponse.Response == null ||
                 infoResponse.Response.IncomingConnectionsCount + infoResponse.Response.OutgoingConnectionsCount < 3)
             {
@@ -429,7 +430,6 @@ namespace Miningcore.Blockchain.Cryptonote
                 return;
             }
 #endif
-
             // validate addresses
             balances = balances
                 .Where(x =>
