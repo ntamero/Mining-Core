@@ -22,11 +22,11 @@ namespace MiningCore.Configuration
                 foreach (var o in jo)
                 {
                     if (o.Value.Type != JTokenType.Object)
-                        logger.ThrowLogPoolStartupException("Invalid coin definition file contents: dictionary of coin definitions expected");
+                        logger.ThrowLogPoolStartupException("Invalid coin-template file: dictionary of coin-templates expected");
 
                     var value = o.Value[nameof(CoinTemplate.Family).ToLower()];
                     if (value == null)
-                        logger.ThrowLogPoolStartupException("Invalid coin definition file contents: missing 'family' property");
+                        logger.ThrowLogPoolStartupException("Invalid coin-template: missing 'family' property");
 
                     var family = value.ToObject<CoinFamily>();
                     var result = (CoinTemplate)o.Value.ToObject(CoinTemplate.Families[family]);
@@ -40,6 +40,9 @@ namespace MiningCore.Configuration
                             {"block", result.ExplorerBlockLink}
                         };
                     }
+
+                    // Record the source of the template
+                    result.Source = filename;
 
                     yield return KeyValuePair.Create(o.Key, result);
                 }
@@ -65,8 +68,9 @@ namespace MiningCore.Configuration
                 {
                     var coinId = definition.Key;
 
+                    // log redefinitions
                     if (result.ContainsKey(coinId))
-                        logger.ThrowLogPoolStartupException($"Duplicate definition of coin '{coinId}' in file {filename}");
+                        logger.Warn($"Redefinition of coin '{coinId}' in file {filename}. First seen in {result[coinId].Source}");
 
                     result[coinId] = definition.Value;
                 }

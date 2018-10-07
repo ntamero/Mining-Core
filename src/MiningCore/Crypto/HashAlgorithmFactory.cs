@@ -33,21 +33,21 @@ namespace MiningCore.Crypto
                 name = nameof(DigestReverser);
 
             // check cache if possible
-            var allowCache = args == null || args.Length == 0;
-            if (allowCache && cache.TryGetValue(name, out var result))
+            var hasArgs = args != null && args.Length > 0;
+            if (!hasArgs && cache.TryGetValue(name, out var result))
                 return result;
 
             var hashClass = (typeof(Sha256D).Namespace + "." + name).ToLower();
             var hashType = typeof(Sha256D).Assembly.GetType(hashClass, true, true);
-            var parameters = args?.Select((x, i) => new PositionalParameter(i, x)).ToArray();
 
             // create it (we'll let Autofac do the heavy lifting)
-            result = (IHashAlgorithm) (parameters != null && parameters.Length > 0 ?
-                ctx.Resolve(hashType, parameters) :
-                ctx.Resolve(hashType));
-
-            if(allowCache)
+            if (hasArgs)
+                result = (IHashAlgorithm) ctx.Resolve(hashType, args.Select((x, i) => new PositionalParameter(i, x)));
+            else
+            {
+                result = (IHashAlgorithm) ctx.Resolve(hashType);
                 cache.TryAdd(name, result);
+            }
 
             return result;
         }

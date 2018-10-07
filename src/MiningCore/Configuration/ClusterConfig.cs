@@ -616,7 +616,7 @@ namespace MiningCore.Configuration
         /// <summary>
         /// One or more files containing coin definitions
         /// </summary>
-        public string[] CoinDefs { get; set; }
+        public string[] CoinTemplates { get; set; }
 
         public string ClusterName { get; set; }
         public ClusterLoggingConfig Logging { get; set; }

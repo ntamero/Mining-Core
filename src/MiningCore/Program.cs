@@ -558,24 +558,31 @@ namespace MiningCore
                 .SingleInstance();
         }
 
+        private static Dictionary<string, CoinTemplate> LoadCoinTemplates()
+        {
+            var basePath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            var defaultTemplates = Path.Combine(basePath, "coins.json");
+
+            // make sure default templates are loaded first
+            clusterConfig.CoinTemplates = new[]
+            {
+                defaultTemplates
+            }
+            .Concat(clusterConfig.CoinTemplates != null ?
+                clusterConfig.CoinTemplates.Where(x => x != defaultTemplates) :
+                new string[0])
+            .ToArray();
+
+            return CoinTemplateLoader.Load(clusterConfig.CoinTemplates);
+        }
+
         private static async Task Start()
         {
-            // Load coin templates
-            if (clusterConfig.CoinDefs == null || clusterConfig.CoinDefs.Length == 0)
-            {
-                var basePath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-                var defaultDefinitions = Path.Combine(basePath, "coins.json");
-
-                clusterConfig.CoinDefs = new[]
-                {
-                    defaultDefinitions
-                };
-            }
-
-            var coinTemplates = CoinTemplateLoader.Load(clusterConfig.CoinDefs);
+            var coinTemplates = LoadCoinTemplates();
+            logger.Info($"{coinTemplates.Keys.Count} coins loaded from {string.Join(", ", clusterConfig.CoinTemplates)}");
 
             // Populate pool configs with corresponding template
-            foreach(var poolConfig in clusterConfig.Pools.Where(x => x.Enabled))
+            foreach (var poolConfig in clusterConfig.Pools.Where(x => x.Enabled))
             {
                 // Lookup coin definition
                 if (!coinTemplates.TryGetValue(poolConfig.Coin, out var template))

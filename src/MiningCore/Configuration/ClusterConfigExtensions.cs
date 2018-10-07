@@ -18,6 +18,12 @@ namespace MiningCore.Configuration
         }
 
         public abstract string GetAlgorithmName(IComponentContext ctx);
+
+        /// <summary>
+        /// json source file where this template originated from
+        /// </summary>
+        [JsonIgnore]
+        public string Source { get; set; }
     }
 
     public partial class BitcoinTemplate
