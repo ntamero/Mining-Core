@@ -280,7 +280,7 @@ namespace Miningcore.Blockchain.Bitcoin
 
                     // persist the coinbase transaction-hash to allow the payment processor
                     // to verify later on that the pool has received the reward for the block
-                    share.TransactionConfirmationData = acceptResponse.CoinbaseTransaction;
+                    share.TransactionConfirmationData = acceptResponse.CoinbaseTx;
                 }
 
                 else

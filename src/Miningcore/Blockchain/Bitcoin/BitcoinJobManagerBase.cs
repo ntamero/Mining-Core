@@ -281,7 +281,7 @@ namespace Miningcore.Blockchain.Bitcoin
             }
         }
 
-        protected virtual async Task<(bool Accepted, string CoinbaseTransaction)> SubmitBlockAsync(Share share, string blockHex)
+        protected virtual async Task<(bool Accepted, string CoinbaseTx)> SubmitBlockAsync(Share share, string blockHex)
         {
             // execute command batch
             var results = await daemon.ExecuteBatchAnyAsync(logger,
