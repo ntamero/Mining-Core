@@ -377,7 +377,7 @@
             "hash": "reverse",
             "args": [
                 {
-                    "hash": "x16rv2"                
+                    "hash": "x16rv2"
                 }
             ]
         },
@@ -481,6 +481,27 @@
         "explorerBlockLink": "https://ravencoin.network/block/$hash$",
         "explorerTxLink": "https://ravencoin.network/tx/{0}",
         "explorerAccountLink": "https://ravencoin.network/address/{0}"
+    },
+
+    "ravencoin-testnet": {
+        "name": "Ravencoin",
+        "symbol": "RVN",
+        "family": "bitcoin",
+        "coinbaseHasher": {
+            "hash": "sha256d"
+        },
+        "headerHasher": {
+            "hash": "x16rv2"
+        },
+        "blockHasher": {
+            "hash": "reverse",
+            "args": [ { "hash": "x16rv2" } ]
+        },
+        "usesCustomHeaderForHash":true,
+        "shareMultiplier": 256,
+        "explorerBlockLink": "https://testnet.ravencoin.network/block/$hash$",
+        "explorerTxLink": "https://testnet.ravencoin.network/tx/{0}",
+        "explorerAccountLink": "https://testnet.ravencoin.network/address/{0}"
     },
     "pexacoin": {
         "name": "Pexacoin",

@@ -37,7 +37,6 @@ using NBitcoin.DataEncoders;
 using Newtonsoft.Json.Linq;
 using Contract = Miningcore.Contracts.Contract;
 using Transaction = NBitcoin.Transaction;
-using Miningcore.Crypto.Hashing.Algorithms;
 
 namespace Miningcore.Blockchain.Bitcoin
 {
@@ -249,7 +248,7 @@ namespace Miningcore.Blockchain.Bitcoin
 
             // optionally push aux-flags
             if(!string.IsNullOrEmpty(BlockTemplate.CoinbaseAux?.Flags))
-                ops.Add(Op.GetPushOp(BlockTemplate.CoinbaseAux.Flags.HexToByteArray()));
+                ops.Add(Op.GetPushOp(BlockTemplate.CoinbaseAux?.Flags.HexToByteArray()));
 
             // push timestamp
             ops.Add(Op.GetPushOp(now));
@@ -263,7 +262,7 @@ namespace Miningcore.Blockchain.Bitcoin
         protected virtual Transaction CreateOutputTransaction()
         {
             rewardToPool = new Money(BlockTemplate.CoinbaseValue, MoneyUnit.Satoshi);
-            
+
             var tx = Transaction.Create(network);
             //Now check if we need to pay founder fees Re PGN pre-dash fork
             if(coin.HasFounderFee)
@@ -335,6 +334,20 @@ namespace Miningcore.Blockchain.Bitcoin
                 BlockTime = DateTimeOffset.FromUnixTimeSeconds(nTime),
                 Nonce = nonce
             };
+            if(coin.UsesCustomHeaderForHash)
+            {
+                var rvNblockHeader = new  RavenBlockHeader
+                {
+                    Version = unchecked((int) version),
+                    Bits  = new Target(Encoders.Hex.DecodeData(BlockTemplate.Bits)),
+                    HashPrevBlock = uint256.Parse(BlockTemplate.PreviousBlockhash),
+                    HashMerkleRoot = new uint256(merkleRoot),
+                    BlockTime = DateTimeOffset.FromUnixTimeSeconds(nTime),
+                    Nonce = nonce,
+                    BlockHeight = BlockTemplate.Height
+                };
+                return rvNblockHeader.ToBytes();
+            }
 
             return blockHeader.ToBytes();
         }
@@ -578,7 +591,7 @@ namespace Miningcore.Blockchain.Bitcoin
         }
 
         #endregion // DevaultCoinbasePayload
-    
+
         #region PigeoncoinDevFee
 
         protected FounderBlockTemplateExtra FounderParameters;
@@ -659,7 +672,7 @@ namespace Miningcore.Blockchain.Bitcoin
             this.shareMultiplier = shareMultiplier;
 
             txComment = !string.IsNullOrEmpty(extraPoolConfig?.CoinbaseTxComment) ?
-                extraPoolConfig.CoinbaseTxComment : coin.CoinbaseTxComment;
+                extraPoolConfig?.CoinbaseTxComment : coin.CoinbaseTxComment;
 
             if(coin.HasMasterNodes)
             {

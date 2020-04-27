@@ -20,58 +20,57 @@ namespace NBitcoin
 	/// in the block is a special one that creates a new coin owned by the creator
 	/// of the block.
 	/// </summary>
-	public class IndexBlockHeader : IBitcoinSerializable
+	public class RavenBlockHeader : IBitcoinSerializable
 	{
 		internal const int Size = 81;
 
 
-		public static IndexBlockHeader Parse(string hex, Network network)
+		public static RavenBlockHeader Parse(string hex, Network network)
 		{
 			if (network == null)
 				throw new ArgumentNullException(nameof(network));
 			return Parse(hex, network.Consensus.ConsensusFactory);
 		}
 
-		public static IndexBlockHeader Parse(string hex, Consensus consensus)
+		public static RavenBlockHeader Parse(string hex, Consensus consensus)
 		{
 			if (consensus == null)
 				throw new ArgumentNullException(nameof(consensus));
 			return Parse(hex, consensus.ConsensusFactory);
 		}
 
-		public static IndexBlockHeader Parse(string hex, ConsensusFactory consensusFactory)
+		public static RavenBlockHeader Parse(string hex, ConsensusFactory consensusFactory)
 		{
 			if (consensusFactory == null)
 				throw new ArgumentNullException(nameof(consensusFactory));
-			return new IndexBlockHeader(Encoders.Hex.DecodeData(hex), consensusFactory);
+			return new RavenBlockHeader(Encoders.Hex.DecodeData(hex), consensusFactory);
 		}
 
 
 		[Obsolete("Use Parse(string hex, Network|Consensus|ConsensusFactory) instead")]
-		public static IndexBlockHeader Parse(string hex)
+		public static RavenBlockHeader Parse(string hex)
 		{
 			return Parse(hex, Consensus.Main.ConsensusFactory);
 		}
 
-		[Obsolete("You should instantiate IndexBlockHeader from ConsensusFactory.CreateIndexBlockHeader")]
-		public IndexBlockHeader()
+		public RavenBlockHeader()
 		{
 			SetNull();
 		}
 
-		public IndexBlockHeader(string hex, Network network)
+		public RavenBlockHeader(string hex, Network network)
 			: this(hex, network?.Consensus?.ConsensusFactory ?? throw new ArgumentNullException(nameof(network)))
 		{
 
 		}
 
-		public IndexBlockHeader(string hex, Consensus consensus)
+		public RavenBlockHeader(string hex, Consensus consensus)
 			: this(hex, consensus?.ConsensusFactory ?? throw new ArgumentNullException(nameof(consensus)))
 		{
 
 		}
 
-		public IndexBlockHeader(string hex, ConsensusFactory consensusFactory)
+		public RavenBlockHeader(string hex, ConsensusFactory consensusFactory)
 		{
 			if (hex == null)
 				throw new ArgumentNullException(nameof(hex));
@@ -84,27 +83,27 @@ namespace NBitcoin
 			this.ReadWrite(bs);
 		}
 
-		[Obsolete("Use new IndexBlockHeader(string hex, Network|Consensus|ConsensusFactory) instead")]
-		public IndexBlockHeader(string hex)
+		[Obsolete("Use new RavenBlockHeader(string hex, Network|Consensus|ConsensusFactory) instead")]
+		public RavenBlockHeader(string hex)
 			: this(Encoders.Hex.DecodeData(hex))
 		{
 
 		}
 
 
-		public IndexBlockHeader(byte[] data, Network network)
+		public RavenBlockHeader(byte[] data, Network network)
 			: this(data, network?.Consensus?.ConsensusFactory ?? throw new ArgumentNullException(nameof(network)))
 		{
 
 		}
 
-		public IndexBlockHeader(byte[] data, Consensus consensus)
+		public RavenBlockHeader(byte[] data, Consensus consensus)
 			: this(data, consensus?.ConsensusFactory ?? throw new ArgumentNullException(nameof(consensus)))
 		{
 
 		}
 
-		public IndexBlockHeader(byte[] data, ConsensusFactory consensusFactory)
+		public RavenBlockHeader(byte[] data, ConsensusFactory consensusFactory)
 		{
 			if (data == null)
 				throw new ArgumentNullException(nameof(data));
@@ -118,8 +117,8 @@ namespace NBitcoin
 		}
 
 
-		[Obsolete("Use new IndexBlockHeader(byte[] hex, Network|Consensus|ConsensusFactory) instead")]
-		public IndexBlockHeader(byte[] bytes)
+		[Obsolete("Use new RavenBlockHeader(byte[] hex, Network|Consensus|ConsensusFactory) instead")]
+		public RavenBlockHeader(byte[] bytes)
 		{
 			this.ReadWrite(bytes);
 		}
@@ -145,6 +144,7 @@ namespace NBitcoin
 
 		protected uint nTime;
 		protected uint nBits;
+        protected uint nHeight;
 
 		public Target Bits
 		{
@@ -196,20 +196,18 @@ namespace NBitcoin
 				hashMerkleRoot = value;
 			}
 		}
-        protected bool fProofOfStake;
-		public bool ProofOfStake
-		{
-			get
-			{
-				return fProofOfStake;
-			}
-			set
-			{
-				fProofOfStake = value;
-			}
-		}
-
-		protected internal virtual void SetNull()
+        public uint BlockHeight
+        {
+            get
+            {
+                return nHeight;
+            }
+            set
+            {
+                nHeight = value;
+            }
+        }
+        protected internal virtual void SetNull()
 		{
 			nVersion = CURRENT_VERSION;
 			hashPrevBlock = 0;
@@ -217,8 +215,8 @@ namespace NBitcoin
 			nTime = 0;
 			nBits = 0;
 			nNonce = 0;
-            fProofOfStake = false;
-		}
+            nHeight = 0;
+        }
 
 		public virtual bool IsNull
 		{
@@ -237,7 +235,7 @@ namespace NBitcoin
 			stream.ReadWrite(ref nTime);
 			stream.ReadWrite(ref nBits);
 			stream.ReadWrite(ref nNonce);
-			stream.ReadWrite(ref fProofOfStake);
+            stream.ReadWrite(ref nHeight);
 
 		}
 

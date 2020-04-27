@@ -199,6 +199,13 @@
     <ClInclude Include="hashodo.h" />
     <ClInclude Include="hefty1.h" />
     <ClInclude Include="jh.h" />
+    <ClInclude Include="kawpow\ethash\bit_manipulation.h" />
+    <ClInclude Include="kawpow\ethash\builtins.h" />
+    <ClInclude Include="kawpow\ethash\endianness.hpp" />
+    <ClInclude Include="kawpow\ethash\ethash-internal.hpp" />
+    <ClInclude Include="kawpow\ethash\kiss99.hpp" />
+    <ClInclude Include="kawpow\ethash\primes.h" />
+    <ClInclude Include="kawpow\support\attributes.h" />
     <ClInclude Include="keccak.h" />
     <ClInclude Include="KeccakP-800-SnP.h" />
     <ClInclude Include="lane.h" />
@@ -296,6 +303,13 @@
     <ClCompile Include="groestl.c" />
     <ClCompile Include="hefty1.c" />
     <ClCompile Include="jh.c" />
+    <ClCompile Include="kawpow\ethash\ethash.cpp" />
+    <ClCompile Include="kawpow\ethash\managed.cpp" />
+    <ClCompile Include="kawpow\ethash\primes.c" />
+    <ClCompile Include="kawpow\ethash\progpow.cpp" />
+    <ClCompile Include="kawpow\keccak\keccak.c" />
+    <ClCompile Include="kawpow\keccak\keccakf1600.c" />
+    <ClCompile Include="kawpow\keccak\keccakf800.c" />
     <ClCompile Include="keccak.c" />
     <ClCompile Include="KeccakP-800-reference.c" />
     <ClCompile Include="lane.c" />
@@ -364,6 +378,10 @@
   <ItemGroup>
     <None Include="equi\crypto\equihash.tcc" />
     <None Include="Makefile" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="kawpow\ethash\CMakeLists.txt" />
+    <Content Include="kawpow\keccak\CMakeLists.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
