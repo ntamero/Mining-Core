@@ -565,7 +565,7 @@ namespace Miningcore.Blockchain.Bitcoin
                     return BitcoinUtils.BechSegwitAddressToDestination(poolConfig.Address, network,extraPoolConfig?.BechPrefix);
 
                 case BitcoinAddressType.CashAddr:
-                    return BitcoinUtils.CashAddrToDestination(poolConfig.Address, network);
+                    return BitcoinUtils.CashAddrToDestination(poolConfig.Address);
 
                 default:
                     return BitcoinUtils.AddressToDestination(poolConfig.Address, network);

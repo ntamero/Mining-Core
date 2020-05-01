@@ -263,7 +263,7 @@ namespace Miningcore.Blockchain.Bitcoin
         protected virtual Transaction CreateOutputTransaction()
         {
             rewardToPool = new Money(BlockTemplate.CoinbaseValue, MoneyUnit.Satoshi);
-            
+
             var tx = Transaction.Create(network);
             //Now check if we need to pay founder fees Re PGN pre-dash fork
             if(coin.HasFounderFee)
@@ -568,7 +568,7 @@ namespace Miningcore.Blockchain.Bitcoin
                 {
                     if(!string.IsNullOrEmpty(CoinbasePayee.Payee))
                     {
-                        var payeeAddress = BitcoinUtils.CashAddrToDestination(CoinbasePayee.Payee, network);
+                        var payeeAddress = BitcoinUtils.CashAddrToDestination(CoinbasePayee.Payee);
                         var payeeReward = CoinbasePayee.Amount;
 
                         tx.Outputs.Add(payeeReward, payeeAddress);
@@ -578,7 +578,7 @@ namespace Miningcore.Blockchain.Bitcoin
         }
 
         #endregion // DevaultCoinbasePayload
-    
+
         #region PigeoncoinDevFee
 
         protected FounderBlockTemplateExtra FounderParameters;

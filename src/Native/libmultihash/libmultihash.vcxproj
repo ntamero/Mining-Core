@@ -266,6 +266,10 @@
     <ClInclude Include="x17.h" />
     <ClInclude Include="x21s.h" />
     <ClInclude Include="x25x.h" />
+    <ClInclude Include="yespower\insecure_memzero.h" />
+    <ClInclude Include="yespower\sha256.h" />
+    <ClInclude Include="yespower\sysendian.h" />
+    <ClInclude Include="yespower\yespower.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="bcrypt.c" />
@@ -354,6 +358,8 @@
     <ClCompile Include="x17.c" />
     <ClCompile Include="x21s.c" />
     <ClCompile Include="x25x.c" />
+    <ClCompile Include="yespower\yespower-combined.c" />
+    <ClCompile Include="yespower\yespower-platform.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="equi\crypto\equihash.tcc" />

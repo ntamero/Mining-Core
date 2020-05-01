@@ -62,7 +62,7 @@
             "hash": "sha256d"
         },
         "headerHasher": {
-            "hash": "yespower_sugarchain"
+            "hash": "sha256d"
         },
         "blockHasher": {
             "hash": "reverse",
@@ -81,7 +81,7 @@
             "hash": "sha256d"
         },
         "headerHasher": {
-            "hash": "yespower_sugarchain"
+            "hash": "sha256d"
         },
         "blockHasher": {
             "hash": "reverse",
@@ -361,7 +361,7 @@
             "hash": "reverse",
             "args": [
                 {
-                    "hash": "x16rv2"                
+                    "hash": "x16rv2"
                 }
             ]
         },

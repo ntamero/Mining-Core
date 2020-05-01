@@ -19,11 +19,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 using System;
-using System.Diagnostics;
 using System.Linq;
 using NBitcoin;
 using NBitcoin.DataEncoders;
-using static Miningcore.Blockchain.Bitcoin.CashAddr;
 using static Miningcore.Blockchain.Bitcoin.BchAddr;
 
 namespace Miningcore.Blockchain.Bitcoin
@@ -54,14 +52,15 @@ namespace Miningcore.Blockchain.Bitcoin
             var encoder = Encoders.Bech32(bechPrefix);
             var decoded = encoder.Decode(address, out var witVersion);
             var result = new WitKeyId(decoded);
+            Console.WriteLine("Resulted addresss is : "+result.GetAddress(expectedNetwork).ToString()+ "  Bech prefix is " + bechPrefix);
 
-            Debug.Assert(result.GetAddress(expectedNetwork).ToString() == address);
+            //Debug.Assert(result.GetAddress(expectedNetwork).ToString() == address);
             return result;
         }
-        public static IDestination CashAddrToDestination(string address, Network expectedNetwork)
+        public static IDestination CashAddrToDestination(string address)
         {
-            BchAddr.BchAddrData bchAddr = BchAddr.DecodeCashAddressWithPrefix(address);
-            var result = new KeyId(bchAddr.Hash);
+            BchAddrData cashAddr = DecodeCashAddressWithPrefix(address);
+            var result = new KeyId(cashAddr.Hash);
             return result;
         }
     }
