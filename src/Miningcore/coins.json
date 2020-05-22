@@ -194,6 +194,42 @@
         "explorerTxLink": "https://chainz.cryptoid.info/lcc/tx.dws?{0}.htm",
         "explorerAccountLink": "https://chainz.cryptoid.info/lcc/address.dws?{0}.htm"
     },
+    "luxcoin": {
+        "name": "Luxcoin",
+        "symbol": "LUX",
+        "family": "bitcoin",
+        "coinbaseHasher": {
+            "hash": "sha256d"
+        },
+        "headerHasher": {
+            "hash": "sha256d"
+        },
+        "blockHasher": {
+            "hash": "reverse",
+            "args": [ { "hash": "sha256d" } ]
+        },
+        "explorerBlockLink": "https://chainz.cryptoid.info/lcc/block.dws?$height$.htm",
+        "explorerTxLink": "https://chainz.cryptoid.info/lcc/tx.dws?{0}.htm",
+        "explorerAccountLink": "https://chainz.cryptoid.info/lcc/address.dws?{0}.htm"
+    },
+    "luxcoin-testnet": {
+        "name": "Luxcoin-testnet",
+        "symbol": "tLUX",
+        "family": "bitcoin",
+        "coinbaseHasher": {
+            "hash": "sha256d"
+        },
+        "headerHasher": {
+            "hash": "sha256d"
+        },
+        "blockHasher": {
+            "hash": "reverse",
+            "args": [ { "hash": "sha256d" } ]
+        },
+        "explorerBlockLink": "https://chainz.cryptoid.info/lcc/block.dws?$height$.htm",
+        "explorerTxLink": "https://chainz.cryptoid.info/lcc/tx.dws?{0}.htm",
+        "explorerAccountLink": "https://chainz.cryptoid.info/lcc/address.dws?{0}.htm"
+    },
     "dogecoin,": {
         "name": "Dogecoin,",
         "symbol": "DOGE",

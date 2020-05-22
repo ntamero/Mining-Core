@@ -173,6 +173,9 @@ namespace Miningcore.Configuration
         [JsonProperty("hasCoinbaseDevReward")]
         public bool HasCoinbaseDevReward { get; set; }
 
+        [JsonProperty("hasScRefund")]
+        public bool HasScRefund { get; set; }
+
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
         [DefaultValue(1.0d)]
         public double ShareMultiplier { get; set; } = 1.0d;

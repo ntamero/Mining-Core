@@ -479,6 +479,9 @@ namespace Miningcore.Blockchain.Bitcoin
             //Now check if we need to pay founder fees Re PGN
             if(coin.HasFounderFee)
                 rewardToPool = CreateFounderOutputs(tx,rewardToPool);
+            //HasScRefund check for LUX
+            if(coin.HasScRefund)
+                rewardToPool = CreateScRefundOutputs(tx,rewardToPool);
             // Finally distribute remaining funds to pool
             tx.Outputs.Insert(0, new TxOut(rewardToPool, poolAddressDestination));
 
@@ -632,18 +635,18 @@ namespace Miningcore.Blockchain.Bitcoin
         {
             if(CoinbaseDevRewardParams.CoinbaseDevReward != null)
             {
-                CoinbaseDevReward[] CBRewards;
+                CoinbaseDevReward[] cbRewards;
                 if(CoinbaseDevRewardParams.CoinbaseDevReward.Type == JTokenType.Array)
-                    CBRewards = CoinbaseDevRewardParams.CoinbaseDevReward.ToObject<CoinbaseDevReward[]>();
+                    cbRewards = CoinbaseDevRewardParams.CoinbaseDevReward.ToObject<CoinbaseDevReward[]>();
                 else
-                    CBRewards = new[] { CoinbaseDevRewardParams.CoinbaseDevReward.ToObject<CoinbaseDevReward>() };
+                    cbRewards = new[] { CoinbaseDevRewardParams.CoinbaseDevReward.ToObject<CoinbaseDevReward>() };
 
-                foreach(var CBReward in CBRewards)
+                foreach(var cbReward in cbRewards)
                 {
-                    if(!string.IsNullOrEmpty(CBReward.Scriptpubkey))
+                    if(!string.IsNullOrEmpty(cbReward.Scriptpubkey))
                     {
-                        var payeeAddress = BitcoinUtils.AddressToDestination(CBReward.Scriptpubkey, network);
-                        var payeeReward = CBReward.Value;
+                        var payeeAddress = BitcoinUtils.AddressToDestination(cbReward.Scriptpubkey, network);
+                        var payeeReward = cbReward.Value;
                         tx.Outputs.Add(payeeReward, payeeAddress);
                     }
                 }
@@ -652,6 +655,34 @@ namespace Miningcore.Blockchain.Bitcoin
         }
 
         #endregion // CoinbaseDevReward for FreeCash
+
+        #region ScRefund
+
+        protected ScRefundBlockTemplateExtra scRefundParams;
+
+        protected virtual Money CreateScRefundOutputs(Transaction tx, Money reward)
+        {
+            if(scRefundParams.ScRefund != null)
+            {
+                ScRefund[] scRefundObj = new[] {scRefundParams.ScRefund.ToObject<ScRefund>()};
+
+                foreach(var scRefundPayee in scRefundObj)
+                {
+                    if(!string.IsNullOrEmpty(scRefundPayee.Payee))
+                    {
+                        var payeeAddress = BitcoinUtils.AddressToDestination(scRefundPayee.Payee, network);
+                        var payeeReward = scRefundPayee.Amount;
+                        reward -= payeeReward;
+                        rewardToPool -= payeeReward;
+                        tx.Outputs.Add(payeeReward, payeeAddress);
+                    }
+                }
+            }
+            return reward;
+        }
+
+        #endregion // ScRefund for LUX
+
         #region API-Surface
 
         public BlockTemplate BlockTemplate { get; protected set; }
@@ -712,6 +743,8 @@ namespace Miningcore.Blockchain.Bitcoin
 
             if(coin.HasCoinbaseDevReward)
                 CoinbaseDevRewardParams = BlockTemplate.Extra.SafeExtensionDataAs<CoinbaseDevRewardTemplateExtra>();
+            if(coin.HasScRefund)
+                scRefundParams = BlockTemplate.Extra.SafeExtensionDataAs<ScRefundBlockTemplateExtra>();
 
             if(coin.HasPayee)
                 payeeParameters = BlockTemplate.Extra.SafeExtensionDataAs<PayeeBlockTemplateExtra>();
