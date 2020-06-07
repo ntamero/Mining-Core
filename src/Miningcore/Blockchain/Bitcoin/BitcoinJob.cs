@@ -552,11 +552,11 @@ namespace Miningcore.Blockchain.Bitcoin
             // Firstly pay coins to pool addr
             tx.Outputs.Insert(0, new TxOut(blockReward, poolAddressDestination));
             // then create payloads incase there is any coinbase_payload in gbt
-            CreatePayloadOutputs(tx, rewardToPool);
+            CreatePayloadOutputs(tx);
             return tx;
         }
 
-        protected virtual void CreatePayloadOutputs(Transaction tx, Money reward)
+        protected virtual void CreatePayloadOutputs(Transaction tx)
         {
             if(coinbasepayloadParameters.CoinbasePayload != null)
             {

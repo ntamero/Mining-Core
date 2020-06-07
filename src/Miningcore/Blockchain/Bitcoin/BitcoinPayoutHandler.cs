@@ -209,11 +209,11 @@ namespace Miningcore.Blockchain.Bitcoin
         {
             Contract.RequiresNonNull(balances, nameof(balances));
             var roundnum = poolConfig.Template.Symbol == "DVT"  ? 3:4;
+            
             // build args
             var amounts = balances
                 .Where(x => x.Amount > 0)
                 .ToDictionary(x => x.Address, x => Math.Round(x.Amount, roundnum));
-
             if(amounts.Count == 0)
                 return;
 
